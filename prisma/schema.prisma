@@ -105,4 +105,6 @@ model Nomination {
   monthKey  String? // e.g., "2025-09" for EOM grouping
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+    @@unique([submitterId, type, monthKey], map: "uniq_submitter_type_month")
+
 }
