@@ -1,12 +1,18 @@
-// example: src/app/page.tsx
+// src/app/sidebar.tsx (server)
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import Link from "next/link";
+
 export default async function Sidebar() {
   const session = await getServerSession(authOptions);
+  const role = (session?.user as any)?.role;
 
   return (
-    <main className="flex flex-col p-10 border-r h-screen w-60">
-        <h2 className="text-lg font-semibold mb-4">Sidebar</h2>
-    </main>
+    <aside className="w-64 border-r p-4 space-y-3">
+      <Link href="/">Home</Link>
+      {role === "SUPER_ADMIN" && (
+        <Link href="/admin/users" className="block text-blue-600">Users & Invites</Link>
+      )}
+    </aside>
   );
 }

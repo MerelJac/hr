@@ -5,8 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { compare } from "bcrypt";
 
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET,         // ensure set in .env
-  session: { strategy: "jwt" },                // we’re not using the Session table
+  secret: process.env.NEXTAUTH_SECRET, // ensure set in .env
+  session: { strategy: "jwt" }, // we’re not using the Session table
   pages: {
     signIn: "/login",
   },
@@ -14,7 +14,7 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email:    { label: "Email", type: "email" },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
@@ -35,7 +35,10 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           email: user.email,
-          name: [user.firstName, user.lastName].filter(Boolean).join(" ") || undefined,
+          name:
+            [user.firstName, user.lastName].filter(Boolean).join(" ") ||
+            undefined,
+          role: user.role,
         };
       },
     }),
@@ -47,12 +50,14 @@ export const authOptions: NextAuthOptions = {
         token.sub = user.id as string;
         token.email = user.email as string;
         token.name = user.name;
+        token.role = (user as any).role;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub as string;
+        (session.user as any).role = token.role;
       }
       return session;
     },
