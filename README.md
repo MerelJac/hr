@@ -13,11 +13,18 @@ pnpm dev
 # or
 bun dev
 ```
-
+```
 nvm use v18.20.8
-
+```
 to start: npm run dev
-See db: npx prisma studio
+See db: npx prisma studio (note: server must be off to run)
+```
+npx prisma format  
+npx prisma migrate dev --name {name_of_migration}
+npx prisma generate
+```
+
+to run after adjusting schema.prisma
 
 
 

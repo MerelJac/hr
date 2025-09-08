@@ -12,9 +12,14 @@ export default async function Sidebar() {
       <Link href="/feed">Feed</Link>
       <Link href="/recognize">Recognize</Link>
       {role === "SUPER_ADMIN" && (
-        <Link href="/admin/users" className="block text-blue-600">
-          Users & Invites
-        </Link>
+        <>
+          <Link href="/admin/users" className="block text-blue-600">
+            Users & Invites
+          </Link>
+          <Link href="/admin/nominations" className="block text-blue-600">
+            Nominations
+          </Link>
+        </>
       )}
     </aside>
   );

@@ -18,20 +18,22 @@ enum Role {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  firstName     String?
-  lastName      String?
-  email         String   @unique
-  passwordHash  String
-  role          Role     @default(EMPLOYEE)
-  pointsBalance Int      @default(0)      
-  monthlyBudget Int      @default(50)
-  emailVerified DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  sessions      Session[]
-  sentRecognitions Recognition[] @relation("SenderRecognitions")
+  id                       String                 @id @default(cuid())
+  firstName                String?
+  lastName                 String?
+  email                    String                 @unique
+  passwordHash             String
+  role                     Role                   @default(EMPLOYEE)
+  pointsBalance            Int                    @default(0)
+  monthlyBudget            Int                    @default(50)
+  emailVerified            DateTime?
+  createdAt                DateTime               @default(now())
+  updatedAt                DateTime               @updatedAt
+  sessions                 Session[]
+  sentRecognitions         Recognition[]          @relation("SenderRecognitions")
   receivedRecognitionLinks RecognitionRecipient[] @relation("UserRecognitionRecipients")
+  submittedNominations     Nomination[]           @relation("SubmittedNominations")
+  nominationsAsNominee     Nomination[]           @relation("NomineeUser")
 }
 
 model Session {
@@ -43,11 +45,11 @@ model Session {
 }
 
 model UserInvite {
-  id          String   @id @default(cuid())
-  email       String   @unique
-  role        Role     @default(EMPLOYEE)
+  id          String    @id @default(cuid())
+  email       String    @unique
+  role        Role      @default(EMPLOYEE)
   createdById String
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now())
   consumedAt  DateTime?
 }
 
@@ -62,12 +64,45 @@ model Recognition {
 }
 
 model RecognitionRecipient {
-  id             String   @id @default(cuid())
-  recognitionId  String
-  recognition    Recognition @relation(fields: [recognitionId], references: [id], onDelete: Cascade)
-  recipientId    String
-  recipient      User     @relation("UserRecognitionRecipients", fields: [recipientId], references: [id], onDelete: Cascade)
-  points         Int
+  id            String      @id @default(cuid())
+  recognitionId String
+  recognition   Recognition @relation(fields: [recognitionId], references: [id], onDelete: Cascade)
+  recipientId   String
+  recipient     User        @relation("UserRecognitionRecipients", fields: [recipientId], references: [id], onDelete: Cascade)
+  points        Int
 
   createdAt DateTime @default(now())
+}
+
+enum NominationType {
+  EOM // Employee of the Month
+  LINKEDIN // Like/Share LinkedIn post
+}
+
+enum NominationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  WON // used for EOM winner
+}
+
+model Nomination {
+  id          String           @id @default(cuid())
+  type        NominationType
+  status      NominationStatus @default(PENDING)
+  submitterId String
+  submitter   User             @relation("SubmittedNominations", fields: [submitterId], references: [id], onDelete: Cascade)
+
+  // EOM
+  nomineeId String?
+  nominee   User?   @relation("NomineeUser", fields: [nomineeId], references: [id], onDelete: SetNull)
+
+  // LinkedIn
+  imageUrl String?
+  caption  String?
+
+  reason    String?
+  monthKey  String? // e.g., "2025-09" for EOM grouping
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
