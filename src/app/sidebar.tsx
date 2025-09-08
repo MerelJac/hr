@@ -8,10 +8,13 @@ export default async function Sidebar() {
   const role = (session?.user as any)?.role;
 
   return (
-    <aside className="w-64 border-r p-4 space-y-3">
-      <Link href="/">Home</Link>
+    <aside className="flex flex-col w-64 border-r p-4 space-y-3">
+      <Link href="/feed">Feed</Link>
+      <Link href="/recognize">Recognize</Link>
       {role === "SUPER_ADMIN" && (
-        <Link href="/admin/users" className="block text-blue-600">Users & Invites</Link>
+        <Link href="/admin/users" className="block text-blue-600">
+          Users & Invites
+        </Link>
       )}
     </aside>
   );

@@ -24,10 +24,14 @@ model User {
   email         String   @unique
   passwordHash  String
   role          Role     @default(EMPLOYEE)
+  pointsBalance Int      @default(0)      
+  monthlyBudget Int      @default(50)
   emailVerified DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   sessions      Session[]
+  sentRecognitions Recognition[] @relation("SenderRecognitions")
+  receivedRecognitionLinks RecognitionRecipient[] @relation("UserRecognitionRecipients")
 }
 
 model Session {
@@ -45,4 +49,25 @@ model UserInvite {
   createdById String
   createdAt   DateTime @default(now())
   consumedAt  DateTime?
+}
+
+model Recognition {
+  id        String   @id @default(cuid())
+  senderId  String
+  sender    User     @relation("SenderRecognitions", fields: [senderId], references: [id], onDelete: Cascade)
+  message   String
+  createdAt DateTime @default(now())
+
+  recipients RecognitionRecipient[]
+}
+
+model RecognitionRecipient {
+  id             String   @id @default(cuid())
+  recognitionId  String
+  recognition    Recognition @relation(fields: [recognitionId], references: [id], onDelete: Cascade)
+  recipientId    String
+  recipient      User     @relation("UserRecognitionRecipients", fields: [recipientId], references: [id], onDelete: Cascade)
+  points         Int
+
+  createdAt DateTime @default(now())
 }
