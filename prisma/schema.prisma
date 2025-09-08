@@ -10,6 +10,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  MANAGER
+  EMPLOYEE
+}
 
 model User {
   id            String   @id @default(cuid())
@@ -17,6 +23,7 @@ model User {
   lastName      String?
   email         String   @unique
   passwordHash  String
+  role          Role     @default(EMPLOYEE)
   emailVerified DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -29,4 +36,13 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   sessionToken String   @unique
   expires      DateTime
+}
+
+model UserInvite {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  role        Role     @default(EMPLOYEE)
+  createdById String
+  createdAt   DateTime @default(now())
+  consumedAt  DateTime?
 }
