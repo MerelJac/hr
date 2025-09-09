@@ -1,6 +1,7 @@
 // src/app/sidebar.tsx (server)
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { Home, Rocket, User, Star, Gift } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import LogoutButton from "./login/logoutButton";
@@ -13,22 +14,56 @@ export default async function Sidebar() {
   return (
     <aside className="flex flex-col w-[15rem] border-r p-4 space-y-3 h-screen justify-between">
       <div className="flex flex-col space-y-3">
-        <Image src={logo} alt="Logo"  />
-        <Link href="/feed">Feed</Link>
-        <Link href="/recognize">Recognize</Link>
+        <Image src={logo} alt="Logo" />
+        <Link
+          href="/feed"
+          className="flex items-center gap-2 hover:text-blue-600"
+        >
+          <Home size={18} />
+          <span>Feed</span>
+        </Link>
+        <Link
+          href="/recognize"
+          className="flex items-center gap-2 hover:text-blue-600"
+        >
+          <Star size={18} />
+          <span>Recognize</span>
+        </Link>
+        <Link
+          href="/rewards"
+          className="flex items-center gap-2 hover:text-blue-600"
+        >
+          <Gift size={18} />
+          <span> Rewards</span>
+        </Link>
         {role === "SUPER_ADMIN" && (
           <>
-            <Link href="/admin/users" className="block text-blue-600">
-              Users & Invites
+            <Link
+              href="/admin/users"
+              className="flex items-center gap-2 hover:text-blue-600"
+            >
+              <Home size={18} />
+              <span> Users & Invites</span>
             </Link>
-            <Link href="/admin/nominations" className="block text-blue-600">
-              Nominations
+
+            <Link
+              href="/admin/nominations"
+              className="flex items-center gap-2 hover:text-blue-600"
+            >
+              <Rocket size={18} />
+              <span> Nominations</span>
             </Link>
           </>
         )}
       </div>
       <div className="flex flex-col space-y-3">
-        <Link href="/profile">My Profile</Link>
+        <Link
+          href="/profile"
+          className="flex items-center gap-2 hover:text-blue-600"
+        >
+          <User size={18} />
+          <span>My Profile</span>
+        </Link>
         <LogoutButton />
       </div>
     </aside>
