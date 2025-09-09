@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getAvailablePoints } from "@/lib/recognition";
 import RecognizeForm from "./recognize-form";
 import NominationModal from "@/components/NominationModal";
+
 export default async function RecognizePage() {
   const session = await getServerSession(authOptions);
   const me = session?.user as any;
@@ -24,13 +25,12 @@ export default async function RecognizePage() {
     id: u.id,
     label: [u.firstName, u.lastName].filter(Boolean).join(" ") || u.email,
   }));
-  const isSuperAdmin = me.role === "SUPER_ADMIN";
 
   return (
     <main className="p-6 space-y-6">
       <div className="flex flex-row justify-between">
-        <h1 className="text-2xl font-semibold">Send Recognition</h1>
-        <NominationModal users={simpleUsers} isSuperAdmin={isSuperAdmin} />
+        <h1 className="text-2xl font-semibold">Send Stars</h1>
+        <NominationModal users={simpleUsers}  />
       </div>
 
       <p className="text-sm text-gray-600">

@@ -34,6 +34,7 @@ model User {
   receivedRecognitionLinks RecognitionRecipient[] @relation("UserRecognitionRecipients")
   submittedNominations     Nomination[]           @relation("SubmittedNominations")
   nominationsAsNominee     Nomination[]           @relation("NomineeUser")
+  redemptions              Redemption[]           @relation("UserRedemptions")
 }
 
 model Session {
@@ -105,6 +106,60 @@ model Nomination {
   monthKey  String? // e.g., "2025-09" for EOM grouping
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-    @@unique([submitterId, type, monthKey], map: "uniq_submitter_type_month")
 
+  @@unique([submitterId, type, monthKey], map: "uniq_submitter_type_month")
+}
+
+enum RewardType {
+  AMAZON
+  VISA
+}
+
+enum RedemptionStatus {
+  PENDING // created, awaiting provider or admin
+  APPROVED // approved to fulfill (optional step)
+  FULFILLED // provider returned a code / delivered
+  FAILED
+  CANCELED
+}
+
+model RewardCatalog {
+  id          String       @id @default(cuid())
+  type        RewardType
+  label        String   @unique 
+  valueCents  Int // e.g., 2500 => $25 card value
+  pointsCost  Int // how many points it costs
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  redemptions Redemption[] @relation("CatalogRedemptions")
+
+  @@index([type, isActive])
+}
+
+model Redemption {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation("UserRedemptions", fields: [userId], references: [id], onDelete: Cascade)
+
+  catalogId String
+  catalog   RewardCatalog @relation("CatalogRedemptions", fields: [catalogId], references: [id], onDelete: Restrict)
+
+  type        RewardType
+  pointsSpent Int
+  valueCents  Int
+  status      RedemptionStatus @default(PENDING)
+
+  provider     String? // e.g. "mock", "tremendous", "tango"
+  externalId   String? // provider reference
+  code         String? // eGift code (if fulfilled)
+  claimUrl     String? // optional claim link
+  deliverEmail String? // where it was sent (default user email)
+  note         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Optional: idempotency if you add a client-generated key
+  idemKey String? @unique
 }

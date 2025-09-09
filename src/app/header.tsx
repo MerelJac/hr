@@ -11,7 +11,7 @@ export default function Header() {
       <section className="flex flex-col sm:flex-row items-center gap-4">
         <Link href="/" className="text-2xl font-bold">
           <Image src={logo} alt="Logo" width={80} height={80} priority />
-          MissionControl
+          BlastOff
         </Link>
       </section>
 

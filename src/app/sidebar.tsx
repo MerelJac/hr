@@ -1,7 +1,7 @@
 // src/app/sidebar.tsx (server)
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { Home, Rocket, User, Star, Gift } from "lucide-react";
+import { Home, Rocket, User, Star, Gift, Users } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import LogoutButton from "./login/logoutButton";
@@ -42,7 +42,7 @@ export default async function Sidebar() {
               href="/admin/users"
               className="flex items-center gap-2 hover:text-blue-600"
             >
-              <Home size={18} />
+              <Users size={18} />
               <span> Users & Invites</span>
             </Link>
 
@@ -53,6 +53,13 @@ export default async function Sidebar() {
               <Rocket size={18} />
               <span> Nominations</span>
             </Link>
+                    <Link
+          href="/admin/rewards"
+          className="flex items-center gap-2 hover:text-blue-600"
+        >
+          <Gift size={18} />
+          <span> Rewards (Admin)</span>
+        </Link>
           </>
         )}
       </div>

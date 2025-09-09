@@ -1,4 +1,3 @@
-import Header from "@/app/header";
 import Sidebar from "@/app/sidebar";
 
 export default function AppShellLayout({ children }: { children: React.ReactNode }) {

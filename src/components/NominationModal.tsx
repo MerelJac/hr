@@ -5,11 +5,9 @@ import { useState } from "react";
 type SimpleUser = { id: string; label: string };
 
 export default function NominationModal({
-  users,
-  isSuperAdmin,
+  users
 }: {
   users: SimpleUser[];
-  isSuperAdmin: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<"EOM" | "LINKEDIN">("EOM");
@@ -22,7 +20,6 @@ export default function NominationModal({
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState<File | null>(null);
 
-  if (!isSuperAdmin) return null;
 
   async function submitEOM(e: React.FormEvent) {
     e.preventDefault();
@@ -53,7 +50,7 @@ export default function NominationModal({
         onClick={() => setOpen(true)}
         className="rounded bg-purple-600 text-white px-3 py-2"
       >
-        Monthly Nomination
+        Monthly Nominations
       </button>
 
       {open && (
