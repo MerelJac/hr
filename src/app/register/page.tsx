@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "" });
@@ -31,6 +32,12 @@ export default function RegisterPage() {
         <input className="w-full border p-2" type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
         <input className="w-full border p-2" type="password" placeholder="Password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
         <button className="bg-black text-white w-full py-2 rounded">Register</button>
+                <Link
+          href="/login"
+          className="block text-center w-full bg-gray-200 text-black py-2 rounded hover:bg-gray-300"
+        >
+          Login
+        </Link>
       </form>
     </main>
   );
