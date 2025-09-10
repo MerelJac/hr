@@ -35,6 +35,7 @@ model User {
   submittedNominations     Nomination[]           @relation("SubmittedNominations")
   nominationsAsNominee     Nomination[]           @relation("NomineeUser")
   redemptions              Redemption[]           @relation("UserRedemptions")
+  isActive                 Boolean                @default(true)
 }
 
 model Session {
@@ -99,8 +100,8 @@ model Nomination {
   nominee   User?   @relation("NomineeUser", fields: [nomineeId], references: [id], onDelete: SetNull)
 
   // LinkedIn
-  imageUrl String?
-  caption  String?
+  postUrl String?
+  caption String?
 
   reason    String?
   monthKey  String? // e.g., "2025-09" for EOM grouping
@@ -126,7 +127,7 @@ enum RedemptionStatus {
 model RewardCatalog {
   id          String       @id @default(cuid())
   type        RewardType
-  label        String   @unique 
+  label       String       @unique
   valueCents  Int // e.g., 2500 => $25 card value
   pointsCost  Int // how many points it costs
   isActive    Boolean      @default(true)

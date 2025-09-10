@@ -35,7 +35,6 @@ export default async function FeedPage() {
   });
 
   const simpleUsers = users.map((u) => ({ id: u.id, label: name(u) }));
-  const isSuperAdmin = me.role === "SUPER_ADMIN";
 
   return (
     <main className="p-6 space-y-4">
@@ -46,7 +45,7 @@ export default async function FeedPage() {
       <div className="flex flex-row justify-between">
         <ul className="space-y-3">
           {recs.map((r) => (
-            <li key={r.id} className="border rounded p-4">
+            <li key={r.id} className="border rounded-lg p-4">
               <div className="text-sm text-gray-600">
                 <b>{name(r.sender)}</b> recognized{" "}
                 {r.recipients.map((rr, i) => (

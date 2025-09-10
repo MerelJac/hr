@@ -7,7 +7,7 @@ export default function AdminActionButton({
   secondary = false,
 }: {
   id: string;
-  action: "approve" | "reject" | "win";
+  action: "approve" | "reject" | "win" | "skip";
   label: string;
   secondary?: boolean;
 }) {

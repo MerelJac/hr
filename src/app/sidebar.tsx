@@ -39,27 +39,26 @@ export default async function Sidebar() {
         {role === "SUPER_ADMIN" && (
           <>
             <Link
+              href="/admin/nominations"
+              className="flex items-center gap-2 hover:text-blue-600"
+            >
+              <Rocket size={18} />
+              <span> Challenges</span>
+            </Link>
+            <Link
+              href="/admin/rewards"
+              className="flex items-center gap-2 hover:text-blue-600"
+            >
+              <Gift size={18} />
+              <span> Manage Rewards</span>
+            </Link>
+            <Link
               href="/admin/users"
               className="flex items-center gap-2 hover:text-blue-600"
             >
               <Users size={18} />
               <span> Users & Invites</span>
             </Link>
-
-            <Link
-              href="/admin/nominations"
-              className="flex items-center gap-2 hover:text-blue-600"
-            >
-              <Rocket size={18} />
-              <span> Nominations</span>
-            </Link>
-                    <Link
-          href="/admin/rewards"
-          className="flex items-center gap-2 hover:text-blue-600"
-        >
-          <Gift size={18} />
-          <span> Rewards (Admin)</span>
-        </Link>
           </>
         )}
       </div>

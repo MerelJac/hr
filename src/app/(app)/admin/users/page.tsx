@@ -12,7 +12,7 @@ export default async function UsersAdminPage() {
   if (role !== "SUPER_ADMIN") redirect("/");
 
   const [invites, users] = await Promise.all([
-    prisma.userInvite.findMany({ orderBy: { createdAt: "desc" } }),
+    prisma.userInvite.findMany({ orderBy: { createdAt: "desc" } ,  where: { consumedAt: null }}),
     prisma.user.findMany({ orderBy: { createdAt: "desc" } }),
   ]);
 

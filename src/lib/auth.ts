@@ -27,9 +27,11 @@ export const authOptions: NextAuthOptions = {
         });
         if (!user) return null;
 
+        if (!user.isActive) throw new Error("Account disabled");
         // Verify password
         const ok = await compare(credentials.password, user.passwordHash);
         if (!ok) return null;
+
 
         // Minimal user object for JWT
         return {
@@ -39,6 +41,7 @@ export const authOptions: NextAuthOptions = {
             [user.firstName, user.lastName].filter(Boolean).join(" ") ||
             undefined,
           role: user.role,
+          isActive: user.isActive
         };
       },
     }),
@@ -51,6 +54,7 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email as string;
         token.name = user.name;
         token.role = (user as any).role;
+        token.isActive = (user as any).isActive;
       }
       return token;
     },
@@ -58,6 +62,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.sub as string;
         (session.user as any).role = token.role;
+        (session.user as any).isActive = token.isActive;
       }
       return session;
     },

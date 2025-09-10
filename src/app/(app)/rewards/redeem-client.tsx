@@ -58,7 +58,7 @@ export default function RedeemClient({
           <button
             key={c.id}
             onClick={() => setSelected(c.id)}
-            className={`border rounded p-4 text-left ${
+            className={`border rounded-lg p-4 text-left ${
               selected === c.id ? "ring-2 ring-black" : ""
             }`}
           >

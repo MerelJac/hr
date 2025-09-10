@@ -7,7 +7,7 @@ export default async function Home() {
   return (
     <>
       <main className="p-6">
-        <h1 className="text-2xl font-semibold mb-4">Welcome to BlastOff</h1>
+        <h1 className="text-2xl font-semibold mb-4">Welcome to Shooting Stars</h1>
         {session ? (
           <p className="text-gray-700">You are signed in as <b>{session.user?.email}</b>.</p>
         ) : (

@@ -33,7 +33,7 @@ export async function middleware(req: any) {
 
   // Extra guard for /admin/**
   if (pathname.startsWith("/admin") && token.role !== "SUPER_ADMIN") {
-    return NextResponse.redirect(new URL("/", url.origin));
+    return NextResponse.redirect(new URL("/feed", url.origin));
   }
 
   return NextResponse.next();
