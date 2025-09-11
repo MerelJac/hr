@@ -38,11 +38,11 @@ export default async function FeedPage() {
 
   return (
     <main className="p-6 space-y-4">
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-between gap-2">
         <h1 className="text-2xl font-semibold mb-2">Recognition Feed</h1>
         <NominationModal users={simpleUsers} />
       </div>
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-between gap-2">
         <ul className="space-y-3">
           {recs.map((r) => (
             <li key={r.id} className="border rounded-lg p-4">

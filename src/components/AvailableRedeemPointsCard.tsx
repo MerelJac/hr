@@ -15,8 +15,8 @@ export default async function AvailableRedeemPointsCard() {
   return (
     <div className="border rounded-lg p-4 shadow-sm bg-white flex items-center justify-between">
       <div>
-        <h2 className="text-lg font-semibold">{available}</h2>
-        <p className="text-2xl font-bold">Stars to redeem</p>
+        <h2 className="text-2xl font-bold">{available}</h2>
+        <p className="text-xl">Stars to Redeem</p>
       </div>
        <Link
           href="/rewards"

@@ -28,7 +28,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     const updated = await tx.user.update({
       where: { id: params.id },
       data,
-      select: { id: true },
+      select: { id: true , isActive: true},
     });
     if (!updated.isActive) {
       await tx.session.deleteMany({ where: { userId: params.id } });

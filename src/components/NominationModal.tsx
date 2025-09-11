@@ -1,5 +1,6 @@
 "use client";
 
+import { Rocket } from "lucide-react";
 import { useState } from "react";
 
 type SimpleUser = { id: string; label: string };
@@ -93,7 +94,7 @@ export default function NominationModal({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded bg-purple-600 text-white px-3 py-2 disabled:opacity-50"
+        className="rounded bg-purple-600 text-white px-3 py-2 disabled:opacity-50 flex align-center gap-2 justify-center items-center"
         disabled={bothBlocked}
         title={
           bothBlocked
@@ -101,6 +102,7 @@ export default function NominationModal({
             : undefined
         }
       >
+                      <Rocket size={18} />
         Monthly Challenges
       </button>
 
