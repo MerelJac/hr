@@ -2,9 +2,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getAvailablePoints } from "@/lib/recognition";
-import RecognizeForm from "./recognize-form";
 import NominationModal from "@/components/NominationModal";
 import { getMyMonthlyNominationFlags } from "@/lib/nomination-status";
+import RecognizeFormWrapper from "@/components/RecognizeFormWrapper";
 
 export default async function RecognizePage() {
   const session = await getServerSession(authOptions);
@@ -41,7 +41,7 @@ export default async function RecognizePage() {
       <p className="text-sm text-gray-600">
         You have <b>{available}</b> stars to give!
       </p>
-      <RecognizeForm users={users} available={available} />
+      <RecognizeFormWrapper />
     </main>
   );
 }

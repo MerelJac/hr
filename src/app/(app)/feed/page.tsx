@@ -4,6 +4,9 @@ import { authOptions } from "@/lib/auth";
 import NominationModal from "@/components/NominationModal";
 import AvailablePointsCard from "@/components/AvailablePointsCard";
 import AvailableRedeemPointsCard from "@/components/AvailableRedeemPointsCard";
+import CommentList from "@/components/CommentList";
+import RecognizeFormWrapper from "@/components/RecognizeFormWrapper";
+import CoreValues from "@/components/CoreValues";
 
 export default async function FeedPage() {
   const session = await getServerSession(authOptions);
@@ -42,27 +45,36 @@ export default async function FeedPage() {
         <h1 className="text-2xl font-semibold mb-2">Recognition Feed</h1>
         <NominationModal users={simpleUsers} />
       </div>
-      <div className="flex flex-row justify-between gap-2">
-        <ul className="space-y-3">
-          {recs.map((r) => (
-            <li key={r.id} className="border rounded-lg p-4">
-              <div className="text-sm text-gray-600">
-                <b>{name(r.sender)}</b> recognized{" "}
-                {r.recipients.map((rr, i) => (
-                  <span key={rr.id}>
-                    <b>{name(rr.recipient)}</b> (+{rr.points})
-                    {i < r.recipients.length - 1 ? ", " : ""}
-                  </span>
-                ))}{" "}
-                • {new Date(r.createdAt).toLocaleString()}
-              </div>
-              <p className="mt-2">{r.message}</p>
-            </li>
-          ))}
-        </ul>
+      <div className="flex flex-row gap-4 justify-between">
+        <div className="min-w-[70%]">
+          <RecognizeFormWrapper />
+          <ul className="space-y-3">
+            {recs.map((r) => (
+              <li key={r.id} className="border rounded-lg p-4">
+                <div className="text-sm text-gray-600">
+                  <b>{name(r.sender)}</b> recognized{" "}
+                  {r.recipients.map((rr, i) => (
+                    <span key={rr.id}>
+                      <b>{name(rr.recipient)}</b> (+{rr.points})
+                      {i < r.recipients.length - 1 ? ", " : ""}
+                    </span>
+                  ))}{" "}
+                  • {new Date(r.createdAt).toLocaleString()}
+                </div>
+                <p className="mt-2">{r.message}</p>
+                <CommentList
+                  recognitionId={r.id}
+                  users={simpleUsers}
+                  currentUserId={me.id}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
         <div id="actionItems" className="flex flex-col gap-4">
-          <AvailablePointsCard/>
-          <AvailableRedeemPointsCard/>
+          <AvailablePointsCard />
+          <AvailableRedeemPointsCard />
+          <CoreValues />
         </div>
       </div>
     </main>

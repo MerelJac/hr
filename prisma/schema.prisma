@@ -36,6 +36,8 @@ model User {
   nominationsAsNominee     Nomination[]           @relation("NomineeUser")
   redemptions              Redemption[]           @relation("UserRedemptions")
   isActive                 Boolean                @default(true)
+  sentComments             RecognitionComment[]   @relation("CommentSender")
+  receivedComments         RecognitionComment[]   @relation("CommentRecipient")
 }
 
 model Session {
@@ -63,6 +65,7 @@ model Recognition {
   createdAt DateTime @default(now())
 
   recipients RecognitionRecipient[]
+  comments   RecognitionComment[]   @relation("RecognitionComments")
 }
 
 model RecognitionRecipient {
@@ -163,4 +166,21 @@ model Redemption {
 
   // Optional: idempotency if you add a client-generated key
   idemKey String? @unique
+}
+
+model RecognitionComment {
+  id            String      @id @default(cuid())
+  recognitionId String
+  recognition   Recognition @relation("RecognitionComments", fields: [recognitionId], references: [id], onDelete: Cascade)
+
+  senderId String
+  sender   User   @relation("CommentSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  recipientId String?
+  recipient   User?   @relation("CommentRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  message       String?
+  pointsBoosted Int     @default(0)
+
+  createdAt DateTime @default(now())
 }
