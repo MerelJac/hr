@@ -31,16 +31,11 @@ export default async function RecognizePage() {
   return (
     <main className="p-6 space-y-6">
       <div className="flex flex-row justify-between">
-        <h1 className="text-2xl font-semibold">Send Stars</h1>
         <NominationModal
           users={simpleUsers}
           already={{ eom: flags.hasEom, linkedin: flags.hasLinkedIn }}
         />
       </div>
-
-      <p className="text-sm text-gray-600">
-        You have <b>{available}</b> stars to give!
-      </p>
       <RecognizeFormWrapper />
     </main>
   );

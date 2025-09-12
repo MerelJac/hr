@@ -23,8 +23,7 @@ export default async function RewardsPage() {
   return (
     <main className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Rewards</h1>
-        <div className="text-sm">Your balance: <b>{user?.pointsBalance ?? 0}</b> pts</div>
+        <h1 className="text-2xl font-semibold text-white">You have <b className="font-bold text-4xl">{user?.pointsBalance ?? 0}</b> stars to cash in!</h1>
       </div>
 
       <RedeemClient
@@ -39,7 +38,7 @@ export default async function RewardsPage() {
           {history.map(r => (
             <li key={r.id} className="border-4 rounded p-3">
               <div className="text-sm">
-                <b>{r.catalog.label}</b> — spent {r.pointsSpent} pts
+                <b>{r.catalog.label}</b> — spent {r.pointsSpent} stars
                 {" · "}status: {r.status}
               </div>
               {r.code && <div className="text-xs mt-1">Code: <code>{r.code}</code></div>}

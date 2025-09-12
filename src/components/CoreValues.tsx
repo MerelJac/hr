@@ -46,7 +46,7 @@ export default function CoreValues() {
   }
 
   return (
-    <div className="coreValues space-y-2">
+    <div className="coreValues space-y-2 p-4 bg-white rounded-lg">
       <div className="headerSection mb-4">
         <p className="text-xl font-semibold">Call One Mission</p>
       </div>
@@ -54,7 +54,7 @@ export default function CoreValues() {
       {values.map((v) => (
         <div
           key={v.id}
-          className="coreFilterSection border-4 rounded-lg p-2 cursor-pointer min-w-xs max-w-xs"
+          className="coreFilterSection border-2 border-blue rounded-lg p-2 cursor-pointer min-w-xs max-w-xs"
           onClick={() => toggle(v.id)}
         >
           <div className="flex items-center">

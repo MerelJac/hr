@@ -52,14 +52,14 @@ export default function RedeemClient({
 
   return (
     <section className="space-y-4">
-      <h2 className="text-lg font-semibold">Catalog</h2>
+      <h2 className="text-lg font-semibold text-white">Catalog</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {catalog.map((c) => (
           <button
             key={c.id}
             onClick={() => setSelected(c.id)}
-            className={`border-4 rounded-lg p-4 text-left ${
-              selected === c.id ? "ring-2 ring-black" : ""
+            className={` rounded-lg p-4 text-left ${
+              selected === c.id ? "ring-2 ring-blue-100 bg-blue-100" : "  bg-white"
             }`}
           >
             {/* 👇 conditional image */}

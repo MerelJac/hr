@@ -94,7 +94,7 @@ export default function NominationModal({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded bg-purple-600 text-white px-3 py-2 disabled:opacity-50 flex align-center gap-2 justify-center items-center"
+        className="rounded-lg border-2 border-white bg-purple-600 text-white px-3 py-2 disabled:opacity-50 flex align-center gap-2 justify-center items-center"
         disabled={bothBlocked}
         title={
           bothBlocked
@@ -102,7 +102,7 @@ export default function NominationModal({
             : undefined
         }
       >
-                      <Rocket size={18} />
+        <Rocket size={18} />
         Monthly Challenges
       </button>
 
@@ -164,7 +164,7 @@ export default function NominationModal({
                 <div>
                   <label className="block text-sm mb-1">Nominee</label>
                   <select
-                    className="w-full border-4 rounded px-2 py-1"
+                    className="w-full border-2 border-blue rounded-lg px-2 py-1"
                     value={nomineeId}
                     onChange={(e) => setNomineeId(e.target.value)}
                     disabled={already.eom}
@@ -179,7 +179,7 @@ export default function NominationModal({
                 <div>
                   <label className="block text-sm mb-1">Reason</label>
                   <textarea
-                    className="w-full border-4 rounded px-3 py-2"
+                    className="w-full border-2 border-blue rounded-lg px-3 py-2"
                     rows={3}
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
@@ -188,7 +188,7 @@ export default function NominationModal({
                   />
                 </div>
                 <button
-                  className="bg-black text-white px-4 py-2 rounded disabled:opacity-50"
+                  className="bg-black text-white px-4 py-2 rounded-lg disabled:opacity-50"
                   disabled={!canSubmitEom()}
                 >
                   Submit EOM
@@ -199,7 +199,7 @@ export default function NominationModal({
                 <div>
                   <label className="block text-sm mb-1">Caption</label>
                   <textarea
-                    className="w-full border-4 rounded px-3 py-2"
+                    className="w-full border-2 border-blue rounded-lg px-3 py-2"
                     rows={3}
                     value={caption}
                     onChange={(e) => setCaption(e.target.value)}
@@ -211,7 +211,7 @@ export default function NominationModal({
                   <label className="block text-sm mb-1">Post URL</label>
                   <input
                     type="url"
-                    className="w-full border-4 rounded px-3 py-2"
+                    className="w-full  border-2 border-blue rounded-lg px-3 py-2"
                     value={postUrl}
                     onChange={(e) => setPostUrl(e.target.value)}
                     placeholder="https://www.linkedin.com/posts/..."
@@ -222,7 +222,7 @@ export default function NominationModal({
                   </p>
                 </div>
                 <button
-                  className="bg-black text-white px-4 py-2 rounded disabled:opacity-50"
+                  className="bg-black text-white px-4 py-2 rounded-lg disabled:opacity-50"
                   disabled={!canSubmitLinkedIn()}
                 >
                   Submit LinkedIn
