@@ -7,6 +7,7 @@ import AvailableRedeemPointsCard from "@/components/AvailableRedeemPointsCard";
 import CommentList from "@/components/CommentList";
 import RecognizeFormWrapper from "@/components/RecognizeFormWrapper";
 import CoreValues from "@/components/CoreValues";
+import React from "react";
 
 export default async function FeedPage() {
   const session = await getServerSession(authOptions);
@@ -46,26 +47,40 @@ export default async function FeedPage() {
           <RecognizeFormWrapper />
           <ul className="space-y-4">
             {recs.map((r) => (
-              <>
+              <React.Fragment key={r.id}>
                 <li key={r.id} className="rounded-lg p-4 my-4 bg-white">
+                  <div className="flex flex-row justify-between items-center">
+                    <span>
+                      {r.recipients.map((rr, i) => (
+                        <span key={rr.id}>
+                          <b>{name(rr.recipient)}</b>
+                          {i < r.recipients.length - 1 ? ", " : ""}
+                        </span>
+                      ))}
+                    </span>
+                    <span className="p-4 bg-green text-white rounded-lg">
+                      + {r.recipients.reduce((a, b) => a + b.points, 0)} points
+                    </span>
+                  </div>
                   <div className="text-sm text-gray-600">
-                    <b>{name(r.sender)}</b> recognized{" "}
-                    {r.recipients.map((rr, i) => (
-                      <span key={rr.id}>
-                        <b>{name(rr.recipient)}</b> (+{rr.points})
-                        {i < r.recipients.length - 1 ? ", " : ""}
-                      </span>
-                    ))}{" "}
-                    • {new Date(r.createdAt).toLocaleString()}
+                    recognized by <b>{name(r.sender)}</b>
                   </div>
                   <p className="mt-2">{r.message}</p>
+                  <small className="text-gray-500">
+                    {new Date(r.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </small>
                 </li>
                 <CommentList
                   recognitionId={r.id}
                   users={simpleUsers}
                   currentUserId={me.id}
+                  defaultRecipientId={r.recipients[0]?.id}
                 />
-              </>
+              </React.Fragment>
             ))}
           </ul>
         </div>

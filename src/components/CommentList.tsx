@@ -5,11 +5,13 @@ export default function CommentList({
   recognitionId,
   users,
   currentUserId,
+  defaultRecipientId,
 }: any) {
   const [comments, setComments] = useState<any[]>([]);
   const [message, setMessage] = useState("");
   const [points, setPoints] = useState(0);
-  const [recipientId, setRecipientId] = useState("");
+  const [recipientId, setRecipientId] = useState(defaultRecipientId || "");
+
 
   useEffect(() => {
     fetch(`/api/comments?recognitionId=${recognitionId}`)
@@ -39,7 +41,7 @@ export default function CommentList({
       <ul className="space-y-2">
         {comments.map((c) => (
           <li key={c.id} className="text-sm">
-            <b>{c.sender.firstName || c.sender.email}</b>: {c.message}{" "}
+            <b>{c.sender.firstName || c.sender.email} {c.sender.lastName}</b>: {c.message}{" "}
             {c.pointsBoosted > 0 && (
               <span className="text-green-600">(+{c.pointsBoosted} pts)</span>
             )}
@@ -49,35 +51,36 @@ export default function CommentList({
       <div className="mt-2 flex gap-2">
         <input
           type="text"
-          placeholder="Add a comment..."
+          placeholder="Add a comment!"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="border-4 p-1 rounded flex-1"
+          className="border-2 border-blue p-1 rounded-lg flex-1"
         />
-        <input
-          type="number"
-          min="5"
-          step={5}
-          value={points}
-          onChange={(e) => setPoints(parseInt(e.target.value))}
-          className="w-20 border-4 p-1 rounded"
-          placeholder="pts"
-        />
+
         <select
           value={recipientId}
           onChange={(e) => setRecipientId(e.target.value)}
-          className="border-4 p-1 rounded"
+          className="border-2 border-blue p-1 rounded-lg"
         >
-          <option value="">Recipient</option>
+          <option value="">Who</option>
           {users.map((u: any) => (
             <option key={u.id} value={u.id}>
               {u.label}
             </option>
           ))}
         </select>
+        <input
+          type="number"
+          min="5"
+          step={5}
+          value={points}
+          onChange={(e) => setPoints(parseInt(e.target.value))}
+          className="w-20 border-2 border-blue p-1 rounded-lg"
+          placeholder="pts"
+        />
         <button
           onClick={submitComment}
-          className="bg-blue text-white px-3 py-1 rounded"
+          className="bg-blue text-white px-3 py-1 rounded-lg"
         >
           Comment
         </button>

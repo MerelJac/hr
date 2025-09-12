@@ -90,7 +90,7 @@ export default function RecognizeForm({
             onClick={addRow}
             className="text-blue-600 text-sm"
           >
-            + Add recipient
+            +
           </button>
         </div>
 
