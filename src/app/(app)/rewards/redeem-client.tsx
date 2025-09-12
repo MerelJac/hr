@@ -58,7 +58,7 @@ export default function RedeemClient({
           <button
             key={c.id}
             onClick={() => setSelected(c.id)}
-            className={`border rounded-lg p-4 text-left ${
+            className={`border-4 rounded-lg p-4 text-left ${
               selected === c.id ? "ring-2 ring-black" : ""
             }`}
           >
@@ -93,7 +93,7 @@ export default function RedeemClient({
       <div className="flex items-center gap-3">
         <input
           type="email"
-          className="border rounded px-3 py-2 w-80"
+          className="border-4 rounded px-3 py-2 w-80"
           placeholder="Delivery email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}

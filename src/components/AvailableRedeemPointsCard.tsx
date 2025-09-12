@@ -13,7 +13,7 @@ export default async function AvailableRedeemPointsCard() {
   const available = await getAvailableRedeemPoints(me.id);
 
   return (
-    <div className="border rounded-lg p-4 shadow-sm bg-white flex items-center justify-between">
+    <div className="border-4 rounded-lg p-4 shadow-sm bg-white flex items-center justify-between">
       <div>
         <h2 className="text-2xl font-bold">{available}</h2>
         <p className="text-xl">Stars to Redeem</p>

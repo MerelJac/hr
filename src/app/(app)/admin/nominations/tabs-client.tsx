@@ -36,7 +36,7 @@ function ItemCard(n: Nom) {
   });
 
   return (
-    <li className="border rounded-lg p-4 space-y-2">
+    <li className="border-4 rounded-lg p-4 space-y-2">
       <div className="text-sm text-gray-600 flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
         <div>
           <b>Type:</b> {n.type} • <b>Status:</b> {n.status} • <b>By:</b>{" "}
@@ -112,7 +112,7 @@ function Section({ title, items }: { title: string; items: Nom[] }) {
           ))}
         </ul>
       ) : (
-        <div className="text-sm text-gray-500 border rounded p-3">
+        <div className="text-sm text-gray-500 border-4 rounded p-3">
           Dang, no nominations.
         </div>
       )}

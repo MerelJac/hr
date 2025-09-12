@@ -27,10 +27,10 @@ export default function RegisterPage() {
     <main className="flex items-center justify-center min-h-screen">
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow w-96 space-y-4">
         <h1 className="text-xl font-bold">Register</h1>
-        <input className="w-full border p-2" placeholder="First name" value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} />
-        <input className="w-full border p-2" placeholder="Last name" value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} />
-        <input className="w-full border p-2" type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-        <input className="w-full border p-2" type="password" placeholder="Password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
+        <input className="w-full border-4 p-2" placeholder="First name" value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} />
+        <input className="w-full border-4 p-2" placeholder="Last name" value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} />
+        <input className="w-full border-4 p-2" type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+        <input className="w-full border-4 p-2" type="password" placeholder="Password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
         <button className="bg-black text-white w-full py-2 rounded">Register</button>
                 <Link
           href="/login"

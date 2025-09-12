@@ -74,7 +74,7 @@ export default function RecognizeForm({
       <div>
         <label className="block text-sm mb-1">Message</label>
         <textarea
-          className="w-full border rounded px-3 py-2"
+          className="w-full border-4 rounded px-3 py-2"
           rows={3}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -97,7 +97,7 @@ export default function RecognizeForm({
         {rows.map((row, i) => (
           <div key={i} className="flex gap-2 items-center">
             <select
-              className="border rounded px-2 py-1"
+              className="border-4 rounded px-2 py-1"
               value={row.userId}
               onChange={(e) => updateRow(i, { userId: e.target.value })}
             >
@@ -113,7 +113,7 @@ export default function RecognizeForm({
               type="number"
               min={5}
               step={5}
-              className="w-24 border rounded px-2 py-1"
+              className="w-24 border-4 rounded px-2 py-1"
               value={row.points}
               onChange={(e) => updateRow(i, { points: Number(e.target.value) })}
             />

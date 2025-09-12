@@ -5,7 +5,7 @@ export default function AppShellLayout({ children }: { children: React.ReactNode
     <main className="min-h-screen min-w-screen">
       <div className="flex flex-row">
         <Sidebar />
-        <div className="flex-1 p-6">{children}</div>
+        <div className="flex-1 p-6 bg-blue">{children}</div>
       </div>
     </main>
   );

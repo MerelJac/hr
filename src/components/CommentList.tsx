@@ -53,7 +53,7 @@ export default function CommentList({
           placeholder="Add a comment..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="border p-1 rounded flex-1"
+          className="border-4 p-1 rounded flex-1"
         />
         <input
           type="number"
@@ -61,13 +61,13 @@ export default function CommentList({
           step={5}
           value={points}
           onChange={(e) => setPoints(parseInt(e.target.value))}
-          className="w-20 border p-1 rounded"
+          className="w-20 border-4 p-1 rounded"
           placeholder="pts"
         />
         <select
           value={recipientId}
           onChange={(e) => setRecipientId(e.target.value)}
-          className="border p-1 rounded"
+          className="border-4 p-1 rounded"
         >
           <option value="">Recipient</option>
           {users.map((u: any) => (

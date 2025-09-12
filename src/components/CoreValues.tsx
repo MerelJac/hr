@@ -54,7 +54,7 @@ export default function CoreValues() {
       {values.map((v) => (
         <div
           key={v.id}
-          className="coreFilterSection border rounded p-2 cursor-pointer min-w-xs max-w-xs"
+          className="coreFilterSection border-4 rounded-lg p-2 cursor-pointer min-w-xs max-w-xs"
           onClick={() => toggle(v.id)}
         >
           <div className="flex items-center">

@@ -70,26 +70,21 @@ export default function RecognizeForm({
   }
 
   return (
-    <form onSubmit={submit} className="space-y-4">
+    <form onSubmit={submit} className="space-y-4 p-4 rounded-xl bg-white">
       <div>
-        <label className="block text-sm mb-1">Message</label>
         <textarea
-          className="w-full border rounded px-3 py-2"
+          className="w-full border-2 border-blue rounded-lg px-3 py-2 bg-blue-100"
           rows={3}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="What did they do great?"
+          placeholder="Give someone a shoutout! What did they do great?"
         />
       </div>
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-sm font-medium">Recipients</label>
-          <button
-            type="button"
-            onClick={addRow}
-            className="text-blue-600 text-sm"
-          >
+          <button type="button" onClick={addRow} className="text-blue text-sm">
             + Add recipient
           </button>
         </div>
@@ -97,7 +92,7 @@ export default function RecognizeForm({
         {rows.map((row, i) => (
           <div key={i} className="flex gap-2 items-center">
             <select
-              className="border rounded px-2 py-1"
+              className="border-1 rounded px-2 py-1 min-h-[36px]"
               value={row.userId}
               onChange={(e) => updateRow(i, { userId: e.target.value })}
             >
@@ -113,17 +108,20 @@ export default function RecognizeForm({
               type="number"
               min={5}
               step={5}
-              className="w-24 border rounded px-2 py-1"
+              className="w-24 border-1 rounded px-2 py-1  min-h-[36px]"
               value={row.points}
               onChange={(e) => updateRow(i, { points: Number(e.target.value) })}
             />
-            <button
-              type="button"
-              onClick={() => removeRow(i)}
-              className="text-red-600 text-sm"
-            >
-              Remove
-            </button>
+            {/*  if recipients.length > 1, show*/}
+            {rows.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeRow(i)}
+                className="text-red-600 text-sm"
+              >
+                Remove
+              </button>
+            )}
           </div>
         ))}
       </div>

@@ -33,7 +33,7 @@ export default function UsersList({ users }: { users: any[] }) {
             </span>
 
             <select
-              className="border px-2 py-1"
+              className="border-4 px-2 py-1"
               value={u.role}
               onChange={(e) => setRole(u.id, e.target.value)}
               disabled={!u.isActive}

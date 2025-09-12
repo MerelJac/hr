@@ -13,7 +13,7 @@ export default async function AvailablePointsCard() {
   const available = await getAvailablePoints(me.id);
 
   return (
-    <div className="border rounded-lg p-4 shadow-sm bg-white flex items-center justify-between">
+    <div className="border-4 rounded-lg p-4 shadow-sm bg-white flex items-center justify-between">
       <div>
         <h2 className="text-2xl font-bold">{available}</h2>
         <p className="text-lg">Stars to Give</p>

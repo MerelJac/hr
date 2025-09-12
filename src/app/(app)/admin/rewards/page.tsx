@@ -18,7 +18,7 @@ export default async function AdminRewards() {
       <h1 className="text-2xl font-semibold">Redemptions</h1>
       <ul className="space-y-2">
         {rows.map(r => (
-          <li key={r.id} className="border rounded p-3 text-sm">
+          <li key={r.id} className="border-4 rounded p-3 text-sm">
             <div><b>{r.catalog.label}</b> • {r.pointsSpent} pts • status: {r.status}</div>
             <div>User: {r.user.email}</div>
             {r.code && <div>Code: <code>{r.code}</code></div>}

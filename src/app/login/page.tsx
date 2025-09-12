@@ -32,14 +32,14 @@ export default function LoginPage() {
       >
         <h1 className="text-xl font-semibold">Sign in</h1>
         <input
-          className="w-full border p-2"
+          className="w-full border-4 p-2"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
         />
         <input
-          className="w-full border p-2"
+          className="w-full border-4 p-2"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

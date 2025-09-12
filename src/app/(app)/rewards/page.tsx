@@ -37,7 +37,7 @@ export default async function RewardsPage() {
         <h2 className="text-lg font-semibold">Recent Redemptions</h2>
         <ul className="space-y-2">
           {history.map(r => (
-            <li key={r.id} className="border rounded p-3">
+            <li key={r.id} className="border-4 rounded p-3">
               <div className="text-sm">
                 <b>{r.catalog.label}</b> — spent {r.pointsSpent} pts
                 {" · "}status: {r.status}

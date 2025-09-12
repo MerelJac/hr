@@ -12,7 +12,7 @@ export default async function Sidebar() {
   const role = (session?.user as any)?.role;
 
   return (
-    <aside className="flex flex-col w-[15rem] border-r p-4 space-y-3 h-screen justify-between">
+    <aside className="flex flex-col w-[15rem] p-4 space-y-3 h-screen justify-between">
       <div className="flex flex-col space-y-3">
         <Image src={logo} alt="Logo" />
         <Link

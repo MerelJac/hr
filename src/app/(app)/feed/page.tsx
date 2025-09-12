@@ -41,16 +41,12 @@ export default async function FeedPage() {
 
   return (
     <main className="p-6 space-y-4">
-      <div className="flex flex-row justify-between gap-2">
-        <h1 className="text-2xl font-semibold mb-2">Recognition Feed</h1>
-        <NominationModal users={simpleUsers} />
-      </div>
       <div className="flex flex-row gap-4 justify-between">
         <div className="min-w-[70%]">
           <RecognizeFormWrapper />
           <ul className="space-y-3">
             {recs.map((r) => (
-              <li key={r.id} className="border rounded-lg p-4">
+              <li key={r.id} className="border-4 rounded-lg p-4">
                 <div className="text-sm text-gray-600">
                   <b>{name(r.sender)}</b> recognized{" "}
                   {r.recipients.map((rr, i) => (
@@ -74,6 +70,7 @@ export default async function FeedPage() {
         <div id="actionItems" className="flex flex-col gap-4">
           <AvailablePointsCard />
           <AvailableRedeemPointsCard />
+          <NominationModal users={simpleUsers} />
           <CoreValues />
         </div>
       </div>
