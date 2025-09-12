@@ -71,6 +71,10 @@ export default function RecognizeForm({
 
   return (
     <form onSubmit={submit} className="space-y-4 p-4 rounded-xl bg-white">
+      <div className="text-sm text-gray-700">
+        You have <b>{available}</b> stars to give!
+      </div>
+
       <div>
         <textarea
           className="w-full border-2 border-blue rounded-lg px-3 py-2 bg-blue-100"
@@ -83,7 +87,7 @@ export default function RecognizeForm({
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium">Recipients</label>
+          <label className="text-sm font-medium">Who & How Many?</label>
           <button type="button" onClick={addRow} className="text-blue text-sm">
             + Add recipient
           </button>
@@ -126,13 +130,11 @@ export default function RecognizeForm({
         ))}
       </div>
 
-      <div className="text-sm text-gray-700">
-        Total: <b>{total}</b> / Available: <b>{available}</b>
-      </div>
-
       <button
         disabled={!message.trim() || total < 1 || total > available}
-        className="bg-black text-white px-4 py-2 rounded disabled:opacity-50"
+        className=" px-4 py-2 rounded-lg text-white
+    bg-blue hover:bg-blue
+    disabled:bg-gray-400 disabled:cursor-not-allowed}"
       >
         Send Stars
       </button>

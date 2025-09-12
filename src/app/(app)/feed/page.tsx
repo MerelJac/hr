@@ -44,26 +44,28 @@ export default async function FeedPage() {
       <div className="flex flex-row gap-4 justify-between">
         <div className="min-w-[70%]">
           <RecognizeFormWrapper />
-          <ul className="space-y-3">
+          <ul className="space-y-4">
             {recs.map((r) => (
-              <li key={r.id} className="border-4 rounded-lg p-4">
-                <div className="text-sm text-gray-600">
-                  <b>{name(r.sender)}</b> recognized{" "}
-                  {r.recipients.map((rr, i) => (
-                    <span key={rr.id}>
-                      <b>{name(rr.recipient)}</b> (+{rr.points})
-                      {i < r.recipients.length - 1 ? ", " : ""}
-                    </span>
-                  ))}{" "}
-                  • {new Date(r.createdAt).toLocaleString()}
-                </div>
-                <p className="mt-2">{r.message}</p>
+              <>
+                <li key={r.id} className="rounded-lg p-4 my-4 bg-white">
+                  <div className="text-sm text-gray-600">
+                    <b>{name(r.sender)}</b> recognized{" "}
+                    {r.recipients.map((rr, i) => (
+                      <span key={rr.id}>
+                        <b>{name(rr.recipient)}</b> (+{rr.points})
+                        {i < r.recipients.length - 1 ? ", " : ""}
+                      </span>
+                    ))}{" "}
+                    • {new Date(r.createdAt).toLocaleString()}
+                  </div>
+                  <p className="mt-2">{r.message}</p>
+                </li>
                 <CommentList
                   recognitionId={r.id}
                   users={simpleUsers}
                   currentUserId={me.id}
                 />
-              </li>
+              </>
             ))}
           </ul>
         </div>

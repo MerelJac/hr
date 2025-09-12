@@ -35,8 +35,7 @@ export default function CommentList({
   }
 
   return (
-    <div className="mt-3 pl-3 border-l border-gray-200">
-      <h4 className="text-sm font-semibold mb-2">Comments</h4>
+    <div className="ml-6 bg-white rounded-lg p-4">
       <ul className="space-y-2">
         {comments.map((c) => (
           <li key={c.id} className="text-sm">
@@ -78,9 +77,9 @@ export default function CommentList({
         </select>
         <button
           onClick={submitComment}
-          className="bg-blue-600 text-white px-3 py-1 rounded"
+          className="bg-blue text-white px-3 py-1 rounded"
         >
-          Post
+          Comment
         </button>
       </div>
     </div>
