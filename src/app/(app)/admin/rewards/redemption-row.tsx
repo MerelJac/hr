@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function RedemptionRow({ r }: { r: any }) {
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState("");
   const [claimUrl, setClaimUrl] = useState("");
+  const [accessUrl, setAccessUrl] = useState("");
 
   async function act(action: string) {
     setLoading(true);
@@ -22,18 +23,46 @@ export default function RedemptionRow({ r }: { r: any }) {
     }
   }
 
+  useEffect(() => {
+    if (r.type === "AMAZON") {
+      setAccessUrl(
+        `https://www.amazon.com/dp/B07MP6B4Y5?ref=altParentAsins_treatment_text_from_Amazon_to_Appreciation&th=1&gpo=${
+          r.pointsSpent / 10
+        }`
+      );
+    } else if (r.type === "VISA") {
+      // set an external Visa provider link if you have one
+      setAccessUrl("");
+    }
+  }, [r.type, r.pointsSpent]);
+
   return (
-    <li className="border-4 rounded p-3 text-sm space-y-2">
+    <li className="border-2 bg-white rounded-lg p-3 text-sm space-y-2">
       <div>
-        <b>{r.catalog.label}</b> • {r.valueCents / 100}$ • {r.pointsSpent} pts •{" "}
+        <b>{r.type}</b> • ${r.valueCents / 100} • {r.pointsSpent} pts •{" "}
         <span className="font-semibold">{r.status}</span>
       </div>
       <div>User: {r.user.email}</div>
+
       {r.code && (
         <div>
           Code: <code>{r.code}</code>
         </div>
       )}
+
+      {accessUrl && (
+        <div>
+          <a
+            href={accessUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline"
+          >
+            Access {r.type}
+          </a>
+        </div>
+      )}
+
       {r.claimUrl && (
         <div>
           Claim:{" "}
@@ -42,6 +71,7 @@ export default function RedemptionRow({ r }: { r: any }) {
           </a>
         </div>
       )}
+
       <div className="text-gray-500">
         {new Date(r.createdAt).toLocaleString("en-US", { timeZone: "UTC" })}
       </div>
@@ -53,7 +83,7 @@ export default function RedemptionRow({ r }: { r: any }) {
             onClick={() => act("approve")}
             className="bg-blue-600 text-white px-2 py-1 rounded"
           >
-            Approve
+            Mark as Approved
           </button>
           <button
             disabled={loading}
