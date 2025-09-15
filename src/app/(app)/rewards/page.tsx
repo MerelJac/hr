@@ -33,10 +33,10 @@ export default async function RewardsPage() {
       />
 
       <section className="space-y-2">
-        <h2 className="text-lg font-semibold">Recent Redemptions</h2>
+        <h2 className="text-lg font-semibold text-white">Recent Redemptions</h2>
         <ul className="space-y-2">
           {history.map(r => (
-            <li key={r.id} className="border-4 rounded p-3">
+            <li key={r.id} className="border-2 rounded-xl bg-white p-3">
               <div className="text-sm">
                 <b>{r.catalog.label}</b> — spent {r.pointsSpent} stars
                 {" · "}status: {r.status}

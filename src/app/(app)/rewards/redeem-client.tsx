@@ -52,7 +52,6 @@ export default function RedeemClient({
 
   return (
     <section className="space-y-4">
-      <h2 className="text-lg font-semibold text-white">Catalog</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {catalog.map((c) => (
           <button
@@ -93,8 +92,8 @@ export default function RedeemClient({
       <div className="flex items-center gap-3">
         <input
           type="email"
-          className="border-4 rounded px-3 py-2 w-80"
-          placeholder="Delivery email"
+          className="border-2 rounded-xl bg-white border-blue px-3 py-2 w-80"
+          placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -103,7 +102,7 @@ export default function RedeemClient({
           disabled={
             !item || loading || (item?.pointsCost ?? Infinity) > balance
           }
-          className="bg-black text-white px-4 py-2 rounded disabled:opacity-50"
+          className="bg-black text-white px-4 py-2 rounded-xl disabled:opacity-50"
         >
           {loading
             ? "Processing..."

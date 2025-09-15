@@ -30,7 +30,7 @@ export default async function RecognizePage() {
 
   return (
     <main className="p-6 space-y-6">
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-end">
         <NominationModal
           users={simpleUsers}
           already={{ eom: flags.hasEom, linkedin: flags.hasLinkedIn }}

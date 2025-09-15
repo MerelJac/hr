@@ -36,7 +36,7 @@ function ItemCard(n: Nom) {
   });
 
   return (
-    <li className="border-4 rounded-lg p-4 space-y-2">
+    <li className="border-2 bg-white rounded-xl p-4 space-y-2">
       <div className="text-sm text-gray-600 flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
         <div>
           <b>Type:</b> {n.type} • <b>Status:</b> {n.status} • <b>By:</b>{" "}
@@ -104,7 +104,7 @@ function ItemCard(n: Nom) {
 function Section({ title, items }: { title: string; items: Nom[] }) {
   return (
     <section className="space-y-2">
-      <h3 className="text-sm font-semibold text-gray-700">{title}</h3>
+      <h3 className="text-sm font-semibold text-white">{title}</h3>
       {items.length ? (
         <ul className="space-y-3">
           {items.map((n) => (
@@ -112,7 +112,7 @@ function Section({ title, items }: { title: string; items: Nom[] }) {
           ))}
         </ul>
       ) : (
-        <div className="text-sm text-gray-500 border-4 rounded p-3">
+        <div className="text-sm text-black bg-white border-2 rounded-xl p-3">
           Dang, no nominations.
         </div>
       )}
@@ -139,7 +139,7 @@ export default function TabsClient({
       <div className="flex gap-2">
         <button
           onClick={() => setTab("LINKEDIN")}
-          className={`px-3 py-1 rounded ${
+          className={`px-3 py-1 rounded-lg ${
             tab === "LINKEDIN" ? "bg-black text-white" : "bg-gray-100"
           }`}
         >
@@ -147,7 +147,7 @@ export default function TabsClient({
         </button>
         <button
           onClick={() => setTab("EOM")}
-          className={`px-3 py-1 rounded ${
+          className={`px-3 py-1 rounded-lg ${
             tab === "EOM" ? "bg-black text-white" : "bg-gray-100"
           }`}
         >
