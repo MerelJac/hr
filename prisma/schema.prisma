@@ -148,8 +148,8 @@ model Redemption {
   userId String
   user   User   @relation("UserRedemptions", fields: [userId], references: [id], onDelete: Cascade)
 
-  catalogId String
-  catalog   RewardCatalog @relation("CatalogRedemptions", fields: [catalogId], references: [id], onDelete: Restrict)
+  catalogId String?
+  catalog   RewardCatalog? @relation("CatalogRedemptions", fields: [catalogId], references: [id], onDelete: Restrict)
 
   type        RewardType
   pointsSpent Int

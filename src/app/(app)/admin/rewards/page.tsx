@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import RedemptionRow from "./redemption-row";
 
 export default async function AdminRewards() {
   const session = await getServerSession(authOptions);
@@ -17,14 +18,8 @@ export default async function AdminRewards() {
     <main className="p-6 space-y-4">
       <h1 className="text-2xl font-semibold">Redemptions</h1>
       <ul className="space-y-2">
-        {rows.map(r => (
-          <li key={r.id} className="border-4 rounded p-3 text-sm">
-            <div><b>{r.catalog.label}</b> • {r.pointsSpent} pts • status: {r.status}</div>
-            <div>User: {r.user.email}</div>
-            {r.code && <div>Code: <code>{r.code}</code></div>}
-            {r.claimUrl && <div>Claim: <a className="underline" href={r.claimUrl} target="_blank">link</a></div>}
-            <div className="text-gray-500">{new Date(r.createdAt).toLocaleString("en-US", { timeZone: "UTC" })}</div>
-          </li>
+        {rows.map((r) => (
+          <RedemptionRow key={r.id} r={r} />
         ))}
       </ul>
     </main>

@@ -48,7 +48,7 @@ export default async function FeedPage() {
           <ul className="space-y-4">
             {recs.map((r) => (
               <React.Fragment key={r.id}>
-                <li key={r.id} className="rounded-lg p-4 my-4 bg-white">
+                <li key={r.id} className="rounded-lg p-4 my-4 mb-0 bg-white">
                   <div className="flex flex-row justify-between items-center">
                     <span>
                       {r.recipients.map((rr, i) => (

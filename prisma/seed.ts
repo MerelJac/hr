@@ -13,22 +13,15 @@ async function user() {
 }
 
 user().finally(()=>prisma.$disconnect());
-
 async function reward() {
-  const items = [
-    { type: "AMAZON", label: "$10 Amazon Gift Card", valueCents: 1000, pointsCost: 1000 },
-    { type: "AMAZON", label: "$25 Amazon Gift Card", valueCents: 2500, pointsCost: 2500 },
-    { type: "VISA",   label: "$10 Visa Gift Card",   valueCents: 1000, pointsCost: 1100 }, // slight fee example
-    { type: "VISA",   label: "$25 Visa Gift Card",   valueCents: 2500, pointsCost: 2700 },
-  ];
-  for (const it of items) {
-    await prisma.rewardCatalog.upsert({
-      where: { label: it.label },
-      update: it,
-      create: it,
-    });
-  }
-  console.log("Seeded reward catalog.");
+await prisma.rewardCatalog.createMany({
+  data: [
+    { type: "AMAZON", label: "Amazon Custom", valueCents: 0, pointsCost: 0 },
+    { type: "VISA", label: "Visa Custom", valueCents: 0, pointsCost: 0 },
+  ]
+})
 }
+
+;
 
 reward().finally(() => prisma.$disconnect());

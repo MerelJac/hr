@@ -27,7 +27,6 @@ export default async function RewardsPage() {
       </div>
 
       <RedeemClient
-        catalog={catalog}
         balance={user?.pointsBalance ?? 0}
         defaultEmail={me.email ?? user?.email ?? ""}
       />
@@ -38,7 +37,7 @@ export default async function RewardsPage() {
           {history.map(r => (
             <li key={r.id} className="border-2 rounded-xl bg-white p-3">
               <div className="text-sm">
-                <b>{r.catalog.label}</b> — spent {r.pointsSpent} stars
+                <b>{r.type}</b> — ${r.pointsSpent / 10}
                 {" · "}status: {r.status}
               </div>
               {r.code && <div className="text-xs mt-1">Code: <code>{r.code}</code></div>}

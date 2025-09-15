@@ -37,7 +37,7 @@ export default function CommentList({
   }
 
   return (
-    <div className="ml-6 bg-white rounded-lg p-4">
+    <div className="ml-6 bg-white rounded-lg p-4 border-t-2 border-blue">
       <ul className="space-y-2">
         {comments.map((c) => (
           <li key={c.id} className="text-sm">
