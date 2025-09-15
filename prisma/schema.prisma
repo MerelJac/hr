@@ -27,6 +27,8 @@ model User {
   pointsBalance            Int                    @default(0)
   monthlyBudget            Int                    @default(50)
   emailVerified            DateTime?
+  birthday                 DateTime?
+  workAnniversary          DateTime?
   createdAt                DateTime               @default(now())
   updatedAt                DateTime               @updatedAt
   sessions                 Session[]

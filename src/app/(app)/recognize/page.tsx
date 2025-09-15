@@ -13,7 +13,7 @@ export default async function RecognizePage() {
     return <div className="p-6">Please sign in.</div>;
   }
 
-  const [users, available, flags] = await Promise.all([
+  const [users, flags] = await Promise.all([
     prisma.user.findMany({
       where: { id: { not: me.id } },
       select: { id: true, email: true, firstName: true, lastName: true },

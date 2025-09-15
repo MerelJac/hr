@@ -5,6 +5,7 @@ import Image from "next/image";
 import LogoutButton from "./login/logoutButton";
 import logo from "@/assets/logo.png";
 
+// Unused
 export default function Header() {
   return (
     <div className="flex justify-between items-center p-4 bg-gray-200">
