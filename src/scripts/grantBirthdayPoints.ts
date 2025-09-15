@@ -28,6 +28,21 @@ async function grantBirthdayPoints() {
     console.log("🎂 No birthdays today.");
     return;
   }
+  for (const u of matchingUsers) {
+    // Create recognition for each employee
+    await prisma.recognition.create({
+      data: {
+        senderId: process.env.SYSTEM_ADMIN_ID || "", // must be a valid User.id
+        message: `Happy Birthday! 🎉 `,
+        recipients: {
+          create: {
+            recipientId: u.id,
+            points: 500,
+          },
+        },
+      },
+    });
+  }
 
   // Update all birthday users
   const updates = await Promise.all(
