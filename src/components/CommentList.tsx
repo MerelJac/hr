@@ -4,14 +4,12 @@ import { useState, useEffect } from "react";
 export default function CommentList({
   recognitionId,
   users,
-  currentUserId,
   defaultRecipientId,
 }: any) {
   const [comments, setComments] = useState<any[]>([]);
   const [message, setMessage] = useState("");
   const [points, setPoints] = useState(0);
   const [recipientId, setRecipientId] = useState(defaultRecipientId || "");
-
 
   useEffect(() => {
     fetch(`/api/comments?recognitionId=${recognitionId}`)
@@ -37,11 +35,14 @@ export default function CommentList({
   }
 
   return (
-    <div className="ml-6 bg-white rounded-lg p-4 border-t-2 border-blue">
+    <div className="ml-6 bg-white rounded-lg p-4 border-t-4 border-blue">
       <ul className="space-y-2">
         {comments.map((c) => (
           <li key={c.id} className="text-sm">
-            <b>{c.sender.firstName || c.sender.email} {c.sender.lastName}</b>: {c.message}{" "}
+            <b>
+              {c.sender.firstName || c.sender.email} {c.sender.lastName}
+            </b>
+            : {c.message}{" "}
             {c.pointsBoosted > 0 && (
               <span className="text-green-600">(+{c.pointsBoosted} pts)</span>
             )}

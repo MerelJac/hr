@@ -58,7 +58,7 @@ export default async function FeedPage() {
                         </span>
                       ))}
                     </span>
-                    <span className="p-4 bg-green text-white rounded-lg">
+                    <span className="p-2 bg-green text-white rounded-lg">
                       + {r.recipients.reduce((a, b) => a + b.points, 0)} points
                     </span>
                   </div>
