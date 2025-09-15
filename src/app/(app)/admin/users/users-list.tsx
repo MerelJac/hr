@@ -23,7 +23,7 @@ export default function UsersList({ users }: { users: any[] }) {
   }
 
   return (
-    <section>
+    <section className="space-y-4 bg-white rounded-xl p-4">
       <h2 className="font-semibold mb-2">Users</h2>
       <ul className="space-y-1">
         {users.map((u) => (
@@ -33,7 +33,7 @@ export default function UsersList({ users }: { users: any[] }) {
             </span>
 
             <select
-              className="border-4 px-2 py-1"
+              className="border-2 rounded-xl px-2 py-1"
               value={u.role}
               onChange={(e) => setRole(u.id, e.target.value)}
               disabled={!u.isActive}

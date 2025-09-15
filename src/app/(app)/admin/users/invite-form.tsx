@@ -18,15 +18,15 @@ export default function InviteForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex gap-2">
-      <input className="border-4 px-2 py-1" placeholder="email@company.com" value={email} onChange={(e)=>setEmail(e.target.value)} />
-      <select className="border-4 px-2 py-1" value={role} onChange={(e)=>setRole(e.target.value)}>
+    <form onSubmit={onSubmit} className="flex gap-2 bg-white rounded-xl p-4">
+      <input className="border-2 rounded-xl px-2 py-1" placeholder="email@company.com" value={email} onChange={(e)=>setEmail(e.target.value)} />
+      <select className="border-2 rounded-xl px-2 py-1" value={role} onChange={(e)=>setRole(e.target.value)}>
         <option>EMPLOYEE</option>
         <option>MANAGER</option>
         <option>ADMIN</option>
         <option>SUPER_ADMIN</option>
       </select>
-      <button className="bg-black text-white px-3 py-1 rounded">Add Invite</button>
+      <button className="bg-black text-white px-3 py-1 rounded-xl">Add Invite</button>
     </form>
   );
 }

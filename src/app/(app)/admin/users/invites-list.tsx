@@ -7,7 +7,7 @@ export default function InvitesList({ invites }: { invites: any[] }) {
     else alert((await res.json()).error || "Failed to remove invite");
   }
   return (
-    <section>
+    <section className="space-y-4 bg-white rounded-xl p-4">
       <h2 className="font-semibold mb-2">Pending Invites</h2>
       <ul className="space-y-1">
         {invites.map((i) => (
