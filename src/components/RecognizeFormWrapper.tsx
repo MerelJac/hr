@@ -11,7 +11,7 @@ export default async function RecognizeFormWrapper() {
 
   const [users, available] = await Promise.all([
     prisma.user.findMany({
-      where: { id: { not: me.id } },
+      where: { id: { not: me.id }, role: "EMPLOYEE" },
       select: { id: true, email: true, firstName: true, lastName: true },
       orderBy: { email: "asc" },
     }),

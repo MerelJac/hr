@@ -94,7 +94,7 @@ export default function NominationModal({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded-lg border-2 border-white bg-purple-600 text-white px-3 py-2 disabled:opacity-50 flex align-center gap-2 justify-center items-center"
+        className="rounded-lg border-2 border-white bg-red-600 text-white px-3 py-2 disabled:opacity-50 flex align-center gap-2 justify-center items-center"
         disabled={bothBlocked}
         title={
           bothBlocked

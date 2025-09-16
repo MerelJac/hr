@@ -27,12 +27,12 @@ export default function LoginPage() {
   }
 
   return (
-    <section className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      <Image src={logo} alt="Logo" className="w-32 h-auto mb-4" />
-      <main className="flex items-center justify-center p-6">
+    <section className="flex flex-col items-center justify-center min-h-screen bg-linear-to-t from-blue-500 to-indigo-500 p-6 ">
+      <main className="flex items-center justify-center flex-col p-6 shadow bg-white rounded-lg">
+        <Image src={logo} alt="Logo" className="w-32 h-auto mb-4" />
         <form
           onSubmit={onSubmit}
-          className="bg-white p-6 rounded shadow w-80 space-y-3"
+          className="bg-white p-6 rounded-xl  w-80 space-y-3"
         >
           <h1 className="text-xl font-semibold">Sign in</h1>
           <input

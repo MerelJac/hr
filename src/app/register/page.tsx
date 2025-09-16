@@ -31,12 +31,12 @@ export default function RegisterPage() {
   }
 
   return (
-    <section className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <Image src={logo} alt="Logo" className="w-32 h-auto mb-4" />
-      <main className="flex items-center justify-center">
+    <section className="flex flex-col items-center justify-center min-h-screen bg-linear-to-t from-blue-500 to-indigo-500 p-4">
+      <main className="flex items-center justify-center flex-col p-6 shadow bg-white rounded-lg">
+        <Image src={logo} alt="Logo" className="w-32 h-auto mb-4" />
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-6 rounded-xl shadow w-96 space-y-4"
+          className="bg-white p-6 rounded-xl  w-96 space-y-4"
         >
           <h1 className="text-xl font-bold">Register</h1>
           <input

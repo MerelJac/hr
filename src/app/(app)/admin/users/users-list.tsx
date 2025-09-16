@@ -22,13 +22,26 @@ export default function UsersList({ users }: { users: any[] }) {
     else alert((await res.json()).error || "Failed to update access");
   }
 
+  async function setDelete(id: string) {
+    const res = await fetch(`/api/users/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (res.ok) location.reload();
+    else alert((await res.json()).error || "Failed to update access");
+  }
+
   return (
     <section className="space-y-4 bg-white rounded-xl p-4">
       <h2 className="font-semibold mb-2">Users</h2>
       <ul className="space-y-1">
         {users.map((u) => (
           <li key={u.id} className="flex items-center gap-2">
-            <span className={`w-64 ${u.isActive ? "" : "line-through text-gray-500"}`}>
+            <span
+              className={`w-64 ${
+                u.isActive ? "" : "line-through text-gray-500"
+              }`}
+            >
               {u.email}
             </span>
 
@@ -54,13 +67,22 @@ export default function UsersList({ users }: { users: any[] }) {
                 Remove Access
               </button>
             ) : (
-              <button
-                onClick={() => setActive(u.id, true)}
-                className="ml-2 text-green-700"
-                title="Reactivate"
-              >
-                Reactivate
-              </button>
+              <>
+                <button
+                  onClick={() => setActive(u.id, true)}
+                  className="ml-2 text-green-700"
+                  title="Reactivate"
+                >
+                  Reactivate
+                </button>
+                <button
+                  onClick={() => setDelete(u.id)}
+                  className="ml-2 text-red-700"
+                  title="Delete Permanently"
+                >
+                  Delete Permanently
+                </button>
+              </>
             )}
           </li>
         ))}

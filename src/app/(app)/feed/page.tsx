@@ -35,6 +35,7 @@ export default async function FeedPage() {
   }
 
   const users = await prisma.user.findMany({
+      where: { id: { not: me.id }, role: "EMPLOYEE" },
     select: { id: true, firstName: true, lastName: true, email: true },
   });
 

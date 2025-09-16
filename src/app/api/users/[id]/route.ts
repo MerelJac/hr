@@ -10,9 +10,17 @@ async function requireSuper() {
 }
 
 // Update role OR active flag
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> } // 👈 params is async
+) {
+  const { id } = await params; // 👈 await here
+  const userId = id;
+
   const session = await requireSuper();
-  if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!session) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   const { role, isActive } = await req.json().catch(() => ({}));
   if (role === undefined && isActive === undefined) {
@@ -23,30 +31,45 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   if (role) data.role = role;
   if (typeof isActive === "boolean") data.isActive = isActive;
 
-  // If deactivating -> kill sessions
   const result = await prisma.$transaction(async (tx) => {
     const updated = await tx.user.update({
-      where: { id: params.id },
+      where: { id: userId },
       data,
-      select: { id: true , isActive: true},
+      select: { id: true, isActive: true },
     });
+
     if (!updated.isActive) {
-      await tx.session.deleteMany({ where: { userId: params.id } });
+      await tx.session.deleteMany({ where: { userId } });
     }
+
     return updated;
   });
 
   return NextResponse.json({ ok: true, user: result });
 }
 
-// Optional: explicit deactivate via DELETE
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+
+export async function DELETE(
+  _req: Request,
+  context: Promise<{ params: { id: string } }>
+) {
+  const { params } = await context;
+  const userId = params.id;
+
   const session = await requireSuper();
-  if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!session) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   await prisma.$transaction(async (tx) => {
-    await tx.user.update({ where: { id: params.id }, data: { isActive: false } });
-    await tx.session.deleteMany({ where: { userId: params.id } });
+    // ✅ delete related sessions first
+    await tx.session.deleteMany({ where: { userId } });
+
+    // ✅ then delete the user profile entirely
+    await tx.user.delete({
+      where: { id: userId },
+    });
   });
+
   return NextResponse.json({ ok: true });
 }
