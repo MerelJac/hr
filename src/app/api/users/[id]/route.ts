@@ -51,10 +51,10 @@ export async function PATCH(
 
 export async function DELETE(
   _req: Request,
-  context: Promise<{ params: { id: string } }>
+{ params }: { params: Promise<{ id: string }> } 
 ) {
-  const { params } = await context;
-  const userId = params.id;
+  const { id } = await params;
+  const userId = id;
 
   const session = await requireSuper();
   if (!session) {
