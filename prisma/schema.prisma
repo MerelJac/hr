@@ -22,6 +22,7 @@ model User {
   firstName                String?
   lastName                 String?
   email                    String                 @unique
+  profileImage             String?
   passwordHash             String
   role                     Role                   @default(EMPLOYEE)
   pointsBalance            Int                    @default(0)

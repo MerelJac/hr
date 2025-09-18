@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
+import Image from "next/image";
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
   const [birthday, setBirthday] = useState("");
@@ -16,6 +16,19 @@ export default function ProfilePage() {
         }
       });
   }, []);
+
+  async function uploadProfileImage(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("/api/profile/image", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    return data.profileImage;
+  }
 
   async function saveBirthday() {
     const res = await fetch("/api/profile", {
@@ -37,6 +50,14 @@ export default function ProfilePage() {
       <h1 className="text-2xl font-semibold">
         Hi, {user.firstName} {user.lastName}
       </h1>
+      <Image
+        src={user.profileImage ?? "/default-avatar.png"}
+        alt="Profile"
+        width={80}
+        height={80}
+        className="rounded-full w-16 h-16"
+      />
+
       <p>
         <b>Email:</b> {user.email}
       </p>
