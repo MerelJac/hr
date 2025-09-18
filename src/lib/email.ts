@@ -1,32 +1,29 @@
-import nodemailer from "nodemailer";
+// lib/email.ts
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
-export async function sendAdminRedemptionEmail(
-  userEmail: string,
-  itemLabel: string,
-  deliverEmail?: string,
-  amount?: number
-) {
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || "587", 10),
-    secure: false, // TODO: upgrade later with STARTTLS
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+const ses = new SESClient({ region: process.env.AWS_REGION });
+
+interface EmailOptions {
+  to: string;
+  subject: string;
+  html: string;
+  text?: string; // fallback plain-text version
+}
+
+export async function sendEmail({ to, subject, html, text }: EmailOptions) {
+  const from = process.env.EMAIL_FROM as string; // e.g. "no-reply@yourdomain.com"
+
+  const command = new SendEmailCommand({
+    Source: from,
+    Destination: { ToAddresses: [to] },
+    Message: {
+      Subject: { Data: subject, Charset: "UTF-8" },
+      Body: {
+        Html: { Data: html, Charset: "UTF-8" },
+        ...(text ? { Text: { Data: text, Charset: "UTF-8" } } : {}),
+      },
     },
   });
 
-  const info = await transporter.sendMail({
-    from: `"Rewards Bot" <${process.env.SMTP_USER}>`,
-    to: process.env.ADMIN_EMAIL,
-    subject: `Reward Redemption Request: ${itemLabel}`,
-    text: `User ${userEmail} has redeemed: ${itemLabel}.
-Deliver to: ${deliverEmail || userEmail}.`,
-    html: `<p><b>User:</b> ${userEmail}</p>
-            <p><b>Amount:</b> $${amount}</p>
-           <p><b>Reward:</b> ${itemLabel}</p>
-           <p><b>Deliver to:</b> ${deliverEmail || userEmail}</p>`,
-  });
-
-  console.log("Admin email sent:", info.messageId);
+  return ses.send(command);
 }

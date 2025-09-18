@@ -47,16 +47,19 @@ export default function ProfilePage() {
 
   return (
     <main className="p-6 space-y-4 bg-white rounded-xl p-4 min-w-full">
+      <div className="flex flex-row justify-between align-center">
       <h1 className="text-2xl font-semibold">
         Hi, {user.firstName} {user.lastName}
       </h1>
       <Image
-        src={user.profileImage ?? "/default-avatar.png"}
+        src={user.profileImage ?? "/default-profile-image.svg"}
         alt="Profile"
         width={80}
         height={80}
-        className="rounded-full w-16 h-16"
+        className="rounded-full w-16 h-16 border-2 border-blue"
       />
+      </div>
+
 
       <p>
         <b>Email:</b> {user.email}

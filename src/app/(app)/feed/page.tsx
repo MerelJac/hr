@@ -8,6 +8,7 @@ import CommentList from "@/components/CommentList";
 import RecognizeFormWrapper from "@/components/RecognizeFormWrapper";
 import CoreValues from "@/components/CoreValues";
 import React from "react";
+import Image from "next/image";
 
 export default async function FeedPage() {
   const session = await getServerSession(authOptions);
@@ -18,11 +19,23 @@ export default async function FeedPage() {
     orderBy: { createdAt: "desc" },
     take: 50,
     include: {
-      sender: { select: { firstName: true, lastName: true, email: true } },
+      sender: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          profileImage: true,
+        },
+      },
       recipients: {
         include: {
           recipient: {
-            select: { firstName: true, lastName: true, email: true },
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+              profileImage: true,
+            },
           },
         },
       },
@@ -35,7 +48,7 @@ export default async function FeedPage() {
   }
 
   const users = await prisma.user.findMany({
-      where: { id: { not: me.id }, role: "EMPLOYEE" },
+    where: { id: { not: me.id }, role: "EMPLOYEE" },
     select: { id: true, firstName: true, lastName: true, email: true },
   });
 
@@ -49,11 +62,27 @@ export default async function FeedPage() {
           <ul className="space-y-4">
             {recs.map((r) => (
               <React.Fragment key={r.id}>
-                <li key={r.id} className="rounded-t-lg p-4 my-4 mb-0 bg-white border-b border-black-2">
+                <li
+                  key={r.id}
+                  className="rounded-t-lg p-4 my-4 mb-0 bg-white border-b border-black-2"
+                >
                   <div className="flex flex-row justify-between items-center">
                     <span>
                       {r.recipients.map((rr, i) => (
-                        <span key={rr.id}>
+                        <span
+                          key={rr.id}
+                          className="flex flex-row justify-center items-center gap-2"
+                        >
+                          <Image
+                            src={
+                              rr.recipient.profileImage ??
+                              "/default-profile-image.svg"
+                            }
+                            alt="Profile"
+                            width={80}
+                            height={80}
+                            className="rounded-full w-16 h-16 border-2 border-blue"
+                          />
                           <b>{name(rr.recipient)}</b>
                           {i < r.recipients.length - 1 ? ", " : ""}
                         </span>
@@ -63,8 +92,18 @@ export default async function FeedPage() {
                       + {r.recipients.reduce((a, b) => a + b.points, 0)} points
                     </span>
                   </div>
-                  <div className="text-sm text-gray-600">
-                    recognized by <b>{name(r.sender)}</b>
+                  <div className="text-sm text-gray-600 flex flex-row gap-2 items-center">
+                    recognized by
+                    <Image
+                      src={
+                        r.sender.profileImage ?? "/default-profile-image.svg"
+                      }
+                      alt="Profile"
+                      width={30}
+                      height={30}
+                      className="rounded-full w-10 h-10 border-2 border-blue"
+                    />
+                    <b>{name(r.sender)}</b>
                   </div>
                   <p className="mt-2">{r.message}</p>
                   <small className="text-gray-500">

@@ -2,16 +2,21 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { sendAdminRedemptionEmail } from "@/lib/email";
+import { sendEmail } from "@/lib/email";
+import { inviteTemplate } from "@/lib/emailTemplates";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   const user = session?.user as any;
-  if (!user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user?.id)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { type, amount, deliverEmail, idemKey } = await req.json();
   if (!type || !amount || amount < 10 || amount % 5 !== 0) {
-    return NextResponse.json({ error: "Invalid redemption request" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid redemption request" },
+      { status: 400 }
+    );
   }
 
   const pointsCost = amount * 10;
@@ -21,7 +26,8 @@ export async function POST(req: Request) {
     const redemption = await prisma.$transaction(async (tx) => {
       const dbUser = await tx.user.findUnique({ where: { id: user.id } });
       if (!dbUser) throw new Error("User not found");
-      if (dbUser.pointsBalance < pointsCost) throw new Error("Insufficient points");
+      if (dbUser.pointsBalance < pointsCost)
+        throw new Error("Insufficient points");
 
       if (idemKey) {
         const existing = await tx.redemption.findUnique({ where: { idemKey } });
@@ -50,10 +56,14 @@ export async function POST(req: Request) {
     });
 
     // Notify admin = TODO enable
-    // await sendAdminRedemptionEmail(user.email, type, deliverEmail);
+    //   const template = recognitionTemplate(link);
+    // await sendEmail({ to: email, ...template });
 
     return NextResponse.json({ ok: true, redemption });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message ?? "Failed to redeem" }, { status: 400 });
+    return NextResponse.json(
+      { error: e.message ?? "Failed to redeem" },
+      { status: 400 }
+    );
   }
 }

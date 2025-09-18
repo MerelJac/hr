@@ -87,7 +87,7 @@ export default function RecognizeForm({
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium">Who & how many stars?</label>
+          <label className="text-sm font-medium">Who & how many points?</label>
           <button type="button" onClick={addRow} className="text-blue text-lg">
             +
           </button>
