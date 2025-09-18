@@ -10,6 +10,7 @@ export default function CommentList({
   const [message, setMessage] = useState("");
   const [points, setPoints] = useState(0);
   const [recipientId, setRecipientId] = useState(defaultRecipientId || "");
+  const [showCommentBox, setShowCommentBox] = useState(false);
 
   useEffect(() => {
     fetch(`/api/comments?recognitionId=${recognitionId}`)
@@ -35,7 +36,7 @@ export default function CommentList({
   }
 
   return (
-    <div className="ml-6 bg-white rounded-lg p-4 border-t-4 border-blue">
+    <div className="bg-white rounded-b-lg p-4">
       <ul className="space-y-2">
         {comments.map((c) => (
           <li key={c.id} className="text-sm">
@@ -49,43 +50,55 @@ export default function CommentList({
           </li>
         ))}
       </ul>
-      <div className="mt-2 flex gap-2">
-        <input
-          type="text"
-          placeholder="Add a comment!"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          className="border-2 border-blue p-1 rounded-lg flex-1"
-        />
+      {showCommentBox ? (
+        <div className="mt-2 flex gap-2">
+          <input
+            type="text"
+            placeholder="Add a comment!"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            className="border-2 border-blue p-1 rounded-lg flex-1"
+          />
 
-        <select
-          value={recipientId}
-          onChange={(e) => setRecipientId(e.target.value)}
-          className="border-2 border-blue p-1 rounded-lg"
-        >
-          <option value="">Who</option>
-          {users.map((u: any) => (
-            <option key={u.id} value={u.id}>
-              {u.label}
-            </option>
-          ))}
-        </select>
-        <input
-          type="number"
-          min="5"
-          step={5}
-          value={points}
-          onChange={(e) => setPoints(parseInt(e.target.value))}
-          className="w-20 border-2 border-blue p-1 rounded-lg"
-          placeholder="pts"
-        />
-        <button
-          onClick={submitComment}
-          className="bg-blue text-white px-3 py-1 rounded-lg"
-        >
-          Comment
-        </button>
-      </div>
+          <select
+            value={recipientId}
+            onChange={(e) => setRecipientId(e.target.value)}
+            className="border-2 border-blue p-1 rounded-lg"
+          >
+             {!defaultRecipientId && <option value="">Who</option>}
+
+            {users.map((u: any) => (
+              <option key={u.id} value={u.id}>
+                {u.label}
+              </option>
+            ))}
+          </select>
+          <input
+            type="number"
+            min="5"
+            step={5}
+            value={points}
+            onChange={(e) => setPoints(parseInt(e.target.value))}
+            className="w-20 border-2 border-blue p-1 rounded-lg"
+            placeholder="pts"
+          />
+          <button
+            onClick={submitComment}
+            className="bg-blue text-white px-3 py-1 rounded-lg"
+          >
+            Comment
+          </button>
+        </div>
+      ) : (
+        <div className="mt-2">
+          <button
+            onClick={() => setShowCommentBox(true)}
+            className="bg-gray-200 px-3 py-1 rounded-lg"
+          >
+            + Comment
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -21,9 +21,9 @@ export default async function RewardsPage() {
   ]);
 
   return (
-    <main className="p-6 space-y-6">
+    <main className="p-6 space-y-6 bg-white">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-white">You have <b className="font-bold text-4xl">{user?.pointsBalance ?? 0}</b> stars to cash in!</h1>
+        <h1 className="text-2xl font-semibold text-blue bg-white p-4 rounded-xl"><b className="font-bold text-4xl">{user?.pointsBalance ?? 0}</b> stars to redeem</h1>
       </div>
 
       <RedeemClient

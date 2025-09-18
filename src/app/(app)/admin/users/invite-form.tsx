@@ -18,7 +18,7 @@ export default function InviteForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex gap-2 bg-white rounded-xl p-4">
+    <form onSubmit={onSubmit} className="flex gap-2 p-4">
       <input className="border-2 rounded-xl px-2 py-1" placeholder="email@company.com" value={email} onChange={(e)=>setEmail(e.target.value)} />
       <select className="border-2 rounded-xl px-2 py-1" value={role} onChange={(e)=>setRole(e.target.value)}>
         <option>EMPLOYEE</option>

@@ -131,20 +131,12 @@ export default function TabsClient({
   liCurrent: Nom[];
   liPast: Nom[];
 }) {
-  const [tab, setTab] = useState<"LINKEDIN" | "EOM">("LINKEDIN");
+  const [tab, setTab] = useState<"EOM">("EOM");
 
   return (
     <div className="space-y-4">
       {/* Tabs */}
       <div className="flex gap-2">
-        <button
-          onClick={() => setTab("LINKEDIN")}
-          className={`px-3 py-1 rounded-lg ${
-            tab === "LINKEDIN" ? "bg-black text-white" : "bg-gray-100"
-          }`}
-        >
-          LinkedIn Posts
-        </button>
         <button
           onClick={() => setTab("EOM")}
           className={`px-3 py-1 rounded-lg ${
@@ -156,15 +148,13 @@ export default function TabsClient({
       </div>
 
       {/* Panels */}
-      {tab === "LINKEDIN" ? (
+      {tab === "EOM" ? (
         <div className="space-y-6">
           <Section title="Current Month" items={liCurrent} />
           <Section title="Past" items={liPast} />
         </div>
       ) : (
         <div className="space-y-6">
-          <Section title="Current Month" items={eomCurrent} />
-          <Section title="Past" items={eomPast} />
         </div>
       )}
     </div>

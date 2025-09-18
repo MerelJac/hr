@@ -23,13 +23,6 @@ export default async function Sidebar() {
           <span>Feed</span>
         </Link>
         <Link
-          href="/recognize"
-          className="flex items-center gap-2 hover:text-blue-600"
-        >
-          <Star size={18} />
-          <span>Recognize</span>
-        </Link>
-        <Link
           href="/rewards"
           className="flex items-center gap-2 hover:text-blue-600"
         >

@@ -60,33 +60,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
-    // type === "LINKEDIN"
-    if (!postUrl) {
-      return NextResponse.json({ error: "LinkedIn post URL required." }, { status: 400 });
-    }
-    // basic validation; ensure absolute URL and likely LinkedIn domain
-    let parsed: URL;
-    try {
-      parsed = new URL(postUrl);
-    } catch {
-      return NextResponse.json({ error: "Invalid URL." }, { status: 400 });
-    }
-    if (!/linkedin\.com$/i.test(parsed.hostname)) {
-      return NextResponse.json({ error: "URL must be a LinkedIn post." }, { status: 400 });
-    }
-
-    await prisma.nomination.create({
-      data: {
-        type: "LINKEDIN",
-        submitterId,
-        postUrl,
-        caption,
-        status: "PENDING",
-        monthKey,
-      },
-    });
-
-    return NextResponse.json({ ok: true });
   } catch (err: any) {
     // use code string (Turbopack can break instanceof)
     if (err?.code === "P2002") {

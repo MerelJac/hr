@@ -12,16 +12,21 @@ export default async function UsersAdminPage() {
   if (role !== "SUPER_ADMIN") redirect("/");
 
   const [invites, users] = await Promise.all([
-    prisma.userInvite.findMany({ orderBy: { createdAt: "desc" } ,  where: { consumedAt: null }}),
+    prisma.userInvite.findMany({
+      orderBy: { createdAt: "desc" },
+      where: { consumedAt: null },
+    }),
     prisma.user.findMany({ orderBy: { createdAt: "desc" } }),
   ]);
 
   return (
     <main className="p-6 space-y-8">
       <h1 className="text-2xl font-semibold text-white">Users & Invites</h1>
-      <InviteForm />
-      <InvitesList invites={invites} />
-      <UsersList users={users} />
+      <section className="bg-white rounded-xl">
+        <InviteForm />
+        <InvitesList invites={invites} />
+        <UsersList users={users} />
+      </section>
     </main>
   );
 }

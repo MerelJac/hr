@@ -83,7 +83,6 @@ model RecognitionRecipient {
 
 enum NominationType {
   EOM // Employee of the Month
-  LINKEDIN // Like/Share LinkedIn post
 }
 
 enum NominationStatus {

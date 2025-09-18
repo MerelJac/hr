@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { EOM_WINNER_POINTS, LINKEDIN_APPROVE_POINTS } from "@/lib/nomination-constants";
+import { EOM_WINNER_POINTS } from "@/lib/nomination-constants";
 
 async function requireSuper(req: Request) {
   const session = await getServerSession(authOptions);
@@ -20,16 +20,6 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   const nom = await prisma.nomination.findUnique({ where: { id: params.id } });
   if (!nom) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  if (action === "approve" && nom.type === "LINKEDIN" && nom.status === "PENDING") {
-    await prisma.$transaction(async (tx) => {
-      await tx.nomination.update({ where: { id: nom.id }, data: { status: "APPROVED" } });
-      await tx.user.update({
-        where: { id: nom.submitterId },
-        data: { pointsBalance: { increment: LINKEDIN_APPROVE_POINTS } },
-      });
-    });
-    return NextResponse.json({ ok: true });
-  }
 
   if (action === "reject" && nom.status === "PENDING") {
     await prisma.nomination.update({ where: { id: nom.id }, data: { status: "REJECTED" } });

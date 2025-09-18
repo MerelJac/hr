@@ -15,21 +15,14 @@ export default function NominationModal({
 }) {
   const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
-  const [type, setType] = useState<"EOM" | "LINKEDIN">("EOM");
+  const [type, setType] = useState<"EOM">("EOM");
 
   // EOM form state
   const [nomineeId, setNomineeId] = useState(users[0]?.id || "");
   const [reason, setReason] = useState("");
 
-  // LinkedIn form state
-  const [caption, setCaption] = useState("");
-  const [postUrl, setPostUrl] = useState("");
-
   function canSubmitEom() {
     return !already.eom && nomineeId && reason.trim().length > 0;
-  }
-  function canSubmitLinkedIn() {
-    return !already.linkedin && !!postUrl;
   }
 
   async function safeReadError(res: Response) {
@@ -110,13 +103,9 @@ export default function NominationModal({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-lg space-y-4">
             <div className="flex items-center justify-between">
-              {type === "EOM" ? (
-                <h2 className="text-xl font-semibold">
-                  Nominate Employee of the Month
-                </h2>
-              ) : (
-                <h2 className="text-xl font-semibold">Submit LinkedIn Post</h2>
-              )}
+              <h2 className="text-xl font-semibold">
+                Nominate Employee of the Month
+              </h2>
 
               {message && (
                 <div className="text-red-600 text-sm mr-4">{message}</div>
@@ -142,93 +131,44 @@ export default function NominationModal({
               >
                 Employee of the Month {already.eom && "✓"}
               </button>
-              <button
-                onClick={() => !already.linkedin && setType("LINKEDIN")}
-                disabled={already.linkedin}
-                className={`px-3 py-1 rounded ${
-                  type === "LINKEDIN" ? "bg-black text-white" : "bg-gray-100"
-                } ${already.linkedin ? "opacity-50 cursor-not-allowed" : ""}`}
-                title={
-                  already.linkedin
-                    ? "You’ve already submitted a LinkedIn nomination this month."
-                    : undefined
-                }
-              >
-                LinkedIn Post {already.linkedin && "✓"}
-              </button>
             </div>
 
             {/* Forms */}
-            {type === "EOM" ? (
-              <form className="space-y-3" onSubmit={submitEOM}>
-                <div>
-                  <label className="block text-sm mb-1">Nominee</label>
-                  <select
-                    className="w-full border-2 border-blue rounded-lg px-2 py-1"
-                    value={nomineeId}
-                    onChange={(e) => setNomineeId(e.target.value)}
-                    disabled={already.eom}
-                  >
-                    {users.map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm mb-1">Reason</label>
-                  <textarea
-                    className="w-full border-2 border-blue rounded-lg px-3 py-2"
-                    rows={3}
-                    value={reason}
-                    onChange={(e) => setReason(e.target.value)}
-                    placeholder="Why are you nominating this person?"
-                    disabled={already.eom}
-                  />
-                </div>
-                <button
-                  className="bg-black text-white px-4 py-2 rounded-lg disabled:opacity-50"
-                  disabled={!canSubmitEom()}
+
+            <form className="space-y-3" onSubmit={submitEOM}>
+              <div>
+                <label className="block text-sm mb-1">Nominee</label>
+                <select
+                  className="w-full border-2 border-blue rounded-lg px-2 py-1"
+                  value={nomineeId}
+                  onChange={(e) => setNomineeId(e.target.value)}
+                  disabled={already.eom}
                 >
-                  Submit EOM
-                </button>
-              </form>
-            ) : (
-              <form className="space-y-3" onSubmit={submitLinkedIn}>
-                <div>
-                  <label className="block text-sm mb-1">Caption</label>
-                  <textarea
-                    className="w-full border-2 border-blue rounded-lg px-3 py-2"
-                    rows={3}
-                    value={caption}
-                    onChange={(e) => setCaption(e.target.value)}
-                    placeholder="What is this post about?"
-                    disabled={already.linkedin}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm mb-1">Post URL</label>
-                  <input
-                    type="url"
-                    className="w-full  border-2 border-blue rounded-lg px-3 py-2"
-                    value={postUrl}
-                    onChange={(e) => setPostUrl(e.target.value)}
-                    placeholder="https://www.linkedin.com/posts/..."
-                    required
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    +10 points on approval.
-                  </p>
-                </div>
-                <button
-                  className="bg-black text-white px-4 py-2 rounded-lg disabled:opacity-50"
-                  disabled={!canSubmitLinkedIn()}
-                >
-                  Submit LinkedIn
-                </button>
-              </form>
-            )}
+                  {users.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm mb-1">Reason</label>
+                <textarea
+                  className="w-full border-2 border-blue rounded-lg px-3 py-2"
+                  rows={3}
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="Why are you nominating this person?"
+                  disabled={already.eom}
+                />
+              </div>
+              <button
+                className="bg-black text-white px-4 py-2 rounded-lg disabled:opacity-50"
+                disabled={!canSubmitEom()}
+              >
+                Submit
+              </button>
+            </form>
           </div>
         </div>
       )}

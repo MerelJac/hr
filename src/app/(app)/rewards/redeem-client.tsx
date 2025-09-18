@@ -62,7 +62,7 @@ export default function RedeemClient({
       </div>
 
       <div>
-        <label className="block text-md font-medium mb-1 text-white">
+        <label className="block text-md font-medium mb-1 text-black">
           Amount (USD)
         </label>
         <div className="relative w-40">
@@ -78,7 +78,7 @@ export default function RedeemClient({
             className="border rounded-lg pl-6 pr-3 py-2 w-full bg-white"
           />
         </div>
-        <p className="text-xs text-white mt-1">
+        <p className="text-xs text-black mt-1">
           Cost: <b>{pointsCost}</b> pts
         </p>
       </div>
