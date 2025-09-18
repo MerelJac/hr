@@ -4,12 +4,14 @@ import { authOptions } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
+  try {
+     const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { recognitionId, recipientId, message, pointsBoosted } = await req.json();
   const senderId = (session.user as any).id;
 
+  console.log('senderId', senderId, 'recip id', recipientId)
   return await prisma.$transaction(async (tx) => {
     let boost = 0;
     if (pointsBoosted && pointsBoosted > 0) {
@@ -41,6 +43,20 @@ export async function POST(req: Request) {
 
     return NextResponse.json(comment);
   });
+  } catch (e: any) {
+    console.error("POST /api/comments failed:", e);
+
+    // Prisma errors often have code + meta
+    if (e.code === "P2025") {
+      return NextResponse.json({ error: "Record not found", detail: e.meta }, { status: 404 });
+    }
+
+    if (e.message === "Not enough points") {
+      return NextResponse.json({ error: e.message }, { status: 400 });
+    }
+
+    return NextResponse.json({ error: "Internal Server Error", detail: e.message }, { status: 500 });
+  }
 }
 
 export async function GET(req: Request) {

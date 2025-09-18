@@ -9,6 +9,7 @@ export default function CommentList({
   const [comments, setComments] = useState<any[]>([]);
   const [message, setMessage] = useState("");
   const [points, setPoints] = useState(0);
+  const [error, setError] = useState("");
   const [recipientId, setRecipientId] = useState(defaultRecipientId || "");
   const [showCommentBox, setShowCommentBox] = useState(false);
 
@@ -19,20 +20,37 @@ export default function CommentList({
   }, [recognitionId]);
 
   async function submitComment() {
-    const res = await fetch("/api/comments", {
-      method: "POST",
-      body: JSON.stringify({
-        recognitionId,
-        recipientId,
-        message,
-        pointsBoosted: points,
-      }),
-    });
-    const newComment = await res.json();
-    setComments((c) => [...c, newComment]);
-    setMessage("");
-    setPoints(0);
-    setRecipientId("");
+    try {
+      const res = await fetch("/api/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recognitionId,
+          recipientId,
+          message,
+          pointsBoosted: points,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // server returned an error
+        setError("Failed to post comment");
+        console.log("Submit comment failed:", data);
+        return;
+      }
+
+      // success → add the comment to state
+      setComments((c) => [...c, data]);
+      setMessage("");
+      setPoints(0);
+      setRecipientId(defaultRecipientId || "");
+      setShowCommentBox(false);
+    } catch (err) {
+      console.log("Unexpected error submitting comment:", err);
+      alert("Something went wrong. Please try again.");
+    }
   }
 
   return (
@@ -65,7 +83,7 @@ export default function CommentList({
             onChange={(e) => setRecipientId(e.target.value)}
             className="border-2 border-blue p-1 rounded-lg"
           >
-             {!defaultRecipientId && <option value="">Who</option>}
+            {!defaultRecipientId && <option value="">Who</option>}
 
             {users.map((u: any) => (
               <option key={u.id} value={u.id}>
@@ -99,6 +117,7 @@ export default function CommentList({
           </button>
         </div>
       )}
+      {error && <small className="text-red-500">{error}</small>}
     </div>
   );
 }

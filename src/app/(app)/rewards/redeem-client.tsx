@@ -12,6 +12,7 @@ export default function RedeemClient({
   defaultEmail: string;
 }) {
   const [type, setType] = useState<"AMAZON" | "VISA" | null>(null);
+  const [activeTab, setActiveTab] = useState<"GIFTCARDS" | "SWAG">("GIFTCARDS");
   const [amount, setAmount] = useState(10);
   const [email, setEmail] = useState(defaultEmail);
   const [loading, setLoading] = useState(false);
@@ -42,28 +43,69 @@ export default function RedeemClient({
 
   return (
     <section className="space-y-6">
-      <div className="grid grid-cols-2 gap-4">
-        <button
-          onClick={() => setType("AMAZON")}
-          className={`rounded-lg p-4 border flex flex-col items-center justify-center ${
-            type === "AMAZON" ? "ring-2 ring-blue-500 bg-blue-100" : "bg-white"
-          }`}
-        >
-          <Image src={amazon} alt="Amazon" width={80} height={40} />
-        </button>
-        <button
-          onClick={() => setType("VISA")}
-          className={`rounded-lg p-4 border flex flex-col items-center justify-center  ${
-            type === "VISA" ? "ring-2 ring-blue-500 bg-blue-100" : "bg-white"
-          }`}
-        >
-          <Image src={visa} alt="Visa" width={80} height={40} />
-        </button>
+      <div className="w-full">
+        {/* Tabs */}
+        <div className="flex border-b mb-4">
+          <button
+            onClick={() => setActiveTab("GIFTCARDS")}
+            className={`px-4 py-2 font-medium ${
+              activeTab === "GIFTCARDS"
+                ? "border-b-2 border-blue-500 text-blue-600"
+                : "text-gray-600"
+            }`}
+          >
+            Giftcards
+          </button>
+          <button
+            onClick={() => setActiveTab("SWAG")}
+            className={`px-4 py-2 font-medium ${
+              activeTab === "SWAG"
+                ? "border-b-2 border-blue-500 text-blue-600"
+                : "text-gray-600"
+            }`}
+          >
+            Swag
+          </button>
+        </div>
+
+        {/* Tab content */}
+        {activeTab === "GIFTCARDS" && (
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              onClick={() => setType("AMAZON")}
+              className={`rounded-lg p-4 border flex flex-col items-center justify-center ${
+                type === "AMAZON"
+                  ? "ring-2 ring-blue-500 bg-blue-100"
+                  : "bg-white"
+              }`}
+            >
+              <Image src={amazon} alt="Amazon" width={80} height={40} />
+            </button>
+
+            <button
+              onClick={() => setType("VISA")}
+              className={`rounded-lg p-4 border flex flex-col items-center justify-center ${
+                type === "VISA"
+                  ? "ring-2 ring-blue-500 bg-blue-100"
+                  : "bg-white"
+              }`}
+            >
+              <Image src={visa} alt="Visa" width={80} height={40} />
+            </button>
+          </div>
+        )}
+
+        {activeTab === "SWAG" && (
+          <div className="p-4 text-gray-600">
+            {/* Placeholder — you can drop swag options here later */}
+            <p>Swag items will go here 🎁</p>
+          </div>
+        )}
       </div>
 
       <div>
         <label className="block text-md font-medium mb-1 text-black">
-          Amount (USD)
+          Amount
         </label>
         <div className="relative w-40">
           <span className="absolute inset-y-0 left-2 flex items-center text-gray-500">
@@ -79,7 +121,11 @@ export default function RedeemClient({
           />
         </div>
         <p className="text-xs text-black mt-1">
-          Cost: <b>{pointsCost}</b> pts
+          Cost:{" "}
+          <b className={canRedeem ? "text-green-600" : "text-red-600"}>
+            {pointsCost}
+          </b>{" "}
+          pts
         </p>
       </div>
 

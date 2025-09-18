@@ -1,7 +1,6 @@
 // __tests__/api/users.test.ts
 import { PATCH, DELETE } from "@/app/api/users/[id]/route";
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
 
 // mock prisma
 jest.mock("@/lib/prisma", () => ({

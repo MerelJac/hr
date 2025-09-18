@@ -59,28 +59,6 @@ export default function NominationModal({
     }
   }
 
-  async function submitLinkedIn(e: React.FormEvent) {
-    e.preventDefault();
-    if (already.linkedin) {
-      setMessage("You’ve already submitted a LinkedIn nomination this month.");
-      return;
-    }
-    if (!postUrl) return setMessage("Please pick an postUrl.");
-
-    const fd = new FormData();
-    fd.set("type", "LINKEDIN");
-    fd.set("caption", caption);
-    fd.set("postUrl", postUrl);
-
-    const res = await fetch("/api/nominations", { method: "POST", body: fd });
-    if (res.ok) {
-      setOpen(false);
-      location.reload();
-    } else {
-      setMessage((await safeReadError(res)) || "Failed");
-    }
-  }
-
   const bothBlocked = already.eom && already.linkedin;
 
   return (

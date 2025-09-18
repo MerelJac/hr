@@ -17,8 +17,6 @@ export async function POST(req: Request) {
   const type = body.type as "EOM" | "LINKEDIN" | undefined;
   const nomineeId: string | undefined = body.nomineeId;
   const reason: string | undefined = body.reason;
-  const caption: string | undefined = body.caption;
-  const postUrl: string | undefined = body.postUrl;
   const monthKey = monthKeyFromDate();
 
   if (type !== "EOM" && type !== "LINKEDIN") {

@@ -134,7 +134,7 @@ export default function TabsClient({
   const [tab, setTab] = useState<"EOM">("EOM");
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 bg-white rounded-xl p-4">
       {/* Tabs */}
       <div className="flex gap-2">
         <button
