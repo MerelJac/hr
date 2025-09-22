@@ -1,9 +1,12 @@
 import { PrismaClient, Role } from "@prisma/client";
-import { hash } from "bcrypt";
+import { hash } from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function user() {
   const email = "mjacobs@calloneonline.com";
+  if (!process.env.ADMIN_PASSWORD) {
+    throw new Error("ADMIN_PASSWORD environment variable is not set.");
+  }
   const passwordHash = await hash(process.env.ADMIN_PASSWORD, 12);
   await prisma.user.upsert({
     where: { email },
