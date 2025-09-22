@@ -3,10 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: Request, context: any) {
+  // works whether params is {id} or Promise<{id}>
+  const { id } = (await context.params) ?? {};
+
   const session = await getServerSession(authOptions);
   const role = (session?.user as any)?.role;
   if (role !== "SUPER_ADMIN") {
@@ -18,12 +18,12 @@ export async function PATCH(
   try {
     if (action === "approve") {
       await prisma.redemption.update({
-        where: { id: params.id },
+        where: { id },
         data: { status: "APPROVED" },
       });
     } else if (action === "fulfill") {
       await prisma.redemption.update({
-        where: { id: params.id },
+        where: { id },
         data: {
           status: "FULFILLED",
           code,
@@ -32,12 +32,12 @@ export async function PATCH(
       });
     } else if (action === "fail") {
       await prisma.redemption.update({
-        where: { id: params.id },
+        where: { id },
         data: { status: "FAILED" },
       });
     } else if (action === "cancel") {
       await prisma.redemption.update({
-        where: { id: params.id },
+        where: { id },
         data: { status: "CANCELED" },
       });
     } else {
