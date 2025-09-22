@@ -4,10 +4,9 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { EOM_WINNER_POINTS } from "@/lib/nomination-constants";
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: Request, context: any) {
+  const { id } = (await context.params) ?? {}; // works whether params is an object or Promise
+
   const session = await getServerSession(authOptions);
   const role = (session?.user as any)?.role;
   if (role !== "SUPER_ADMIN") {
@@ -17,12 +16,8 @@ export async function PATCH(
   const { action } = await req.json();
 
   try {
-    const nom = await prisma.nomination.findUnique({
-      where: { id: params.id },
-    });
-    if (!nom) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
+    const nom = await prisma.nomination.findUnique({ where: { id } });
+    if (!nom) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     if (action === "reject" && nom.status === "PENDING") {
       await prisma.nomination.update({
@@ -34,12 +29,8 @@ export async function PATCH(
 
     if (action === "win" && nom.type === "EOM") {
       if (!nom.nomineeId) {
-        return NextResponse.json(
-          { error: "Missing nominee." },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: "Missing nominee." }, { status: 400 });
       }
-
       await prisma.$transaction(async (tx) => {
         await tx.nomination.update({
           where: { id: nom.id },
@@ -47,18 +38,13 @@ export async function PATCH(
         });
         await tx.user.update({
           where: { id: nom.nomineeId },
-          data: {
-            pointsBalance: { increment: EOM_WINNER_POINTS },
-          },
+          data: { pointsBalance: { increment: EOM_WINNER_POINTS } },
         });
       });
       return NextResponse.json({ ok: true });
     }
 
-    return NextResponse.json(
-      { error: "Invalid action or state." },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid action or state." }, { status: 400 });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
