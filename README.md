@@ -14,6 +14,12 @@ npx prisma migrate dev --name {name_of_migration}
 npx prisma generate
 ```
 
+to debug before deploying, run 
+```
+npm run build
+```
+
+then push to branch dev or main for dev or prod aws deploying
 to run after adjusting schema.prisma
 
 

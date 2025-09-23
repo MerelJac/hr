@@ -41,7 +41,7 @@ export async function PATCH(req: Request, context: any) {
           data: { status: "WON" },
         });
         await tx.user.update({
-          where: { id: nom.nomineeId },
+          where: { id: nom.nomineeId as string },
           data: { pointsBalance: { increment: EOM_WINNER_POINTS } },
         });
       });
