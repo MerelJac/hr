@@ -6,7 +6,10 @@ import { prisma } from "@/lib/prisma";
 
 async function requireSuper() {
   const session = await getServerSession(authOptions);
-  return (session?.user as any)?.role === "SUPER_ADMIN" ? session : null;
+
+  
+  type UserWithRole = { role?: string };
+  return (session?.user as UserWithRole)?.role === "SUPER_ADMIN" ? session : null;
 }
 
 // Update role OR active flag

@@ -8,7 +8,11 @@ export async function PATCH(req: Request, context: any) {
   const { id } = (await context.params) ?? {}; // works whether params is an object or Promise
 
   const session = await getServerSession(authOptions);
-  const role = (session?.user as any)?.role;
+  interface SessionUser {
+    role?: string;
+    [key: string]: unknown;
+  }
+  const role = (session?.user as SessionUser)?.role;
   if (role !== "SUPER_ADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -45,7 +49,8 @@ export async function PATCH(req: Request, context: any) {
     }
 
     return NextResponse.json({ error: "Invalid action or state." }, { status: 400 });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  } catch (e: unknown) {
+    const errorMessage = e instanceof Error ? e.message : "An unknown error occurred";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

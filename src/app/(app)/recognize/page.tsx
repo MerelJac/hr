@@ -8,12 +8,19 @@ import RecognizeFormWrapper from "@/components/RecognizeFormWrapper";
 
 export default async function RecognizePage() {
   const session = await getServerSession(authOptions);
-  const me = session?.user as any;
+  type User = {
+    id: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    // add other properties as needed
+  };
+  const me = session?.user as User;
   if (!me?.id) {
     return <div className="p-6">Please sign in.</div>;
   }
 
-  const [users, flags] = await Promise.all([
+  const [users, availablePoints, flags] = await Promise.all([
     prisma.user.findMany({
       where: { id: { not: me.id }, role: "EMPLOYEE" },
       select: { id: true, email: true, firstName: true, lastName: true },

@@ -2,8 +2,17 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+type User = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  workAnniversary: string;
+  profileImage?: string;
+  birthday?: string;
+};
+
 export default function ProfilePage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [birthday, setBirthday] = useState("");
   const [message, setMesssage] = useState("");
   useEffect(() => {
