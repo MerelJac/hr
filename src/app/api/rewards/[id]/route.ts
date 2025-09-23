@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function PATCH(req: Request, context: { params: { id: string } }) {
+export async function PATCH(req: Request, context: any) {
   // works whether params is {id} or Promise<{id}>
   const { id } = (await context.params) ?? {};
   type User = {
@@ -52,8 +52,7 @@ export async function PATCH(req: Request, context: { params: { id: string } }) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch (e: unknown) {
-    const errorMessage = e instanceof Error ? e.message : "An unknown error occurred";
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
