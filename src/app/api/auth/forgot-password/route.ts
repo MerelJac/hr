@@ -16,9 +16,13 @@ export async function POST(req: Request) {
     });
 
     const resetUrl = `${process.env.APP_URL}/reset-password?token=${token}`;
-    await sendEmail(user.email, "Reset your password", `
-      Click here to reset your password: ${resetUrl}
-    `);
+    await sendEmail({
+      to: user.email,
+      subject: "Reset your password",
+      html: `
+        Click here to reset your password: ${resetUrl}
+      `,
+    });
   }
 
   // Always respond success
