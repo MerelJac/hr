@@ -1,4 +1,3 @@
-// src/app/api/users/[id]/route.ts
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -6,42 +5,46 @@ import { prisma } from "@/lib/prisma";
 
 async function requireSuper() {
   const session = await getServerSession(authOptions);
-
-  
   type UserWithRole = { role?: string };
   return (session?.user as UserWithRole)?.role === "SUPER_ADMIN" ? session : null;
 }
 
-// Update role OR active flag
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> } // 👈 params is async
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await params; // 👈 await here
-  const userId = id;
-
+  const userId = params.id;
   const session = await requireSuper();
   if (!session) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { role, isActive } = await req.json().catch(() => ({}));
-  if (role === undefined && isActive === undefined) {
+  const body = await req.json();
+
+  // build update data object
+  const data: any = {};
+  if (body.role) data.role = body.role;
+  if (typeof body.isActive === "boolean") data.isActive = body.isActive;
+
+  if (body.firstName !== undefined) data.firstName = body.firstName;
+  if (body.lastName !== undefined) data.lastName = body.lastName;
+  if (body.preferredName !== undefined) data.preferredName = body.preferredName;
+  if (body.department !== undefined) data.department = body.department;
+  if (body.birthday) data.birthday = new Date(body.birthday);
+  if (body.workAnniversary) data.workAnniversary = new Date(body.workAnniversary);
+
+  if (Object.keys(data).length === 0) {
     return NextResponse.json({ error: "No changes provided" }, { status: 400 });
   }
-
-  const data: any = {};
-  if (role) data.role = role;
-  if (typeof isActive === "boolean") data.isActive = isActive;
 
   const result = await prisma.$transaction(async (tx) => {
     const updated = await tx.user.update({
       where: { id: userId },
       data,
-      select: { id: true, isActive: true },
     });
 
-    if (!updated.isActive) {
+    // if user is deactivated, clear their sessions
+    if (data.isActive === false) {
       await tx.session.deleteMany({ where: { userId } });
     }
 
@@ -51,13 +54,11 @@ export async function PATCH(
   return NextResponse.json({ ok: true, user: result });
 }
 
-
 export async function DELETE(
   _req: Request,
-{ params }: { params: Promise<{ id: string }> } 
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await params;
-  const userId = id;
+  const userId = params.id;
 
   const session = await requireSuper();
   if (!session) {
@@ -65,13 +66,8 @@ export async function DELETE(
   }
 
   await prisma.$transaction(async (tx) => {
-    // ✅ delete related sessions first
     await tx.session.deleteMany({ where: { userId } });
-
-    // ✅ then delete the user profile entirely
-    await tx.user.delete({
-      where: { id: userId },
-    });
+    await tx.user.delete({ where: { id: userId } });
   });
 
   return NextResponse.json({ ok: true });
