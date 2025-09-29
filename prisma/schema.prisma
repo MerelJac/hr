@@ -55,12 +55,12 @@ model Session {
 }
 
 model UserInvite {
-  id          String    @id @default(cuid())
-  email       String    @unique
-  role        Role      @default(EMPLOYEE)
-  createdById String
-  createdAt   DateTime  @default(now())
-  consumedAt  DateTime?
+  id              String    @id @default(cuid())
+  email           String    @unique
+  role            Role      @default(EMPLOYEE)
+  createdById     String
+  createdAt       DateTime  @default(now())
+  consumedAt      DateTime?
   // new optional fields
   firstName       String?
   lastName        String?
@@ -68,7 +68,7 @@ model UserInvite {
   birthday        DateTime?
   workAnniversary DateTime?
   department      String?
-  sendEmail       Boolean @default(true)
+  sendEmail       Boolean   @default(true)
 }
 
 model Recognition {
@@ -105,6 +105,24 @@ enum NominationStatus {
   WON // used for EOM winner
 }
 
+model NominationChallenge {
+  id            String   @id @default(cuid())
+  title         String   @unique
+  description   String?
+  qualification String? // free text about how to qualify
+  isActive      Boolean  @default(true)
+  startDate     DateTime
+  endDate       DateTime
+
+  // Optional JSON field for flexible requirements (e.g. upload screenshot, URL, notes)
+  requirements Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  nominations Nomination[]
+}
+
 model Nomination {
   id          String           @id @default(cuid())
   type        NominationType
@@ -112,7 +130,7 @@ model Nomination {
   submitterId String
   submitter   User             @relation("SubmittedNominations", fields: [submitterId], references: [id], onDelete: Cascade)
 
-  // EOM
+  // EOM: specific nominee user
   nomineeId String?
   nominee   User?   @relation("NomineeUser", fields: [nomineeId], references: [id], onDelete: SetNull)
 
@@ -120,8 +138,13 @@ model Nomination {
   postUrl String?
   caption String?
 
-  reason    String?
-  monthKey  String? // e.g., "2025-09" for EOM grouping
+  reason   String?
+  monthKey String?
+
+  // NEW: link to the challenge definition
+  challengeId String?
+  challenge   NominationChallenge? @relation(fields: [challengeId], references: [id], onDelete: SetNull)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

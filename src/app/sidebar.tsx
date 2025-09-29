@@ -32,7 +32,7 @@ export default async function Sidebar() {
         {role === "SUPER_ADMIN" && (
           <>
             <Link
-              href="/admin/nominations"
+              href="/admin/challenges"
               className="flex items-center gap-2 hover:text-blue-600"
             >
               <Rocket size={18} />

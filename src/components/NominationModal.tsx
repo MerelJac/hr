@@ -74,7 +74,7 @@ export default function NominationModal({
         }
       >
         <Rocket size={18} />
-        Monthly Challenges
+        Challenges
       </button>
 
       {open && (

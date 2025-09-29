@@ -1,0 +1,219 @@
+"use client";
+
+import { useState } from "react";
+import { Copy, Trash, Edit } from "lucide-react";
+type Challenge = {
+  id: string;
+  title: string;
+  description?: string;
+  qualification?: string;
+  isActive: boolean;
+  startDate: string;
+  endDate: string;
+};
+
+export default function ChallengeList({
+  challenges,
+}: {
+  challenges: Challenge[];
+}) {
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<Challenge | null>(null);
+
+  function openModal(challenge?: Challenge) {
+    setSelected(challenge || null);
+    setOpen(true);
+  }
+
+  function closeModal() {
+    setSelected(null);
+    setOpen(false);
+  }
+
+  async function saveChallenge(data: Partial<Challenge>) {
+    const method = selected?.id ? "PATCH" : "POST";
+    const url = selected?.id
+      ? `/api/challenges/${selected.id}`
+      : "/api/challenges";
+
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (res.ok) location.reload();
+    else
+      alert(
+        "Failed to save challenge. Check if name already exists or contact your developer."
+      );
+  }
+
+  async function deleteChallenge(id: string) {
+    if (!confirm("Delete this challenge permanently?")) return;
+    const res = await fetch(`/api/challenges/${id}`, { method: "DELETE" });
+    if (res.ok) location.reload();
+    else alert("Failed to delete challenge");
+  }
+
+  return (
+    <section className="space-y-4">
+      <button
+        onClick={() => openModal()}
+        className="bg-blue-600 text-white px-3 py-2 rounded-xl"
+      >
+        + New Challenge
+      </button>
+
+      <ul className="divide-y border rounded-xl">
+        {challenges.map((c) => (
+          <li key={c.id} className="p-4 flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold">{c.title}</h3>
+              <p className="text-sm text-gray-600">{c.description}</p>
+              <p className="text-xs text-gray-500">
+                {new Date(c.startDate).toLocaleDateString()} -{" "}
+                {new Date(c.endDate).toLocaleDateString()}
+              </p>
+              <span
+                className={`px-2 py-1 rounded text-xs font-medium ${
+                  c.isActive
+                    ? "bg-green-100 text-green-800"
+                    : "bg-red-100 text-red-800"
+                }`}
+              >
+                {c.isActive ? "Active" : "Inactive"}
+              </span>
+            </div>
+            <div className="flex gap-4">
+              <button
+                onClick={() => openModal(c)}
+                className="text-blue-600 hover:underline"
+              >
+                <Edit size={18} />
+              </button>
+              <button
+                onClick={() =>
+                  openModal({
+                    ...c,
+                    id: "", // reset so it’s treated as new
+                    title: `${c.title} (Copy)`,
+                  })
+                }
+                className="text-purple-600 hover:underline"
+              >
+                <Copy size={18} />
+              </button>
+              <button
+                onClick={() => deleteChallenge(c.id)}
+                className="text-red-600 hover:underline"
+              >
+                <Trash size={18} />
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      {open && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-lg">
+            <h2 className="text-xl font-semibold mb-4">
+              {selected ? "Edit Challenge" : "New Challenge"}
+            </h2>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const form = e.currentTarget as HTMLFormElement;
+                const formData = new FormData(form);
+
+                saveChallenge({
+                  title: formData.get("title") as string,
+                  description: formData.get("description") as string,
+                  qualification: formData.get("qualification") as string,
+                  startDate: formData.get("startDate") as string,
+                  endDate: formData.get("endDate") as string,
+                  isActive: formData.get("isActive") === "on",
+                });
+              }}
+              className="space-y-3"
+            >
+              <label>Title</label>
+              <input
+                name="title"
+                defaultValue={selected?.title}
+                placeholder="Title"
+                className="w-full border rounded px-3 py-2"
+                required
+              />
+              <label>Description</label>
+              <textarea
+                name="description"
+                defaultValue={selected?.description || ""}
+                placeholder="Description"
+                className="w-full border rounded px-3 py-2"
+              />
+              <label>Qualification</label>
+              <textarea
+                name="qualification"
+                defaultValue={selected?.qualification || ""}
+                placeholder="Qualification criteria"
+                className="w-full border rounded px-3 py-2"
+              />
+              <label>Eligable Between</label>
+              <div className="flex gap-2">
+                <input
+                  type="date"
+                  name="startDate"
+                  defaultValue={
+                    selected?.startDate
+                      ? new Date(selected.startDate).toISOString().split("T")[0]
+                      : ""
+                  }
+                  className="border rounded px-3 py-2 flex-1"
+                  required
+                />
+                <input
+                  type="date"
+                  name="endDate"
+                  defaultValue={
+                    selected?.endDate
+                      ? new Date(selected.endDate).toISOString().split("T")[0]
+                      : ""
+                  }
+                  className="border rounded px-3 py-2 flex-1"
+                  required
+                />
+              </div>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="isActive"
+                  defaultChecked={selected?.isActive ?? true}
+                />
+                Active
+              </label>
+
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-4 py-2 border rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}

@@ -28,3 +28,58 @@ await prisma.rewardCatalog.createMany({
 };
 
 reward().finally(() => prisma.$disconnect());
+
+
+async function nominationChallenge() {
+  console.log("🌱 Seeding challenges...");
+
+  // Employee of the Month Challenge
+  await prisma.nominationChallenge.upsert({
+    where: { title: "Employee of the Month" },
+    update: {},
+    create: {
+      title: "Employee of the Month",
+      description:
+        "Recognize outstanding employees who go above and beyond this month.",
+      qualification:
+        "Nominate a coworker who demonstrates leadership, teamwork, and initiative.",
+      startDate: new Date("2025-09-01"),
+      endDate: new Date("2025-09-30"),
+      isActive: true,
+      requirements: {
+        requiresNominee: true,
+      },
+    },
+  });
+
+  // LinkedIn Post Challenge
+  await prisma.nominationChallenge.upsert({
+    where: { title: "LinkedIn Post Challenge" },
+    update: {},
+    create: {
+      title: "LinkedIn Post Challenge",
+      description:
+        "Encourage employees to share their professional achievements on LinkedIn.",
+      qualification:
+        "Make a LinkedIn post with the hashtag #OurCompany and submit the link.",
+      startDate: new Date("2025-09-01"),
+      endDate: new Date("2025-09-15"),
+      isActive: true,
+      requirements: {
+        requiresPostUrl: true,
+        requiresScreenshot: true,
+      },
+    },
+  });
+
+  console.log("✅ Challenges seeded successfully");
+}
+
+nominationChallenge()
+  .catch((e) => {
+    console.error("❌ Error seeding:", e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
