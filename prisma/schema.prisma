@@ -30,6 +30,7 @@ model User {
   emailVerified            DateTime?
   birthday                 DateTime?
   workAnniversary          DateTime?
+  department               String?
   createdAt                DateTime               @default(now())
   updatedAt                DateTime               @updatedAt
   sessions                 Session[]
@@ -59,6 +60,14 @@ model UserInvite {
   createdById String
   createdAt   DateTime  @default(now())
   consumedAt  DateTime?
+  // new optional fields
+  firstName       String?
+  lastName        String?
+  preferredName   String?
+  birthday        DateTime?
+  workAnniversary DateTime?
+  department      String?
+  sendEmail       Boolean @default(true)
 }
 
 model Recognition {

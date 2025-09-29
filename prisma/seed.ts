@@ -11,11 +11,13 @@ async function user() {
   await prisma.user.upsert({
     where: { email },
     update: { role: Role.SUPER_ADMIN },
-    create: { email, passwordHash, role: Role.SUPER_ADMIN, firstName: "Super", lastName: "Admin" },
+    create: { email, passwordHash, role: Role.SUPER_ADMIN, firstName: "Super", lastName: "Admin" , department: 'Human Resources'},
   });
 }
 
 user().finally(()=>prisma.$disconnect());
+
+
 async function reward() {
 await prisma.rewardCatalog.createMany({
   data: [
@@ -23,8 +25,6 @@ await prisma.rewardCatalog.createMany({
     { type: "VISA", label: "Visa Custom", valueCents: 0, pointsCost: 0 },
   ]
 })
-}
-
-;
+};
 
 reward().finally(() => prisma.$disconnect());
