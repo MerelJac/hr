@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Copy, Trash, Edit } from "lucide-react";
+import Link from "next/link";
 type Challenge = {
   id: string;
   title: string;
@@ -10,6 +11,7 @@ type Challenge = {
   isActive: boolean;
   startDate: string;
   endDate: string;
+  points: number;
 };
 
 export default function ChallengeList({
@@ -62,7 +64,7 @@ export default function ChallengeList({
         onClick={() => openModal()}
         className="bg-blue-600 text-white px-3 py-2 rounded-xl"
       >
-        + New Challenge
+        + Create Challenge
       </button>
 
       <ul className="divide-y border rounded-xl">
@@ -71,6 +73,7 @@ export default function ChallengeList({
             <div>
               <h3 className="font-semibold">{c.title}</h3>
               <p className="text-sm text-gray-600">{c.description}</p>
+              <p className="text-sm text-gray-600">Points: {c.points}</p>
               <p className="text-xs text-gray-500">
                 {new Date(c.startDate).toLocaleDateString()} -{" "}
                 {new Date(c.endDate).toLocaleDateString()}
@@ -86,6 +89,9 @@ export default function ChallengeList({
               </span>
             </div>
             <div className="flex gap-4">
+              <Link href={`/admin/challenges/${c.id}`}>
+                <button className="text-gray-700 hover:underline">View</button>
+              </Link>
               <button
                 onClick={() => openModal(c)}
                 className="text-blue-600 hover:underline"
@@ -135,6 +141,7 @@ export default function ChallengeList({
                   startDate: formData.get("startDate") as string,
                   endDate: formData.get("endDate") as string,
                   isActive: formData.get("isActive") === "on",
+                  points: Number(formData.get("points"))
                 });
               }}
               className="space-y-3"
@@ -186,6 +193,17 @@ export default function ChallengeList({
                   required
                 />
               </div>
+              <div className="flex flex-col">
+                <label>Points</label>
+                <input
+                  type="number"
+                  name="points"
+                  defaultValue={selected?.points ?? 0}
+                  className="border rounded px-3 py-2 flex-1"
+                  required
+                />
+              </div>
+
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"

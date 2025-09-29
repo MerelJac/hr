@@ -46,6 +46,7 @@ async function nominationChallenge() {
       startDate: new Date("2025-09-01"),
       endDate: new Date("2025-09-30"),
       isActive: true,
+      points: 100,
       requirements: {
         requiresNominee: true,
       },

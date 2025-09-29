@@ -18,6 +18,7 @@ export async function POST(req: Request) {
       startDate: new Date(body.startDate),
       endDate: new Date(body.endDate),
       isActive: body.isActive ?? true,
+      points: body.points ?? 0
     },
   });
 

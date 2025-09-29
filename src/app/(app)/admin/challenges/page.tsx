@@ -18,7 +18,7 @@ export default async function ChallengesAdminPage() {
 
   return (
     <main className="p-6 space-y-4 bg-white rounded-xl h-full">
-      <h1 className="text-2xl font-semibold">Nomination Challenges</h1>
+      <h1 className="text-2xl font-semibold">Challenges</h1>
       <ChallengeList challenges={challenges} />
     </main>
   );

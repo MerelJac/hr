@@ -113,7 +113,7 @@ model NominationChallenge {
   isActive      Boolean  @default(true)
   startDate     DateTime
   endDate       DateTime
-
+  points        Int     @default(0)
   // Optional JSON field for flexible requirements (e.g. upload screenshot, URL, notes)
   requirements Json?
 
