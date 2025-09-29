@@ -19,7 +19,8 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       startDate: new Date(body.startDate),
       endDate: new Date(body.endDate),
       isActive: body.isActive ?? true,
-      points: body.points ?? 0
+      points: body.points ?? 0,
+      requirements: body.requirements ?? {},
     },
   });
 

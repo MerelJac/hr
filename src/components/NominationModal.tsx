@@ -4,26 +4,38 @@ import { Rocket } from "lucide-react";
 import { useState } from "react";
 
 type SimpleUser = { id: string; label: string };
-type Already = { eom: boolean; linkedin: boolean };
+type Challenge = {
+  id: string;
+  title: string;
+  description?: string;
+  qualification?: string;
+  points: number;
+  startDate: string;
+  endDate: string;
+  requirements: {
+    requiresNominee?: boolean;
+    requiresReason?: boolean;
+    requiresScreenshot?: boolean;
+  };
+};
 
 export default function NominationModal({
   users,
-  already = { eom: false, linkedin: false },
+  challenges = [],
 }: {
   users: SimpleUser[];
-  already?: Already;
+  challenges: Challenge[];
 }) {
-  const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
-  const [type, setType] = useState<"EOM">("EOM");
+  const [message, setMessage] = useState("");
+  const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(
+    null
+  );
 
-  // EOM form state
-  const [nomineeId, setNomineeId] = useState(users[0]?.id || "");
+  // form state
+  const [nomineeId, setNomineeId] = useState("");
   const [reason, setReason] = useState("");
-
-  function canSubmitEom() {
-    return !already.eom && nomineeId && reason.trim().length > 0;
-  }
+  const [screenshot, setScreenshot] = useState<File | null>(null);
 
   async function safeReadError(res: Response) {
     try {
@@ -40,38 +52,38 @@ export default function NominationModal({
     }
   }
 
-  async function submitEOM(e: React.FormEvent) {
+  async function submitChallenge(e: React.FormEvent) {
     e.preventDefault();
-    if (already.eom) {
-      setMessage("You’ve already submitted Employee of the Month this month.");
-      return;
+    if (!activeChallenge) return;
+
+    const body: any = { challengeId: activeChallenge.id };
+    if (activeChallenge.requirements.requiresNominee) {
+      body.nomineeId = nomineeId;
+    }
+    if (activeChallenge.requirements.requiresReason) {
+      body.reason = reason;
     }
     const res = await fetch("/api/nominations", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "EOM", nomineeId, reason }),
+      body: JSON.stringify(body),
     });
+
     if (res.ok) {
       setOpen(false);
       location.reload();
     } else {
-      setMessage((await safeReadError(res)) || "Failed");
+      setMessage((await safeReadError(res)) || "Failed to submit");
     }
   }
-
-  const bothBlocked = already.eom && already.linkedin;
 
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded-lg border-2 border-white bg-red-600 text-white px-3 py-2 disabled:opacity-50 flex align-center gap-2 justify-center items-center"
-        disabled={bothBlocked}
-        title={
-          bothBlocked
-            ? "You’ve already submitted both nominations this month."
-            : undefined
-        }
+        className="rounded-lg border-2 border-white bg-red-600 text-white px-3 py-2 flex items-center gap-2 justify-center"
+        disabled={challenges.length === 0}
+        title={challenges.length === 0 ? "No active challenges" : undefined}
       >
         <Rocket size={18} />
         Challenges
@@ -79,12 +91,9 @@ export default function NominationModal({
 
       {open && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-lg space-y-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-2xl space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">
-                Nominate Employee of the Month
-              </h2>
-
+              <h2 className="text-xl font-semibold">Active Challenges</h2>
               {message && (
                 <div className="text-red-600 text-sm mr-4">{message}</div>
               )}
@@ -93,60 +102,109 @@ export default function NominationModal({
               </button>
             </div>
 
-            {/* Tabs */}
-            <div className="flex gap-2 text-sm">
-              <button
-                onClick={() => !already.eom && setType("EOM")}
-                disabled={already.eom}
-                className={`px-3 py-1 rounded ${
-                  type === "EOM" ? "bg-black text-white" : "bg-gray-100"
-                } ${already.eom ? "opacity-50 cursor-not-allowed" : ""}`}
-                title={
-                  already.eom
-                    ? "You’ve already submitted EOM this month."
-                    : undefined
-                }
-              >
-                Employee of the Month {already.eom && "✓"}
-              </button>
-            </div>
+            {/* List of challenges */}
+            {!activeChallenge ? (
+              <ul className="space-y-4">
+                {challenges.map((c) => (
+                  <li
+                    key={c.id}
+                    className="border rounded-lg p-4 bg-gray-50 space-y-2"
+                  >
+                    <h3 className="font-semibold">{c.title}</h3>
+                    <p className="text-sm text-gray-600">{c.description}</p>
+                    <p className="text-xs text-gray-500">
+                      Eligible: {new Date(c.startDate).toLocaleDateString()} –{" "}
+                      {new Date(c.endDate).toLocaleDateString()}
+                    </p>
+                    <p className="text-xs text-gray-700">Points: {c.points}</p>
+                    {c.qualification && (
+                      <p className="text-sm italic">{c.qualification}</p>
+                    )}
+                    <button
+                      onClick={() => setActiveChallenge(c)}
+                      className="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm"
+                    >
+                      Submit
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              // Challenge submission form
+              <form className="space-y-4" onSubmit={submitChallenge}>
+                <h3 className="text-lg font-semibold">
+                  {activeChallenge.title}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {activeChallenge.description}
+                </p>
 
-            {/* Forms */}
+                {activeChallenge.requirements.requiresNominee && (
+                  <div>
+                    <label className="block text-sm mb-1">Nominee</label>
+                    <select
+                      className="w-full border rounded px-2 py-1"
+                      value={nomineeId}
+                      onChange={(e) => setNomineeId(e.target.value)}
+                      required
+                    >
+                      <option value="">Select a nominee</option>
+                      {users.map((u) => (
+                        <option key={u.id} value={u.id}>
+                          {u.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
-            <form className="space-y-3" onSubmit={submitEOM}>
-              <div>
-                <label className="block text-sm mb-1">Nominee</label>
-                <select
-                  className="w-full border-2 border-blue rounded-lg px-2 py-1"
-                  value={nomineeId}
-                  onChange={(e) => setNomineeId(e.target.value)}
-                  disabled={already.eom}
-                >
-                  {users.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm mb-1">Reason</label>
-                <textarea
-                  className="w-full border-2 border-blue rounded-lg px-3 py-2"
-                  rows={3}
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  placeholder="Why are you nominating this person?"
-                  disabled={already.eom}
-                />
-              </div>
-              <button
-                className="bg-black text-white px-4 py-2 rounded-lg disabled:opacity-50"
-                disabled={!canSubmitEom()}
-              >
-                Submit
-              </button>
-            </form>
+                {activeChallenge.requirements.requiresReason && (
+                  <div>
+                    <label className="block text-sm mb-1">
+                      Reason or Explaination
+                    </label>
+                    <textarea
+                      className="w-full border rounded px-3 py-2"
+                      rows={3}
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+
+                {activeChallenge.requirements.requiresScreenshot && (
+                  <div>
+                    <label className="block text-sm mb-1">
+                      Upload Screenshot
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) =>
+                        setScreenshot(e.target.files ? e.target.files[0] : null)
+                      }
+                    />
+                  </div>
+                )}
+
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveChallenge(null)}
+                    className="px-4 py-2 border rounded"
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white rounded"
+                  >
+                    Submit
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

@@ -12,6 +12,11 @@ type Challenge = {
   startDate: string;
   endDate: string;
   points: number;
+  requirements?: {
+    requiresNominee?: boolean;
+    requiresReason?: boolean;
+    requiresScreenshot?: boolean;
+  };
 };
 
 export default function ChallengeList({
@@ -141,7 +146,13 @@ export default function ChallengeList({
                   startDate: formData.get("startDate") as string,
                   endDate: formData.get("endDate") as string,
                   isActive: formData.get("isActive") === "on",
-                  points: Number(formData.get("points"))
+                  points: Number(formData.get("points")),
+                  requirements: {
+                    requiresNominee: formData.get("requiresNominee") === "on",
+                    requiresReason: formData.get("requiresReason") === "on",
+                    requiresScreenshot:
+                      formData.get("requiresScreenshot") === "on",
+                  },
                 });
               }}
               className="space-y-3"
@@ -202,6 +213,39 @@ export default function ChallengeList({
                   className="border rounded px-3 py-2 flex-1"
                   required
                 />
+              </div>
+              <label className="block font-semibold">Requirements</label>
+              <div className="space-y-2">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="requiresNominee"
+                    defaultChecked={
+                      selected?.requirements?.requiresNominee ?? false
+                    }
+                  />
+                  Requires Nominee
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="requiresReason"
+                    defaultChecked={
+                      selected?.requirements?.requiresReason ?? false
+                    }
+                  />
+                  Requires Reason
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="requiresScreenshot"
+                    defaultChecked={
+                      selected?.requirements?.requiresScreenshot ?? false
+                    }
+                  />
+                  Requires Screenshot
+                </label>
               </div>
 
               <label className="flex items-center gap-2">

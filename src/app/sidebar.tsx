@@ -8,8 +8,15 @@ import LogoutButton from "./login/logoutButton";
 import logo from "@/assets/logo.png";
 
 export default async function Sidebar() {
+  interface SessionUser {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    role?: string | null;
+  }
+
   const session = await getServerSession(authOptions);
-  const role = (session?.user as any)?.role;
+  const role = (session?.user as SessionUser)?.role;
 
   return (
     <aside className="flex flex-col w-[15rem] p-4 space-y-3 h-screen justify-between">

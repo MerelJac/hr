@@ -15,6 +15,15 @@ export default async function FeedPage() {
   if (!session) return <div className="p-6">Please sign in.</div>;
   const me = session.user as any;
 
+  const challenges = await prisma.nominationChallenge.findMany({
+    where: {
+      isActive: true,
+      startDate: { lte: new Date() },
+      endDate: { gte: new Date() },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
   const recs = await prisma.recognition.findMany({
     orderBy: { createdAt: "desc" },
     take: 50,
@@ -127,7 +136,7 @@ export default async function FeedPage() {
         <div id="actionItems" className="flex flex-col gap-4">
           <AvailablePointsCard />
           <AvailableRedeemPointsCard />
-          <NominationModal users={simpleUsers} />
+          <NominationModal users={simpleUsers} challenges={challenges}/>
           <CoreValues />
         </div>
       </div>

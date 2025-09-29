@@ -52,6 +52,6 @@ export async function POST(req: Request) {
     data: { profileImage: url },
     select: { id: true, profileImage: true },
   });
-
+  
   return NextResponse.json({ ok: true, profileImage: user.profileImage });
 }

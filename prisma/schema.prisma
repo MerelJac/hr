@@ -102,7 +102,8 @@ enum NominationStatus {
   PENDING
   APPROVED
   REJECTED
-  WON // used for EOM winner
+  WON
+  SKIPPED
 }
 
 model NominationChallenge {
@@ -113,42 +114,35 @@ model NominationChallenge {
   isActive      Boolean  @default(true)
   startDate     DateTime
   endDate       DateTime
-  points        Int     @default(0)
+  points        Int      @default(0)
   // Optional JSON field for flexible requirements (e.g. upload screenshot, URL, notes)
-  requirements Json?
+  requirements  Json?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  nominations Nomination[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  nominations   Nomination[]
 }
 
 model Nomination {
-  id          String           @id @default(cuid())
-  type        NominationType
-  status      NominationStatus @default(PENDING)
+  id          String @id @default(cuid())
   submitterId String
-  submitter   User             @relation("SubmittedNominations", fields: [submitterId], references: [id], onDelete: Cascade)
+  submitter   User   @relation("SubmittedNominations", fields: [submitterId], references: [id], onDelete: Cascade)
 
-  // EOM: specific nominee user
+  challengeId String
+  challenge   NominationChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
   nomineeId String?
   nominee   User?   @relation("NomineeUser", fields: [nomineeId], references: [id], onDelete: SetNull)
 
-  // LinkedIn
-  postUrl String?
-  caption String?
+  reason     String?
+  screenshot String?
 
-  reason   String?
-  monthKey String?
+  status    NominationStatus @default(PENDING)
+  monthKey  String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 
-  // NEW: link to the challenge definition
-  challengeId String?
-  challenge   NominationChallenge? @relation(fields: [challengeId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([submitterId, type, monthKey], map: "uniq_submitter_type_month")
+  @@unique([submitterId, challengeId, monthKey], map: "uniq_submitter_challenge_month")
 }
 
 enum RewardType {

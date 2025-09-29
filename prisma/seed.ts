@@ -84,3 +84,39 @@ nominationChallenge()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+
+
+async function setupBonus() {
+  console.log("🌱 Seeding Setup Bonus...");
+
+  await prisma.nominationChallenge.upsert({
+  where: { title: "Setup Bonus" },
+  update: {},
+  create: {
+    title: "Setup Bonus",
+    description: "Earn 5 points by completing your profile picture and sending your first shoutout.",
+    qualification: "Upload a profile picture and recognize a colleague.",
+    startDate: new Date("2025-01-01T00:00:00Z"), // always active
+    endDate: new Date("2099-12-31T23:59:59Z"),   // practically never expires
+    isActive: true,
+    points: 5,
+    requirements: {
+      requiresProfileImage: true,
+      requiresFirstShoutout: true,
+    },
+  },
+});
+
+console.log("🌱 Set up bonus challenge seeded.");
+
+}
+
+setupBonus()
+  .catch((e) => {
+    console.error("❌ Error seeding:", e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
