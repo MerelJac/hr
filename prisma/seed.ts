@@ -11,24 +11,29 @@ async function user() {
   await prisma.user.upsert({
     where: { email },
     update: { role: Role.SUPER_ADMIN },
-    create: { email, passwordHash, role: Role.SUPER_ADMIN, firstName: "Super", lastName: "Admin" , department: 'Human Resources'},
+    create: {
+      email,
+      passwordHash,
+      role: Role.SUPER_ADMIN,
+      firstName: "Super",
+      lastName: "Admin",
+      department: "Human Resources",
+    },
   });
 }
 
-user().finally(()=>prisma.$disconnect());
-
+user().finally(() => prisma.$disconnect());
 
 async function reward() {
-await prisma.rewardCatalog.createMany({
-  data: [
-    { type: "AMAZON", label: "Amazon Custom", valueCents: 0, pointsCost: 0 },
-    { type: "VISA", label: "Visa Custom", valueCents: 0, pointsCost: 0 },
-  ]
-})
-};
+  await prisma.rewardCatalog.createMany({
+    data: [
+      { type: "AMAZON", label: "Amazon Custom", valueCents: 0, pointsCost: 0 },
+      { type: "VISA", label: "Visa Custom", valueCents: 0, pointsCost: 0 },
+    ],
+  });
+}
 
 reward().finally(() => prisma.$disconnect());
-
 
 async function nominationChallenge() {
   console.log("🌱 Seeding challenges...");
@@ -85,34 +90,66 @@ nominationChallenge()
     await prisma.$disconnect();
   });
 
-
-
 async function setupBonus() {
   console.log("🌱 Seeding Setup Bonus...");
 
   await prisma.nominationChallenge.upsert({
-  where: { title: "Setup Bonus" },
-  update: {},
-  create: {
-    title: "Setup Bonus",
-    description: "Earn 5 points by uploading your profile picture and sending your first shoutout.",
-    qualification: "Upload a profile picture and recognize a colleague.",
-    startDate: new Date("2025-01-01T00:00:00Z"), // always active
-    endDate: new Date("2099-12-31T23:59:59Z"),   // practically never expires
-    isActive: true,
-    points: 5,
-    requirements: {
-      requiresProfileImage: true,
-      requiresFirstShoutout: true,
+    where: { title: "Setup Bonus" },
+    update: {},
+    create: {
+      title: "Setup Bonus",
+      description:
+        "Earn 5 points by uploading your profile picture and sending your first shoutout.",
+      qualification: "Upload a profile picture and recognize a colleague.",
+      startDate: new Date("2025-01-01T00:00:00Z"), // always active
+      endDate: new Date("2099-12-31T23:59:59Z"), // practically never expires
+      isActive: true,
+      points: 5,
+      requirements: {
+        requiresProfileImage: true,
+        requiresFirstShoutout: true,
+      },
     },
-  },
-});
+  });
 
-console.log("🌱 Set up bonus challenge seeded.");
-
+  console.log("🌱 Set up bonus challenge seeded.");
 }
 
 setupBonus()
+  .catch((e) => {
+    console.error("❌ Error seeding:", e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+
+  
+async function employeeReferral() {
+  console.log("🌱 Seeding Employee Referral...");
+
+  await prisma.nominationChallenge.upsert({
+    where: { title: "Employee Referral" },
+    update: {},
+    create: {
+      title: "Employee Referral",
+      description:
+        "After 90 days of employment for your referral, you will receive 1000 points!",
+      qualification: "Briefly explain why you're claiming this challenge.",
+      startDate: new Date("2025-01-01T00:00:00Z"), // always active
+      endDate: new Date("2099-12-31T23:59:59Z"), // practically never expires
+      isActive: true,
+      points: 1000,
+      requirements: {
+        requiresReason: true,
+      },
+    },
+  });
+
+  console.log("🌱 Employee Referral challenge seeded.");
+}
+
+employeeReferral()
   .catch((e) => {
     console.error("❌ Error seeding:", e);
     process.exit(1);

@@ -79,7 +79,7 @@ export default function ChallengeDetailClient({ challenge }: ChallengeDetailProp
                 )}
                 {n.reason && (
                   <p>
-                    <b>Reason:</b> {n.reason}
+                    <b>Briefly explain why you&#39;re claiming this challenge:</b> {n.reason}
                   </p>
                 )}
                 <p><b>Status:</b> {n.status}</p>

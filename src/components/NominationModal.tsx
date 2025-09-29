@@ -161,7 +161,7 @@ export default function NominationModal({
                 {activeChallenge.requirements.requiresReason && (
                   <div>
                     <label className="block text-sm mb-1">
-                      Reason or Explaination
+                      Briefly explain why you&#39;re claiming this challenge.
                     </label>
                     <textarea
                       className="w-full border rounded px-3 py-2"

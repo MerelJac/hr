@@ -32,6 +32,12 @@ export default function ProfilePage() {
     "settings"
   );
 
+  // Change password form state
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordMessage, setPasswordMessage] = useState("");
+
   useEffect(() => {
     fetch("/api/me")
       .then((res) => res.json())
@@ -81,6 +87,31 @@ export default function ProfilePage() {
     }
   }
 
+    async function changePassword() {
+    setPasswordMessage("");
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage("New passwords do not match.");
+      return;
+    }
+
+    const res = await fetch("/api/profile/password", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ oldPassword, newPassword }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      setPasswordMessage("Password updated successfully!");
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } else {
+      setPasswordMessage(data.error || "Failed to update password.");
+    }
+  }
+
+
   if (!user) return <div className="p-6 text-gray-600">Loading...</div>;
 
   return (
@@ -110,8 +141,9 @@ export default function ProfilePage() {
       </div>
 
       {/* Tab Content */}
-      {activeTab === "settings" && (
+           {activeTab === "settings" && (
         <div className="space-y-6">
+          {/* Profile Info */}
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-semibold">
               Hi, {user.preferredName || `${user.firstName} ${user.lastName}`}
@@ -140,33 +172,18 @@ export default function ProfilePage() {
             </div>
           </div>
 
+          {/* Basic Info */}
           <div className="space-y-2">
-            <p>
-              <b>Name:</b> {user.firstName} {user.lastName}
-            </p>
-            <p>
-              <b>Email:</b> {user.email}
-            </p>
-            <p>
-              <b>Work Anniversary:</b>{" "}
-              {new Date(user.workAnniversary).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </p>
-            {user.department && (
-              <p>
-                <b>Department:</b> {user.department}
-              </p>
-            )}
+            <p><b>Name:</b> {user.firstName} {user.lastName}</p>
+            <p><b>Email:</b> {user.email}</p>
+            <p><b>Work Anniversary:</b> {new Date(user.workAnniversary).toLocaleDateString()}</p>
+            {user.department && <p><b>Department:</b> {user.department}</p>}
           </div>
 
+          {/* Editable Fields */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium">
-                Preferred Name
-              </label>
+              <label className="block text-sm font-medium">Preferred Name</label>
               <input
                 type="text"
                 value={preferredName}
@@ -204,8 +221,46 @@ export default function ProfilePage() {
             </button>
             {message && <p className="text-sm text-gray-600">{message}</p>}
           </div>
+
+          {/* Change Password Section */}
+          <div className="mt-8 border-t pt-6">
+            <h2 className="text-lg font-semibold mb-4">Change Password</h2>
+            <div className="space-y-4">
+              <input
+                type="password"
+                placeholder="Current Password"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+                className="border rounded-lg px-2 py-1 w-full"
+              />
+              <input
+                type="password"
+                placeholder="New Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="border rounded-lg px-2 py-1 w-full"
+              />
+              <input
+                type="password"
+                placeholder="Confirm New Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="border rounded-lg px-2 py-1 w-full"
+              />
+              <button
+                onClick={changePassword}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              >
+                Update Password
+              </button>
+              {passwordMessage && (
+                <p className="text-sm text-gray-600">{passwordMessage}</p>
+              )}
+            </div>
+          </div>
         </div>
       )}
+
 
       {activeTab === "challenges" && (
         <div>

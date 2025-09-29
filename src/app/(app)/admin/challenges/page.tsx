@@ -1,4 +1,3 @@
-
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -14,6 +13,11 @@ export default async function ChallengesAdminPage() {
 
   const challenges = await prisma.nominationChallenge.findMany({
     orderBy: { createdAt: "desc" },
+    include: {
+      nominations: {
+        select: { id: true, status: true }, // 👈 must include status
+      },
+    },
   });
 
   return (

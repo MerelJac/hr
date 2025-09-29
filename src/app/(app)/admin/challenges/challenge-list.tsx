@@ -17,6 +17,7 @@ type Challenge = {
     requiresReason?: boolean;
     requiresScreenshot?: boolean;
   };
+    nominations?: { id: string; status: string }[]; 
 };
 
 export default function ChallengeList({
@@ -72,59 +73,63 @@ export default function ChallengeList({
         + Create Challenge
       </button>
 
-      <ul className="divide-y border rounded-xl">
-        {challenges.map((c) => (
-          <li key={c.id} className="p-4 flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold">{c.title}</h3>
-              <p className="text-sm text-gray-600">{c.description}</p>
-              <p className="text-sm text-gray-600">Points: {c.points}</p>
-              <p className="text-xs text-gray-500">
-                {new Date(c.startDate).toLocaleDateString()} -{" "}
-                {new Date(c.endDate).toLocaleDateString()}
-              </p>
-              <span
-                className={`px-2 py-1 rounded text-xs font-medium ${
-                  c.isActive
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
-                }`}
-              >
-                {c.isActive ? "Active" : "Inactive"}
+   <ul className="divide-y border rounded-xl">
+  {challenges.map((c) => {
+    const pendingCount = c.nominations?.filter((n) => n.status === "PENDING").length ?? 0;
+
+    return (
+      <li key={c.id} className="p-4 flex items-center justify-between relative">
+        <div>
+          <h3 className="font-semibold flex items-center gap-2">
+            {c.title}
+            {pendingCount > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-xs w-5 h-5">
+                {pendingCount}
               </span>
-            </div>
-            <div className="flex gap-4">
-              <Link href={`/admin/challenges/${c.id}`}>
-                <button className="text-gray-700 hover:underline">View</button>
-              </Link>
-              <button
-                onClick={() => openModal(c)}
-                className="text-blue-600 hover:underline"
-              >
-                <Edit size={18} />
-              </button>
-              <button
-                onClick={() =>
-                  openModal({
-                    ...c,
-                    id: "", // reset so it’s treated as new
-                    title: `${c.title} (Copy)`,
-                  })
-                }
-                className="text-purple-600 hover:underline"
-              >
-                <Copy size={18} />
-              </button>
-              <button
-                onClick={() => deleteChallenge(c.id)}
-                className="text-red-600 hover:underline"
-              >
-                <Trash size={18} />
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+            )}
+          </h3>
+          <p className="text-sm text-gray-600">{c.description}</p>
+          <p className="text-sm text-gray-600">Points: {c.points}</p>
+          <p className="text-xs text-gray-500">
+            {new Date(c.startDate).toLocaleDateString()} -{" "}
+            {new Date(c.endDate).toLocaleDateString()}
+          </p>
+          <span
+            className={`px-2 py-1 rounded text-xs font-medium ${
+              c.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+            }`}
+          >
+            {c.isActive ? "Active" : "Inactive"}
+          </span>
+        </div>
+        <div className="flex gap-4">
+          <Link href={`/admin/challenges/${c.id}`}>
+            <button className="text-gray-700 hover:underline">View</button>
+          </Link>
+          <button onClick={() => openModal(c)} className="text-blue-600 hover:underline">
+            <Edit size={18} />
+          </button>
+          <button
+            onClick={() =>
+              openModal({
+                ...c,
+                id: "",
+                title: `${c.title} (Copy)`,
+              })
+            }
+            className="text-purple-600 hover:underline"
+          >
+            <Copy size={18} />
+          </button>
+          <button onClick={() => deleteChallenge(c.id)} className="text-red-600 hover:underline">
+            <Trash size={18} />
+          </button>
+        </div>
+      </li>
+    );
+  })}
+</ul>
+
 
       {open && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
