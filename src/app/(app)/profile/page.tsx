@@ -3,6 +3,13 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 
+type Nomination = {
+  id: string;
+  status: string;
+  createdAt: string;
+  challenge: { id: string; title: string; points: number };
+};
+
 type User = {
   firstName: string;
   lastName: string;
@@ -12,6 +19,7 @@ type User = {
   profileImage?: string;
   birthday?: string;
   preferredName?: string;
+  submittedNominations?: Nomination[];
 };
 
 export default function ProfilePage() {
@@ -20,6 +28,9 @@ export default function ProfilePage() {
   const [preferredName, setPreferredName] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [message, setMessage] = useState("");
+  const [activeTab, setActiveTab] = useState<"settings" | "challenges">(
+    "settings"
+  );
 
   useEffect(() => {
     fetch("/api/me")
@@ -73,84 +84,167 @@ export default function ProfilePage() {
   if (!user) return <div className="p-6 text-gray-600">Loading...</div>;
 
   return (
-    <main className="p-6 space-y-6 bg-white rounded-xl w-full">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">
-          Hi, {user.preferredName || `${user.firstName} ${user.lastName}`}
-        </h1>
-        <div className="relative">
-          <Image
-            src={profileImage ?? "/default-profile-image.svg"}
-            alt="Profile"
-            width={80}
-            height={80}
-            className="rounded-full w-20 h-20 border-2 border-blue-500"
-          />
-          <label className="absolute bottom-0 right-0 bg-blue-600 text-white text-xs px-2 py-1 rounded cursor-pointer hover:bg-blue-700">
-            Update
-            <input
-              type="file"
-              className="hidden"
-              accept="image/*"
-              onChange={(e) => {
-                if (e.target.files?.[0]) {
-                  uploadProfileImage(e.target.files[0]);
-                }
-              }}
-            />
-          </label>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <p>
-          <b>Email:</b> {user.email}
-        </p>
-        <p>
-          <b>Work Anniversary:</b>{" "}
-          {new Date(user.workAnniversary).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </p>
-        {user.department && (
-          <p>
-            <b>Department:</b> {user.department}
-          </p>
-        )}
-      </div>
-
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium">Preferred Name</label>
-          <input
-            type="text"
-            value={preferredName}
-            onChange={(e) => setPreferredName(e.target.value)}
-            className="border rounded-lg px-2 py-1 w-full"
-            placeholder={user.firstName}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Birthday</label>
-          <input
-            type="date"
-            value={birthday}
-            onChange={(e) => setBirthday(e.target.value)}
-            className="border rounded-lg px-2 py-1 w-full"
-          />
-        </div>
-
+    <main className="p-6 bg-white rounded-xl w-full">
+      {/* Tabs */}
+      <div className="flex border-b mb-6">
         <button
-          onClick={saveProfile}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          onClick={() => setActiveTab("settings")}
+          className={`px-4 py-2 text-sm font-medium ${
+            activeTab === "settings"
+              ? "border-b-2 border-blue-600 text-blue-600"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
         >
-          Save Changes
+          Settings
         </button>
-        {message && <p className="text-sm text-gray-600">{message}</p>}
+        <button
+          onClick={() => setActiveTab("challenges")}
+          className={`px-4 py-2 text-sm font-medium ${
+            activeTab === "challenges"
+              ? "border-b-2 border-blue-600 text-blue-600"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          Past Challenges
+        </button>
       </div>
+
+      {/* Tab Content */}
+      {activeTab === "settings" && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-semibold">
+              Hi, {user.preferredName || `${user.firstName} ${user.lastName}`}
+            </h1>
+            <div className="relative">
+              <Image
+                src={profileImage ?? "/default-profile-image.svg"}
+                alt="Profile"
+                width={80}
+                height={80}
+                className="rounded-full w-20 h-20 border-2 border-blue-500"
+              />
+              <label className="absolute bottom-0 right-0 bg-blue-600 text-white text-xs px-2 py-1 rounded cursor-pointer hover:bg-blue-700">
+                Update
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) {
+                      uploadProfileImage(e.target.files[0]);
+                    }
+                  }}
+                />
+              </label>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <p>
+              <b>Name:</b> {user.firstName} {user.lastName}
+            </p>
+            <p>
+              <b>Email:</b> {user.email}
+            </p>
+            <p>
+              <b>Work Anniversary:</b>{" "}
+              {new Date(user.workAnniversary).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+            {user.department && (
+              <p>
+                <b>Department:</b> {user.department}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium">
+                Preferred Name
+              </label>
+              <input
+                type="text"
+                value={preferredName}
+                onChange={(e) => setPreferredName(e.target.value)}
+                className="border rounded-lg px-2 py-1 w-full"
+                placeholder={user.firstName}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">Birthday</label>
+              {birthday ? (
+                <input
+                  disabled
+                  type="date"
+                  value={birthday ?? ""}
+                  className="border rounded-lg px-2 py-1 w-full bg-gray-100 text-gray-500 cursor-not-allowed"
+                />
+              ) : (
+                <input
+                  type="date"
+                  className="border rounded-lg px-2 py-1 w-full"
+                  value={birthday ?? ""}
+                  onChange={(e) => setBirthday(e.target.value)}
+                  placeholder="Not set"
+                />
+              )}
+            </div>
+
+            <button
+              onClick={saveProfile}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            >
+              Save Changes
+            </button>
+            {message && <p className="text-sm text-gray-600">{message}</p>}
+          </div>
+        </div>
+      )}
+
+      {activeTab === "challenges" && (
+        <div>
+          <h2 className="text-xl font-semibold mb-4">
+            Your Challenge Submissions
+          </h2>
+          {user.submittedNominations && user.submittedNominations.length > 0 ? (
+            <ul className="divide-y border rounded-lg">
+              {user.submittedNominations.map((n) => (
+                <li key={n.id} className="p-4">
+                  <p>
+                    <b>Challenge:</b> {n.challenge.title} ({n.challenge.points}{" "}
+                    pts)
+                  </p>
+                  <p>
+                    <b>Status:</b>{" "}
+                    <span
+                      className={`font-medium ${
+                        n.status === "APPROVED"
+                          ? "text-green-600"
+                          : n.status === "REJECTED"
+                          ? "text-red-600"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      {n.status}
+                    </span>
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Submitted {new Date(n.createdAt).toLocaleDateString()}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500">No challenge submissions yet.</p>
+          )}
+        </div>
+      )}
     </main>
   );
 }

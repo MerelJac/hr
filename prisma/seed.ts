@@ -95,7 +95,7 @@ async function setupBonus() {
   update: {},
   create: {
     title: "Setup Bonus",
-    description: "Earn 5 points by completing your profile picture and sending your first shoutout.",
+    description: "Earn 5 points by uploading your profile picture and sending your first shoutout.",
     qualification: "Upload a profile picture and recognize a colleague.",
     startDate: new Date("2025-01-01T00:00:00Z"), // always active
     endDate: new Date("2099-12-31T23:59:59Z"),   // practically never expires

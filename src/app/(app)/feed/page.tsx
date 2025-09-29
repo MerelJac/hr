@@ -22,7 +22,12 @@ export default async function FeedPage() {
       endDate: { gte: new Date() },
     },
     orderBy: { createdAt: "desc" },
+    include: {
+      nominations: true,
+    },
   });
+
+  const availableChallenges = challenges.filter(c => c.nominations.length === 0);
 
   const recs = await prisma.recognition.findMany({
     orderBy: { createdAt: "desc" },
@@ -136,7 +141,7 @@ export default async function FeedPage() {
         <div id="actionItems" className="flex flex-col gap-4">
           <AvailablePointsCard />
           <AvailableRedeemPointsCard />
-          <NominationModal users={simpleUsers} challenges={challenges}/>
+          <NominationModal users={simpleUsers} challenges={availableChallenges}/>
           <CoreValues />
         </div>
       </div>
