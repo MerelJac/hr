@@ -13,9 +13,18 @@ export default async function ChallengesAdminPage() {
 
   const challenges = await prisma.nominationChallenge.findMany({
     orderBy: { createdAt: "desc" },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      qualification: true,
+      isActive: true,
+      startDate: true,
+      endDate: true,
+      points: true,
+      requirements: true,
       nominations: {
-        select: { id: true, status: true }, // 👈 must include status
+        select: { id: true, status: true },
       },
     },
   });
