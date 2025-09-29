@@ -20,9 +20,9 @@ export default async function UsersAdminPage() {
   ]);
 
   return (
-    <main className="p-6 space-y-8">
-      <h1 className="text-2xl font-semibold text-white">Users & Invites</h1>
-      <section className="bg-white rounded-xl">
+    <main className="p-6 space-y-8 bg-white rounded-xl h-full">
+      <h1 className="text-2xl font-semibold">Users & Invites</h1>
+      <section className="">
         <InviteForm />
         <InvitesList invites={invites} />
         <UsersList users={users} />

@@ -15,8 +15,8 @@ export default async function AdminRewards() {
   });
 
   return (
-    <main className="p-6 space-y-4">
-      <h1 className="text-2xl font-semibold text-white">Redemptions</h1>
+    <main className="p-6 space-y-4 bg-white rounded-xl h-full">
+      <h1 className="text-2xl font-semibold">Redemptions</h1>
       <ul className="space-y-2">
         {rows.map((r) => (
           <RedemptionRow key={r.id} r={r} />

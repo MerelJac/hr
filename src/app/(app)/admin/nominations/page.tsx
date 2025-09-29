@@ -32,8 +32,8 @@ export default async function NominationsAdminPage() {
   const liPast     = li.filter(n => !isCurrent(n.monthKey));
 
   return (
-    <main className="p-6 space-y-4">
-      <h1 className="text-2xl font-semibold text-white">Challenges</h1>
+    <main className="p-6 space-y-4 bg-white rounded-xl h-full">
+      <h1 className="text-2xl font-semibold">Challenges</h1>
       <TabsClient
         eomCurrent={eomCurrent}
         eomPast={eomPast}
