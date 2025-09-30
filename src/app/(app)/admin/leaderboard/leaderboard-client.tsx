@@ -31,7 +31,7 @@ export default function LeaderboardClient() {
   if (!data) return <p>No data</p>;
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6 p-6">
       {/* Filters */}
       <div className="flex gap-3">
         <button

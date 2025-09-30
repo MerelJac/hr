@@ -65,7 +65,7 @@ export default function ChallengeList({
   }
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-4 p-6">
       <button
         onClick={() => openModal()}
         className="bg-blue-600 text-white px-3 py-2 rounded-xl"

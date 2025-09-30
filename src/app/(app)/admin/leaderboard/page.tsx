@@ -10,8 +10,10 @@ export default async function LeaderboardPage() {
   }
 
   return (
-    <main className="p-6 bg-white rounded-xl space-y-6">
-      <h1 className="text-2xl font-semibold">Leaderboard</h1>
+    <main className="bg-white rounded-xl space-y-6">
+      <header className="p-6 shadow-md">
+        <h1 className="text-2xl font-semibold">Leaderboard</h1>
+      </header>
       <LeaderboardClient />
     </main>
   );

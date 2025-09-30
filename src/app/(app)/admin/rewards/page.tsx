@@ -25,8 +25,11 @@ export default async function AdminRewards() {
   });
 
   return (
-    <main className="p-6 space-y-4 bg-white rounded-xl h-full">
-      <h1 className="text-2xl font-semibold">Rewards Admin</h1>
+
+    <main className="bg-white">
+      <header className="p-6 shadow-md">
+        <h1 className="text-2xl font-semibold">Rewards Admin</h1>
+      </header>
       <ManageRewards rows={rows} rewards={rewards} categories={categories} />
     </main>
   );

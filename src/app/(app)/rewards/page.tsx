@@ -26,11 +26,12 @@ export default async function RewardsPage() {
   ]);
 
   return (
-    <main className="p-6 space-y-6 bg-white rounded-xl">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-blue bg-white p-4 rounded-xl">
+    <main className="space-y-6 bg-white rounded-xl">
+      <div className="flex items-center justify-between p-6 shadow-md">
+        <h1 className="text-2xl font-semibold">Redeem Points</h1>
+        <p className="text-2xl font-semibold text-blue bg-white p-4 rounded-xl">
           {user?.pointsBalance ?? 0} stars to redeem
-        </h1>
+        </p>
       </div>
 
       <RedeemClient
@@ -46,7 +47,9 @@ export default async function RewardsPage() {
             <li key={r.id} className="border-2 rounded-xl bg-white p-3">
               <div className="text-sm">
                 <b>{r.catalog?.label || r.type}</b> —{" "}
-                {r.valueCents ? `$${r.valueCents / 100}` : `${r.pointsSpent} pts`}
+                {r.valueCents
+                  ? `$${r.valueCents / 100}`
+                  : `${r.pointsSpent} pts`}
                 {" · "}status: {r.status}
               </div>
               {r.code && (
@@ -57,11 +60,7 @@ export default async function RewardsPage() {
               {r.claimUrl && (
                 <div className="text-xs">
                   Claim:{" "}
-                  <a
-                    className="underline"
-                    href={r.claimUrl}
-                    target="_blank"
-                  >
+                  <a className="underline" href={r.claimUrl} target="_blank">
                     link
                   </a>
                 </div>

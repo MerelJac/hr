@@ -83,7 +83,7 @@ export default function RedeemClient({
   }
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6 p-6">
       {/* Tabs */}
       <div className="flex border-b mb-4">
         {categories.map((cat) => (

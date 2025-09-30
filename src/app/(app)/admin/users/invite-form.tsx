@@ -47,7 +47,7 @@ export default function InviteForm() {
         onClick={() => setOpen(true)}
         className="bg-black text-white px-3 py-2 rounded-xl"
       >
-        Add User
+        + User
       </button>
 
       {/* Modal overlay */}

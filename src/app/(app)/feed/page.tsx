@@ -69,7 +69,7 @@ export default async function FeedPage() {
   const simpleUsers = users.map((u) => ({ id: u.id, label: name(u) }));
 
   return (
-    <main className="p-6 space-y-4">
+    <main className="p-6 space-y-4 p-6 bg-gradient-to-t from-blue-500 to-indigo-500 h-full">
       <div className="flex flex-row gap-4 justify-between">
         <div className="min-w-[70%]">
           <RecognizeFormWrapper />
