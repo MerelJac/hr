@@ -22,8 +22,7 @@ export async function POST(req: Request) {
         categoryId,
         valueCents,
         pointsCost,
-        isActive,
-        type: "AMAZON", // 👈 TODO: adjust if you want this selectable
+        isActive
       },
     });
     return NextResponse.json(reward);

@@ -137,8 +137,10 @@ export default function RewardsAdmin({
                   Category: {r.category?.name}
                 </p>
                 <p className="text-sm">
-                  Value: ${(r.valueCents / 100).toFixed(2)} | Cost:{" "}
-                  {r.pointsCost} pts
+                  {r.category?.name === "Gift Card"
+                    ? "Flexible amount"
+                    : `Value: ${(r.valueCents / 100).toFixed(2)} ${r.pointsCost} pts`}
+                  
                 </p>
                 <span
                   className={`px-2 py-1 rounded text-xs font-medium ${
@@ -258,15 +260,6 @@ export default function RewardsAdmin({
                   </option>
                 ))}
               </select>
-              <label>Value (Cents)</label>
-              <input
-                type="number"
-                name="valueCents"
-                defaultValue={selected?.valueCents ?? 0}
-                className="w-full border rounded px-3 py-2"
-                required
-              />
-
               <label>Points Cost</label>
               <input
                 type="number"

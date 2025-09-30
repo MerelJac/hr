@@ -170,7 +170,7 @@ model RewardCatalog {
   id          String         @id @default(cuid())
   categoryId  String
   category    RewardCategory @relation(fields: [categoryId], references: [id])
-  type        RewardType
+  type        RewardType?
   label       String         @unique
   valueCents  Int?
   pointsCost  Int
