@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { EOM_WINNER_POINTS } from "@/lib/nomination-constants";
+import { handleApiError } from "@/lib/handleApiError";
 
 export async function PATCH(req: Request, context: any) {
   const { id } = (await context.params) ?? {}; // works whether params is an object or Promise
@@ -49,7 +50,7 @@ export async function PATCH(req: Request, context: any) {
     }
 
     return NextResponse.json({ error: "Invalid action or state." }, { status: 400 });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  } catch (e: unknown) {
+    return handleApiError(e);
   }
 }

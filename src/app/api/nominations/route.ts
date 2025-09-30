@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { monthKeyFromDate } from "@/lib/nomination-constants";
 import { User } from "@/types/user";
+import { ChallengeRequirements } from "@/types/challengeRequirements";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -31,7 +32,7 @@ export async function POST(req: Request) {
   }
 
   // enforce challenge requirements
-  const reqs = (challenge.requirements ?? {}) as any;
+  const reqs = (challenge.requirements ?? {}) as ChallengeRequirements;
   if (reqs.requiresNominee && !nomineeId) return NextResponse.json({ error: "Nominee required" }, { status: 400 });
   if (reqs.requiresReason && !reason) return NextResponse.json({ error: "Reason required" }, { status: 400 });
 

@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { User } from "@/types/user";
+import { handleApiError } from "@/lib/handleApiError";
 
 export async function POST(req: Request) {
   try {
@@ -9,7 +11,7 @@ export async function POST(req: Request) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { recognitionId, recipientId, message, pointsBoosted } = await req.json();
-  const senderId = (session.user as any).id;
+  const senderId = (session.user as User).id;
 
   console.log('senderId', senderId, 'recip id', recipientId)
   return await prisma.$transaction(async (tx) => {
@@ -33,6 +35,8 @@ export async function POST(req: Request) {
       boost = pointsBoosted;
     }
 
+    if (!senderId) throw new Error("senderId is required");
+    
     const comment = await tx.recognitionComment.create({
       data: { recognitionId, senderId, recipientId, message, pointsBoosted: boost },
       include: {
@@ -43,19 +47,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json(comment);
   });
-  } catch (e: any) {
-    console.error("POST /api/comments failed:", e);
-
-    // Prisma errors often have code + meta
-    if (e.code === "P2025") {
-      return NextResponse.json({ error: "Record not found", detail: e.meta }, { status: 404 });
-    }
-
-    if (e.message === "Not enough points") {
-      return NextResponse.json({ error: e.message }, { status: 400 });
-    }
-
-    return NextResponse.json({ error: "Internal Server Error", detail: e.message }, { status: 500 });
+  } catch (e: unknown) {
+    return handleApiError(e);
   }
 }
 

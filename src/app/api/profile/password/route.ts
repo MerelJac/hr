@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { compare, hash } from "bcryptjs";
 import { NextResponse } from "next/server";
+import { handleApiError } from "@/lib/handleApiError";
 
 export async function PATCH(req: Request) {
   try {
@@ -43,8 +44,7 @@ export async function PATCH(req: Request) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (e: any) {
-    console.error(e);
-    return NextResponse.json({ error: e.message ?? "Server error" }, { status: 500 });
+  } catch (e: unknown) {
+    return handleApiError(e);
   }
 }

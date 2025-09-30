@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { User } from "@/types/user";
+import { handleApiError } from "@/lib/handleApiError";
 
 export async function PATCH(req: Request) {
   const session = await getServerSession(authOptions);
@@ -26,7 +27,7 @@ export async function PATCH(req: Request) {
       },
     });
     return NextResponse.json(updated);
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (e: unknown) {
+    return handleApiError(e);
   }
 }

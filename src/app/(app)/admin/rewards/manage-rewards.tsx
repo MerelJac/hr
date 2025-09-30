@@ -3,15 +3,29 @@
 import { useState } from "react";
 import RewardsAdmin from "./rewards-admin";
 import RedemptionRow from "./redemption-row";
+import type { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+
+type RedemptionWithRelations = Prisma.PromiseReturnType<
+  typeof prisma.redemption.findMany
+>[number];
+
+type RewardWithCategory = Prisma.PromiseReturnType<
+  typeof prisma.rewardCatalog.findMany
+>[number];
+
+type RewardCategory = Prisma.PromiseReturnType<
+  typeof prisma.rewardCategory.findMany
+>[number];
 
 export default function ManageRewards({
   rows,
   rewards,
   categories,
 }: {
-  rows: any[];
-  rewards: any[];
-  categories: any[];
+  rows: RedemptionWithRelations[];
+  rewards: RewardWithCategory[];
+  categories: RewardCategory[];
 }) {
   const [activeTab, setActiveTab] = useState<"redemption" | "manage">("redemption");
 
