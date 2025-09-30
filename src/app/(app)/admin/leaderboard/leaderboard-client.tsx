@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-
+import Image from "next/image";
 export default function LeaderboardClient() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -77,7 +77,7 @@ export default function LeaderboardClient() {
           rows={data.shoutoutsGiven}
           field="count"
         />
-                <LeaderboardTable
+        <LeaderboardTable
           title="Most Shoutouts Received"
           rows={data.shoutoutsReceived}
           field="count"
@@ -93,16 +93,18 @@ function LeaderboardTable({ title, rows, field }: any) {
       <h2 className="text-lg font-semibold mb-3">{title}</h2>
       <ul className="space-y-2">
         {rows.map((r: any, i: number) => (
-          <li
-            key={r.user?.id || i}
-            className="flex justify-between"
-          >
-            <span>
-              {i + 1}. {r.user?.preferredName || r.user?.firstName || "Unknown"}
+          <li key={r.user?.id || i} className="flex justify-between items-center">
+            <span className="flex flex-row items-center justify-start gap-2">
+              <Image
+                src={r.user?.profileImage ?? "/default-profile-image.svg"}
+                alt="Profile"
+                width={40}
+                height={40}
+                className="rounded-full border-2 border-blue-500"
+              />
+              {r.user?.preferredName || r.user?.firstName || "Unknown"}
             </span>
-            <span className="font-medium">
-              {r[field] ?? 0}
-            </span>
+            <span className="font-medium">{r[field] ?? 0}</span>
           </li>
         ))}
       </ul>
