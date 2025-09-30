@@ -1,11 +1,12 @@
 // src/app/sidebar.tsx (server)
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { Home, Rocket, User, Star, Gift, Users } from "lucide-react";
+import { Home, Rocket, User, AlignEndHorizontal, Gift, Users } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import LogoutButton from "./login/logoutButton";
 import logo from "@/assets/logo.png";
+
 
 export default async function Sidebar() {
   interface SessionUser {
@@ -51,6 +52,13 @@ export default async function Sidebar() {
             >
               <Gift size={18} />
               <span> Manage Rewards</span>
+            </Link>
+                        <Link
+              href="/admin/leaderboard"
+              className="flex items-center gap-2 hover:text-blue-600"
+            >
+              <AlignEndHorizontal size={18} />
+              <span> Leaderboard</span>
             </Link>
             <Link
               href="/admin/users"
