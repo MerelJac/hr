@@ -232,7 +232,7 @@ export default function RewardsAdmin({
                 saveReward({
                   label: formData.get("label") as string,
                   categoryId: formData.get("categoryId") as string,
-                  valueCents: Number(formData.get("valueCents")),
+                  valueCents: Number(formData.get("valueCents")) ?? 0, // defauly 0 
                   pointsCost: Number(formData.get("pointsCost")),
                   isActive: formData.get("isActive") === "on",
                 });

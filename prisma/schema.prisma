@@ -172,7 +172,7 @@ model RewardCatalog {
   category    RewardCategory @relation(fields: [categoryId], references: [id])
   type        RewardType
   label       String         @unique
-  valueCents  Int
+  valueCents  Int            @defualt(0)
   pointsCost  Int
   isActive    Boolean        @default(true)
   createdAt   DateTime       @default(now())
