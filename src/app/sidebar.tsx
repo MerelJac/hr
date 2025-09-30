@@ -1,7 +1,7 @@
 // src/app/sidebar.tsx (server)
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { Home, Rocket, User, AlignEndHorizontal, Gift, Users } from "lucide-react";
+import { Home, Rocket, User, AlignEndHorizontal, Gift, Users, Handbag } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import LogoutButton from "./login/logoutButton";
@@ -39,6 +39,7 @@ export default async function Sidebar() {
         </Link>
         {role === "SUPER_ADMIN" && (
           <>
+          <p>Admin</p>
             <Link
               href="/admin/challenges"
               className="flex items-center gap-2 hover:text-blue-600"
@@ -50,7 +51,7 @@ export default async function Sidebar() {
               href="/admin/rewards"
               className="flex items-center gap-2 hover:text-blue-600"
             >
-              <Gift size={18} />
+              <Handbag size={18} />
               <span> Manage Rewards</span>
             </Link>
                         <Link

@@ -27,7 +27,7 @@ export async function GET(req: Request) {
 
   const receivedUsers = await prisma.user.findMany({
     where: { id: { in: receivedRaw.map(r => r.recipientId) } },
-    select: { id: true, firstName: true, preferredName: true },
+    select: { id: true, firstName: true, preferredName: true, profileImage: true },
   });
 
   const received = receivedRaw.map(r => ({
@@ -46,7 +46,7 @@ export async function GET(req: Request) {
 
   const givenUsers = await prisma.user.findMany({
     where: { id: { in: givenRaw.map(r => r.recipientId) } },
-    select: { id: true, firstName: true, preferredName: true },
+    select: { id: true, firstName: true, preferredName: true, profileImage: true },
   });
 
   const given = givenRaw.map(r => ({
@@ -65,7 +65,7 @@ export async function GET(req: Request) {
 
   const shoutoutsGivenUsers = await prisma.user.findMany({
     where: { id: { in: shoutoutsGivenRaw.map(r => r.senderId) } },
-    select: { id: true, firstName: true, preferredName: true },
+    select: { id: true, firstName: true, preferredName: true, profileImage: true },
   });
 
   const shoutoutsGiven = shoutoutsGivenRaw.map(r => ({
@@ -84,7 +84,7 @@ export async function GET(req: Request) {
 
   const shoutoutsReceivedUsers = await prisma.user.findMany({
     where: { id: { in: shoutoutsReceivedRaw.map(r => r.recipientId) } },
-    select: { id: true, firstName: true, preferredName: true },
+    select: { id: true, firstName: true, preferredName: true, profileImage: true },
   });
 
   const shoutoutsReceived = shoutoutsReceivedRaw.map(r => ({
