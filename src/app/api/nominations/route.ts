@@ -4,10 +4,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { monthKeyFromDate } from "@/lib/nomination-constants";
+import { User } from "@/types/user";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  const submitterId = (session?.user as any)?.id;
+  const submitterId = (session?.user as User)?.id;
   if (!submitterId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { challengeId, nomineeId, reason } = await req.json();

@@ -2,25 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-
-type Nomination = {
-  id: string;
-  status: string;
-  createdAt: string;
-  challenge: { id: string; title: string; points: number };
-};
-
-type User = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  workAnniversary: string;
-  department?: string;
-  profileImage?: string;
-  birthday?: string;
-  preferredName?: string;
-  submittedNominations?: Nomination[];
-};
+import { User } from "@/types/user";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);

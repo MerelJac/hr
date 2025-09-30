@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import ChallengeDetailClient from "./ChallengeDetailClient";
+import { User } from "@/types/user";
 
 export default async function ChallengeDetailPage({
   params,
@@ -11,7 +12,7 @@ export default async function ChallengeDetailPage({
   params: { id: string };
 }) {
   const session = await getServerSession(authOptions);
-  const role = (session?.user as any)?.role;
+  const role = (session?.user as User)?.role;
   if (role !== "SUPER_ADMIN") return <div className="p-6">Forbidden</div>;
 
   const challenge = await prisma.nominationChallenge.findUnique({

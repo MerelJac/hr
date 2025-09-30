@@ -4,10 +4,11 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import TabsClient from "./tabs-client";
 import { monthKeyFromDate } from "@/lib/nomination-constants";
+import { User } from "@/types/user";
 
 export default async function NominationsAdminPage() {
   const session = await getServerSession(authOptions);
-  const role = (session?.user as any)?.role;
+  const role = (session?.user as User)?.role;
   if (role !== "SUPER_ADMIN") return <div className="p-6">Forbidden</div>;
 
   const currentMonthKey = monthKeyFromDate();

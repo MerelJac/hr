@@ -3,10 +3,11 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 import ManageRewards from "./manage-rewards";
+import { User } from "@/types/user";
 
 export default async function AdminRewards() {
   const session = await getServerSession(authOptions);
-  const role = (session?.user as any)?.role;
+  const role = (session?.user as User)?.role;
   if (role !== "SUPER_ADMIN") return <div className="p-6">Forbidden</div>;
 
   const rows = await prisma.redemption.findMany({

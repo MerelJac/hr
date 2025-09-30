@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { getAvailablePoints } from "@/lib/recognition";
+import { User } from "@/types/user";
 
 const schema = z.object({
   message: z.string().min(1).max(500),
@@ -15,7 +16,7 @@ const schema = z.object({
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  const senderId = (session?.user as any)?.id;
+  const senderId = (session?.user as User)?.id;
   if (!senderId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();

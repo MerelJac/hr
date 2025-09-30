@@ -1,23 +1,24 @@
 // src/app/sidebar.tsx (server)
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { Home, Rocket, User, AlignEndHorizontal, Gift, Users, Handbag } from "lucide-react";
+import {
+  Home,
+  Rocket,
+  User as UserIcon,
+  AlignEndHorizontal,
+  Gift,
+  Users,
+  Handbag,
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import LogoutButton from "./login/logoutButton";
 import logo from "@/assets/logo.png";
-
+import { User } from "@/types/user";
 
 export default async function Sidebar() {
-  interface SessionUser {
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-    role?: string | null;
-  }
-
   const session = await getServerSession(authOptions);
-  const role = (session?.user as SessionUser)?.role;
+  const role = (session?.user as User)?.role;
 
   return (
     <aside className="flex flex-col w-[15rem] p-4 space-y-3 h-screen justify-between">
@@ -39,7 +40,7 @@ export default async function Sidebar() {
         </Link>
         {role === "SUPER_ADMIN" && (
           <>
-          <small>ADMIN</small>
+            <small>ADMIN</small>
             <Link
               href="/admin/challenges"
               className="flex items-center gap-2 hover:text-blue-600"
@@ -54,7 +55,7 @@ export default async function Sidebar() {
               <Handbag size={18} />
               <span> Manage Rewards</span>
             </Link>
-                        <Link
+            <Link
               href="/admin/leaderboard"
               className="flex items-center gap-2 hover:text-blue-600"
             >
@@ -76,7 +77,7 @@ export default async function Sidebar() {
           href="/profile"
           className="flex items-center gap-2 hover:text-blue-600"
         >
-          <User size={18} />
+          <UserIcon size={18} />
           <span>My Profile</span>
         </Link>
         <LogoutButton />

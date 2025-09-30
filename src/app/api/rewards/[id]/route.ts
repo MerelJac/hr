@@ -2,10 +2,11 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { User } from "@prisma/client";
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
-  const role = (session?.user as any)?.role;
+  const role = (session?.user as User)?.role;
   if (role !== "SUPER_ADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -26,7 +27,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
-  const role = (session?.user as any)?.role;
+  const role = (session?.user as User)?.role;
   if (role !== "SUPER_ADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }

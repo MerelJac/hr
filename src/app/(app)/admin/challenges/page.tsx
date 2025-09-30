@@ -2,10 +2,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import ChallengeList from "./challenge-list";
+import { User } from "@/types/user";
 
 export default async function ChallengesAdminPage() {
   const session = await getServerSession(authOptions);
-  const role = (session?.user as any)?.role;
+  const role = (session?.user as User)?.role;
 
   if (role !== "SUPER_ADMIN") {
     return <div className="p-6">Forbidden</div>;
