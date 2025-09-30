@@ -38,8 +38,8 @@ rewardCategory().finally(() => prisma.$disconnect());
 async function reward() {
   await prisma.rewardCatalog.createMany({
     data: [
-      { type: "AMAZON", categoryId: "123",label: "Amazon Custom", valueCents: 0, pointsCost: 0 },
-      { type: "VISA", categoryId: "123", label: "Visa Custom", valueCents: 0, pointsCost: 0 },
+      { type: "AMAZON", categoryId: "123",label: "Amazon Gift Card", valueCents: 0, pointsCost: 0 },
+      { type: "VISA", categoryId: "123", label: "Visa Gift Card", valueCents: 0, pointsCost: 0 },
     ],
   });
 }

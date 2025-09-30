@@ -1,7 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { listCatalog } from "@/lib/rewards";
 import RedeemClient from "./redeem-client";
 
 export default async function RewardsPage() {
@@ -9,12 +8,11 @@ export default async function RewardsPage() {
   const me = session?.user as any;
   if (!me?.id) return <div className="p-6">Please sign in.</div>;
 
-  const [user, catalog, history, categories] = await Promise.all([
+  const [user, history, categories] = await Promise.all([
     prisma.user.findUnique({
       where: { id: me.id },
       select: { pointsBalance: true, email: true },
     }),
-    listCatalog(),
     prisma.redemption.findMany({
       where: { userId: me.id },
       orderBy: { createdAt: "desc" },
@@ -22,7 +20,7 @@ export default async function RewardsPage() {
       take: 20,
     }),
     prisma.rewardCategory.findMany({
-      include: { rewards: true },
+      include: { rewards: { where: { isActive: true } } },
       orderBy: { name: "asc" },
     }),
   ]);
@@ -47,7 +45,8 @@ export default async function RewardsPage() {
           {history.map((r) => (
             <li key={r.id} className="border-2 rounded-xl bg-white p-3">
               <div className="text-sm">
-                <b>{r.type}</b> — ${r.pointsSpent / 10}
+                <b>{r.catalog?.label || r.type}</b> —{" "}
+                {r.valueCents ? `$${r.valueCents / 100}` : `${r.pointsSpent} pts`}
                 {" · "}status: {r.status}
               </div>
               {r.code && (

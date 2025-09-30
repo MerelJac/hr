@@ -48,7 +48,9 @@ export default function RewardsAdmin({
 
   async function deleteCategory(id: string) {
     if (!confirm("Delete this category permanently?")) return;
-    const res = await fetch(`/api/rewards/categories/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/rewards/categories/${id}`, {
+      method: "DELETE",
+    });
     if (res.ok) location.reload();
     else alert("Failed to delete category");
   }
@@ -90,10 +92,7 @@ export default function RewardsAdmin({
         </button>
         <ul className="divide-y border rounded-xl">
           {categories.map((cat) => (
-            <li
-              key={cat.id}
-              className="p-3 flex justify-between items-center"
-            >
+            <li key={cat.id} className="p-3 flex justify-between items-center">
               <span>{cat.name}</span>
               <div className="flex gap-3">
                 <button
@@ -232,7 +231,7 @@ export default function RewardsAdmin({
                 saveReward({
                   label: formData.get("label") as string,
                   categoryId: formData.get("categoryId") as string,
-                  valueCents: Number(formData.get("valueCents")) ?? 0, // defauly 0 
+                  valueCents: Number(formData.get("valueCents")) ?? 0, // defauly 0
                   pointsCost: Number(formData.get("pointsCost")),
                   isActive: formData.get("isActive") === "on",
                 });
@@ -267,6 +266,7 @@ export default function RewardsAdmin({
                 className="w-full border rounded px-3 py-2"
                 required
               />
+
               <label>Points Cost</label>
               <input
                 type="number"
@@ -274,6 +274,27 @@ export default function RewardsAdmin({
                 defaultValue={selected?.pointsCost ?? 0}
                 className="w-full border rounded px-3 py-2"
                 required
+              />
+              <label>Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+
+                  // Example: upload to /api/upload or Cloudinary/S3
+                  const formData = new FormData();
+                  formData.append("file", file);
+
+                  const res = await fetch("/api/upload", {
+                    method: "POST",
+                    body: formData,
+                  });
+
+                  const { url } = await res.json();
+                  setSelected({ ...selected, imageUrl: url });
+                }}
               />
               <label className="flex items-center gap-2">
                 <input
