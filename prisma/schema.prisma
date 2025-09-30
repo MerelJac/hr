@@ -118,9 +118,9 @@ model NominationChallenge {
   // Optional JSON field for flexible requirements (e.g. upload screenshot, URL, notes)
   requirements  Json?
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  nominations   Nomination[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  nominations Nomination[]
 }
 
 model Nomination {
@@ -158,17 +158,28 @@ enum RedemptionStatus {
   CANCELED
 }
 
-model RewardCatalog {
-  id          String       @id @default(cuid())
-  type        RewardType
-  label       String       @unique
-  valueCents  Int // e.g., 2500 => $25 card value
-  pointsCost  Int // how many points it costs
-  isActive    Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  redemptions Redemption[] @relation("CatalogRedemptions")
+model RewardCategory {
+  id        String          @id @default(cuid())
+  name      String          @unique
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  rewards   RewardCatalog[]
+}
 
+model RewardCatalog {
+  id          String         @id @default(cuid())
+  categoryId  String
+  category    RewardCategory @relation(fields: [categoryId], references: [id])
+  type        RewardType
+  label       String         @unique
+  valueCents  Int
+  pointsCost  Int
+  isActive    Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  redemptions Redemption[]   @relation("CatalogRedemptions")
+
+  @@index([categoryId, isActive])
   @@index([type, isActive])
 }
 
