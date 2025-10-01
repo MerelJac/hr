@@ -113,6 +113,7 @@ model NominationChallenge {
   description   String?
   qualification String? // free text about how to qualify
   isActive      Boolean  @default(true)
+  gifUrl        String?
   startDate     DateTime
   endDate       DateTime
   points        Int      @default(0)

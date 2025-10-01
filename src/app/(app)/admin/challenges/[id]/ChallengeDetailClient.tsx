@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useTransition } from "react";
 
 type ChallengeDetailProps = {
@@ -12,18 +13,29 @@ type ChallengeDetailProps = {
     isActive: boolean;
     startDate: string | Date;
     endDate: string | Date;
+    gifUrl: string | null;
     nominations: {
       id: string;
       status: string;
       reason?: string | null;
       createdAt: string | Date;
-      submitter?: { firstName?: string | null; lastName?: string | null; email?: string | null } | null;
-      nominee?: { firstName?: string | null; lastName?: string | null; email?: string | null } | null;
+      submitter?: {
+        firstName?: string | null;
+        lastName?: string | null;
+        email?: string | null;
+      } | null;
+      nominee?: {
+        firstName?: string | null;
+        lastName?: string | null;
+        email?: string | null;
+      } | null;
     }[];
   };
 };
 
-export default function ChallengeDetailClient({ challenge }: ChallengeDetailProps) {
+export default function ChallengeDetailClient({
+  challenge,
+}: ChallengeDetailProps) {
   const [isPending, startTransition] = useTransition();
 
   async function updateStatus(id: string, status: "APPROVED" | "REJECTED") {
@@ -48,6 +60,17 @@ export default function ChallengeDetailClient({ challenge }: ChallengeDetailProp
       <h1 className="text-2xl font-semibold">{challenge.title}</h1>
       <p>Points: {challenge.points}</p>
       <p>{challenge.description}</p>
+      {challenge.gifUrl && (
+        <Image
+          src={challenge.gifUrl}
+          alt="Selected GIF"
+          width={150}
+          height={150}
+          unoptimized // required for animated gifs
+          className="max-h-40 rounded mt-2"
+        />
+      )}
+
       <p className="text-sm text-gray-600">{challenge.qualification}</p>
       <p className="text-xs text-gray-500">
         {new Date(challenge.startDate).toLocaleDateString()} –{" "}
@@ -55,7 +78,9 @@ export default function ChallengeDetailClient({ challenge }: ChallengeDetailProp
       </p>
       <span
         className={`px-2 py-1 rounded text-xs font-medium ${
-          challenge.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+          challenge.isActive
+            ? "bg-green-100 text-green-800"
+            : "bg-red-100 text-red-800"
         }`}
       >
         {challenge.isActive ? "Active" : "Inactive"}
@@ -70,19 +95,26 @@ export default function ChallengeDetailClient({ challenge }: ChallengeDetailProp
             {challenge.nominations.map((n) => (
               <li key={n.id} className="p-4 space-y-2">
                 <p>
-                  <b>Submitted by:</b> {n.submitter?.firstName} {n.submitter?.lastName} ({n.submitter?.email})
+                  <b>Submitted by:</b> {n.submitter?.firstName}{" "}
+                  {n.submitter?.lastName} ({n.submitter?.email})
                 </p>
                 {n.nominee && (
                   <p>
-                    <b>Nominee:</b> {n.nominee.firstName} {n.nominee.lastName} ({n.nominee.email})
+                    <b>Nominee:</b> {n.nominee.firstName} {n.nominee.lastName} (
+                    {n.nominee.email})
                   </p>
                 )}
                 {n.reason && (
                   <p>
-                    <b>Briefly explain why you&#39;re claiming this challenge:</b> {n.reason}
+                    <b>
+                      Briefly explain why you&#39;re claiming this challenge:
+                    </b>{" "}
+                    {n.reason}
                   </p>
                 )}
-                <p><b>Status:</b> {n.status}</p>
+                <p>
+                  <b>Status:</b> {n.status}
+                </p>
                 <p className="text-xs text-gray-500">
                   Submitted on {new Date(n.createdAt).toLocaleDateString()}
                 </p>

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Copy, Trash, Edit } from "lucide-react";
 import Link from "next/link";
+import GifPicker from "@/components/GifPicker";
+import Image from "next/image";
 type Challenge = {
   id: string;
   title: string;
@@ -17,7 +19,7 @@ type Challenge = {
     requiresReason?: boolean;
     requiresScreenshot?: boolean;
   };
-    nominations?: { id: string; status: string }[]; 
+  nominations?: { id: string; status: string }[];
 };
 
 export default function ChallengeList({
@@ -27,9 +29,11 @@ export default function ChallengeList({
 }) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Challenge | null>(null);
+  const [gifUrl, setGifUrl] = useState<string | null>(null);
 
   function openModal(challenge?: Challenge) {
     setSelected(challenge || null);
+    setGifUrl(challenge?.gifUrl ?? null);
     setOpen(true);
   }
 
@@ -73,63 +77,76 @@ export default function ChallengeList({
         + Create Challenge
       </button>
 
-   <ul className="divide-y border rounded-xl">
-  {challenges.map((c) => {
-    const pendingCount = c.nominations?.filter((n) => n.status === "PENDING").length ?? 0;
+      <ul className="divide-y border rounded-xl">
+        {challenges.map((c) => {
+          const pendingCount =
+            c.nominations?.filter((n) => n.status === "PENDING").length ?? 0;
 
-    return (
-      <li key={c.id} className="p-4 flex items-center justify-between relative">
-        <div>
-          <h3 className="font-semibold flex items-center gap-2">
-            {c.title}
-            {pendingCount > 0 && (
-              <span className="ml-2 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-xs w-5 h-5">
-                {pendingCount}
-              </span>
-            )}
-          </h3>
-          <p className="text-sm text-gray-600">{c.description}</p>
-          <p className="text-sm text-gray-600">Points: {c.points}</p>
-          <p className="text-xs text-gray-500">
-            {new Date(c.startDate).toLocaleDateString()} -{" "}
-            {new Date(c.endDate).toLocaleDateString()}
-          </p>
-          <span
-            className={`px-2 py-1 rounded text-xs font-medium ${
-              c.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-            }`}
-          >
-            {c.isActive ? "Active" : "Inactive"}
-          </span>
-        </div>
-        <div className="flex gap-4">
-          <Link href={`/admin/challenges/${c.id}`}>
-            <button className="text-gray-700 hover:underline">View</button>
-          </Link>
-          <button onClick={() => openModal(c)} className="text-blue-600 hover:underline">
-            <Edit size={18} />
-          </button>
-          <button
-            onClick={() =>
-              openModal({
-                ...c,
-                id: "",
-                title: `${c.title} (Copy)`,
-              })
-            }
-            className="text-purple-600 hover:underline"
-          >
-            <Copy size={18} />
-          </button>
-          <button onClick={() => deleteChallenge(c.id)} className="text-red-600 hover:underline">
-            <Trash size={18} />
-          </button>
-        </div>
-      </li>
-    );
-  })}
-</ul>
-
+          return (
+            <li
+              key={c.id}
+              className="p-4 flex items-center justify-between relative"
+            >
+              <div>
+                <h3 className="font-semibold flex items-center gap-2">
+                  {c.title}
+                  {pendingCount > 0 && (
+                    <span className="ml-2 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-xs w-5 h-5">
+                      {pendingCount}
+                    </span>
+                  )}
+                </h3>
+                <p className="text-sm text-gray-600">{c.description}</p>
+                <p className="text-sm text-gray-600">Points: {c.points}</p>
+                <p className="text-xs text-gray-500">
+                  {new Date(c.startDate).toLocaleDateString()} -{" "}
+                  {new Date(c.endDate).toLocaleDateString()}
+                </p>
+                <span
+                  className={`px-2 py-1 rounded text-xs font-medium ${
+                    c.isActive
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
+                  {c.isActive ? "Active" : "Inactive"}
+                </span>
+              </div>
+              <div className="flex gap-4">
+                <Link href={`/admin/challenges/${c.id}`}>
+                  <button className="text-gray-700 hover:underline">
+                    View
+                  </button>
+                </Link>
+                <button
+                  onClick={() => openModal(c)}
+                  className="text-blue-600 hover:underline"
+                >
+                  <Edit size={18} />
+                </button>
+                <button
+                  onClick={() =>
+                    openModal({
+                      ...c,
+                      id: "",
+                      title: `${c.title} (Copy)`,
+                    })
+                  }
+                  className="text-purple-600 hover:underline"
+                >
+                  <Copy size={18} />
+                </button>
+                <button
+                  onClick={() => deleteChallenge(c.id)}
+                  className="text-red-600 hover:underline"
+                >
+                  <Trash size={18} />
+                </button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
 
       {open && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -151,6 +168,7 @@ export default function ChallengeList({
                   startDate: formData.get("startDate") as string,
                   endDate: formData.get("endDate") as string,
                   isActive: formData.get("isActive") === "on",
+                  gifUrl: gifUrl,
                   points: Number(formData.get("points")),
                   requirements: {
                     requiresNominee: formData.get("requiresNominee") === "on",
@@ -184,6 +202,28 @@ export default function ChallengeList({
                 placeholder="Qualification criteria"
                 className="w-full border rounded px-3 py-2"
               />
+              <GifPicker onSelect={(url) => setGifUrl(url)} />
+              <div className="">
+                {gifUrl && (
+                  <div className="mt-2 relative max-w-fit">
+                    <Image
+                      src={gifUrl}
+                      alt="Selected GIF"
+                      width={150} // required
+                      height={150} // required
+                      unoptimized // 👈 prevents Next from trying to optimize animated gifs
+                      className="max-h-40 rounded"
+                    />{" "}
+                    <button
+                      type="button"
+                      onClick={() => setGifUrl(null)}
+                      className="absolute top-1 right-1 bg-white/80 text-red-600 text-xs px-2 py-1 rounded"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+              </div>
               <label>Eligable Between</label>
               <div className="flex gap-2">
                 <input

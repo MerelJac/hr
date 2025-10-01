@@ -20,6 +20,7 @@ export async function POST(req: Request) {
       endDate: new Date(body.endDate),
       isActive: body.isActive ?? true,
       points: body.points ?? 0,
+      gifUrl: body.gifUrl ?? null,
       requirements: body.requirements ?? {},
     },
   });
