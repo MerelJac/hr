@@ -5,8 +5,11 @@ import { prisma } from "@/lib/prisma";
 import { EOM_WINNER_POINTS } from "@/lib/nomination-constants";
 import { handleApiError } from "@/lib/handleApiError";
 
-export async function PATCH(req: Request, context: any) {
-  const { id } = (await context.params) ?? {}; // works whether params is an object or Promise
+export async function PATCH(
+  req: Request,
+  context: { params: { id: string } }
+) {
+  const { id } = context.params;
 
   const session = await getServerSession(authOptions);
   interface SessionUser {
@@ -32,7 +35,7 @@ export async function PATCH(req: Request, context: any) {
       return NextResponse.json({ ok: true });
     }
 
-    if (action === "win" && nom.type === "EOM") {
+    if (action === "win") {
       if (!nom.nomineeId) {
         return NextResponse.json({ error: "Missing nominee." }, { status: 400 });
       }

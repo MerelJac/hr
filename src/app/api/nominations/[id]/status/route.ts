@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { User } from "@/types/user";
+import { Nomination } from "@/types/nomination";
 
 export async function PATCH(
   req: Request,
@@ -13,7 +14,7 @@ export async function PATCH(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { status } = await req.json();
+  const { status }: { status: Nomination["status"]} = await req.json();
 
   // validate input
   if (!["APPROVED", "REJECTED"].includes(status)) {
@@ -26,7 +27,10 @@ export async function PATCH(
   });
 
   if (!nomination) {
-    return NextResponse.json({ error: "Nomination not found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "Nomination not found" },
+      { status: 404 }
+    );
   }
 
   const updated = await prisma.$transaction(async (tx) => {
@@ -35,8 +39,7 @@ export async function PATCH(
       data: { status },
     });
 
-    if (status === "APPROVED") {
-      // Award points to the submitter or nominee
+    if (status === "APPROVED" && nomination.challenge) {
       const awardToUserId = nomination.nomineeId || nomination.submitterId;
       await tx.user.update({
         where: { id: awardToUserId },

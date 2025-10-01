@@ -3,6 +3,19 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
+type GiphyImage = {
+  url: string;
+};
+
+type GiphyGif = {
+  id: string;
+  images: {
+    fixed_height_small: GiphyImage;
+    original: GiphyImage;
+  };
+};
+
+
 export default function GifPicker({
   onSelect,
 }: {
@@ -10,7 +23,7 @@ export default function GifPicker({
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<GiphyGif[]>([]);
 
   useEffect(() => {
   if (open) {
