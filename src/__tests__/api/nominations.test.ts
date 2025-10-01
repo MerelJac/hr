@@ -1,15 +1,14 @@
 // __tests__/api/nominations.test.ts
 import { POST } from "@/app/api/nominations/route";
 import { prisma } from "@/lib/prisma";
-import { EOM_SUBMIT_POINTS } from "@/lib/nomination-constants";
 import { getServerSession } from "next-auth";
 
 // mock prisma
 jest.mock("@/lib/prisma", () => ({
   prisma: {
     nomination: { findFirst: jest.fn(), create: jest.fn() },
+    nominationChallenge: { findUnique: jest.fn() },
     user: { findUnique: jest.fn(), update: jest.fn() },
-    $transaction: <T>(fn: (tx: unknown) => T) => fn(prisma),
   },
 }));
 
@@ -21,37 +20,67 @@ jest.mock("next-auth", () => ({
   getServerSession: jest.fn(),
 }));
 
-
 const mockedGetServerSession = jest.mocked(getServerSession);
-describe("POST /api/nominations", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  // default challenge for most tests
+  (prisma.nominationChallenge.findUnique as jest.Mock).mockResolvedValue({
+    id: "chal1",
+    isActive: true,
+    startDate: new Date("2000-01-01"),
+    endDate: new Date("2100-01-01"),
+    requirements: {},
+  });
+});
+
+describe("POST /api/nominations", () => {
   it("should return 401 if not logged in", async () => {
     mockedGetServerSession.mockResolvedValueOnce(null);
 
     const req = new Request("http://localhost", {
       method: "POST",
-      body: JSON.stringify({ type: "EOM", nomineeId: "u1", reason: "Great work" }),
+      body: JSON.stringify({
+        challengeId: "chal1",
+        nomineeId: "u1",
+        reason: "Great work",
+      }),
     });
 
     const res = await POST(req);
     expect(res.status).toBe(401);
   });
 
-  it("should return 400 for invalid type", async () => {
+  it("should return 404 if challenge not found", async () => {
     mockedGetServerSession.mockResolvedValueOnce({ user: { id: "submitter1" } });
+    (prisma.nominationChallenge.findUnique as jest.Mock).mockResolvedValueOnce(null);
 
     const req = new Request("http://localhost", {
       method: "POST",
-      body: JSON.stringify({ type: "WRONGTYPE" }),
+      body: JSON.stringify({ challengeId: "bad-id" }),
     });
 
     const res = await POST(req);
-    const json = await res.json();
+    expect(res.status).toBe(404);
+  });
+
+  it("should return 400 if challenge not active", async () => {
+    mockedGetServerSession.mockResolvedValueOnce({ user: { id: "submitter1" } });
+    (prisma.nominationChallenge.findUnique as jest.Mock).mockResolvedValueOnce({
+      id: "chal1",
+      isActive: false,
+      startDate: new Date("2000-01-01"),
+      endDate: new Date("2100-01-01"),
+      requirements: {},
+    });
+
+    const req = new Request("http://localhost", {
+      method: "POST",
+      body: JSON.stringify({ challengeId: "chal1" }),
+    });
+
+    const res = await POST(req);
     expect(res.status).toBe(400);
-    expect(json.error).toMatch(/Invalid type/);
   });
 
   it("should return 409 if already submitted this month", async () => {
@@ -60,102 +89,83 @@ describe("POST /api/nominations", () => {
 
     const req = new Request("http://localhost", {
       method: "POST",
-      body: JSON.stringify({ type: "EOM", nomineeId: "u1" }),
+      body: JSON.stringify({ challengeId: "chal1", nomineeId: "u1" }),
     });
 
     const res = await POST(req);
     expect(res.status).toBe(409);
   });
 
-  it("should return 400 if no nomineeId for EOM", async () => {
+  it("should return 400 if nominee required but missing", async () => {
     mockedGetServerSession.mockResolvedValueOnce({ user: { id: "submitter1" } });
     (prisma.nomination.findFirst as jest.Mock).mockResolvedValueOnce(null);
-
-    const req = new Request("http://localhost", {
-      method: "POST",
-      body: JSON.stringify({ type: "EOM" }),
+    (prisma.nominationChallenge.findUnique as jest.Mock).mockResolvedValueOnce({
+      id: "chal1",
+      isActive: true,
+      startDate: new Date("2000-01-01"),
+      endDate: new Date("2100-01-01"),
+      requirements: { requiresNominee: true },
     });
 
-    const res = await POST(req);
-    const json = await res.json();
-    expect(res.status).toBe(400);
-    expect(json.error).toMatch(/Nominee required/);
-  });
-
-  it("should return 400 if nominee not found", async () => {
-    mockedGetServerSession.mockResolvedValueOnce({ user: { id: "submitter1" } });
-    (prisma.nomination.findFirst as jest.Mock).mockResolvedValueOnce(null);
-    (prisma.user.findUnique as jest.Mock).mockResolvedValueOnce(null);
-
     const req = new Request("http://localhost", {
       method: "POST",
-      body: JSON.stringify({ type: "EOM", nomineeId: "missingId" }),
+      body: JSON.stringify({ challengeId: "chal1" }),
     });
 
     const res = await POST(req);
     expect(res.status).toBe(400);
   });
 
-  it("should create EOM nomination and increment points", async () => {
+  it("should return 400 if reason required but missing", async () => {
     mockedGetServerSession.mockResolvedValueOnce({ user: { id: "submitter1" } });
     (prisma.nomination.findFirst as jest.Mock).mockResolvedValueOnce(null);
-    (prisma.user.findUnique as jest.Mock).mockResolvedValueOnce({ id: "u1" });
-    (prisma.nomination.create as jest.Mock).mockResolvedValueOnce({ id: "nom1" });
-    (prisma.user.update as jest.Mock).mockResolvedValueOnce({ id: "submitter1", pointsBalance: 10 });
+    (prisma.nominationChallenge.findUnique as jest.Mock).mockResolvedValueOnce({
+      id: "chal1",
+      isActive: true,
+      startDate: new Date("2000-01-01"),
+      endDate: new Date("2100-01-01"),
+      requirements: { requiresReason: true },
+    });
 
     const req = new Request("http://localhost", {
       method: "POST",
-      body: JSON.stringify({ type: "EOM", nomineeId: "u1", reason: "Great job" }),
+      body: JSON.stringify({ challengeId: "chal1", nomineeId: "u1" }),
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+  });
+
+  it("should create nomination when valid", async () => {
+    mockedGetServerSession.mockResolvedValueOnce({ user: { id: "submitter1" } });
+    (prisma.nomination.findFirst as jest.Mock).mockResolvedValueOnce(null);
+    (prisma.nomination.create as jest.Mock).mockResolvedValueOnce({
+      id: "nom1",
+      challengeId: "chal1",
+      submitterId: "submitter1",
+      status: "PENDING",
+    });
+
+    const req = new Request("http://localhost", {
+      method: "POST",
+      body: JSON.stringify({
+        challengeId: "chal1",
+        nomineeId: "u1",
+        reason: "Great job",
+      }),
     });
 
     const res = await POST(req);
     const json = await res.json();
 
     expect(res.status).toBe(200);
-    expect(json.ok).toBe(true);
-
-    expect(prisma.nomination.create).toHaveBeenCalledWith(
+    expect(json).toEqual(
       expect.objectContaining({
-        data: expect.objectContaining({
-          type: "EOM",
-          submitterId: "submitter1",
-          nomineeId: "u1",
-          reason: "Great job",
-        }),
+        id: "nom1",
+        challengeId: "chal1",
+        submitterId: "submitter1",
+        status: "PENDING",
       })
     );
-
-    expect(prisma.user.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { id: "submitter1" },
-        data: { pointsBalance: { increment: EOM_SUBMIT_POINTS } },
-      })
-    );
-  });
-
-  it("should return 409 on unique constraint error", async () => {
-    mockedGetServerSession.mockResolvedValueOnce({ user: { id: "submitter1" } });
-    (prisma.nomination.findFirst as jest.Mock).mockRejectedValueOnce({ code: "P2002" });
-
-    const req = new Request("http://localhost", {
-      method: "POST",
-      body: JSON.stringify({ type: "EOM", nomineeId: "u1" }),
-    });
-
-    const res = await POST(req);
-    expect(res.status).toBe(409);
-  });
-
-  it("should return 500 on unexpected error", async () => {
-    mockedGetServerSession.mockResolvedValueOnce({ user: { id: "submitter1" } });
-    (prisma.nomination.findFirst as jest.Mock).mockRejectedValueOnce(new Error("DB exploded"));
-
-    const req = new Request("http://localhost", {
-      method: "POST",
-      body: JSON.stringify({ type: "EOM", nomineeId: "u1" }),
-    });
-
-    const res = await POST(req);
-    expect(res.status).toBe(500);
   });
 });

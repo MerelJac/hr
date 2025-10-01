@@ -11,8 +11,8 @@ jest.mock("@/lib/prisma", () => ({
   },
 }));
 
-// mock bcrypt
-jest.mock("bcrypt", () => ({
+// mock bcryptjs
+jest.mock("bcryptjs", () => ({
   hash: jest.fn(() => "hashedpw"),
 }));
 

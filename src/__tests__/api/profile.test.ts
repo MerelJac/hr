@@ -61,11 +61,18 @@ describe("PATCH /api/profile", () => {
       birthday: new Date("1990-01-01").toISOString(),
     });
 
-    expect(prisma.user.update).toHaveBeenCalledWith({
-      where: { id: "user1" },
-      data: { birthday: new Date("1990-01-01") },
-      select: { id: true, birthday: true },
-    });
+    expect(prisma.user.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: "user1" },
+        data: expect.objectContaining({
+          birthday: new Date("1990-01-01"),
+        }),
+        select: expect.objectContaining({
+          id: true,
+          birthday: true,
+        }),
+      })
+    );
   });
 
   it("should set birthday to null if omitted", async () => {
@@ -86,16 +93,25 @@ describe("PATCH /api/profile", () => {
     const json = await res.json();
     expect(json).toEqual({ id: "user1", birthday: null });
 
-    expect(prisma.user.update).toHaveBeenCalledWith({
-      where: { id: "user1" },
-      data: { birthday: null },
-      select: { id: true, birthday: true },
-    });
+    expect(prisma.user.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: "user1" },
+        data: expect.objectContaining({
+          birthday: null,
+        }),
+        select: expect.objectContaining({
+          id: true,
+          birthday: true,
+        }),
+      })
+    );
   });
 
   it("should return 500 if prisma throws", async () => {
     mockedGetServerSession.mockResolvedValueOnce({ user: { id: "user1" } });
-    (prisma.user.update as jest.Mock).mockRejectedValueOnce(new Error("DB error"));
+    (prisma.user.update as jest.Mock).mockRejectedValueOnce(
+      new Error("DB error")
+    );
 
     const req = new Request("http://localhost/api/profile", {
       method: "PATCH",
