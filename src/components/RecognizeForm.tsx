@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import GifPicker from "./GifPicker";
+import Image from "next/image";
+import { User } from "lucide-react";
 
 type SimpleUser = {
   id: string;
@@ -20,7 +23,7 @@ export default function RecognizeForm({
     { userId: users[0]?.id ?? "", points: 5 },
   ]);
   const [message, setMessage] = useState("");
-
+  const [gifUrl, setGifUrl] = useState<string | null>(null);
   const total = rows.reduce((s, r) => s + (Number(r.points) || 0), 0);
 
   function updateRow(
@@ -54,6 +57,7 @@ export default function RecognizeForm({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message,
+        gifUrl,
         recipients: rows.map((r) => ({
           userId: r.userId,
           points: Number(r.points),
@@ -84,15 +88,41 @@ export default function RecognizeForm({
           placeholder="Give someone a shoutout! What did they do great?"
         />
       </div>
-
+      <div className="flex justify-end gap-4 items-start">
+        <GifPicker onSelect={(url) => setGifUrl(url)} />
+        <button
+          type="button"
+          onClick={addRow}
+          className="text-blue text-lg flex flex-row items-center"
+        >
+          + <User size={18} />
+        </button>
+      </div>
+      <div className="">
+        {gifUrl && (
+          <div className="mt-2 relative max-w-fit">
+            <Image
+              src={gifUrl}
+              alt="Selected GIF"
+              width={150} // required
+              height={150} // required
+              unoptimized // 👈 prevents Next from trying to optimize animated gifs
+              className="max-h-40 rounded"
+            />{" "}
+            <button
+              type="button"
+              onClick={() => setGifUrl(null)}
+              className="absolute top-1 right-1 bg-white/80 text-red-600 text-xs px-2 py-1 rounded"
+            >
+              Remove
+            </button>
+          </div>
+        )}
+      </div>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-sm font-medium">Who & how many points?</label>
-          <button type="button" onClick={addRow} className="text-blue text-lg">
-            +
-          </button>
         </div>
-
         {rows.map((row, i) => (
           <div key={i} className="flex gap-2 items-center">
             <select

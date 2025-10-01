@@ -9,11 +9,12 @@ import RecognizeFormWrapper from "@/components/RecognizeFormWrapper";
 import CoreValues from "@/components/CoreValues";
 import React from "react";
 import Image from "next/image";
+import { User } from "@/types/user";
 
 export default async function FeedPage() {
   const session = await getServerSession(authOptions);
   if (!session) return <div className="p-6">Please sign in.</div>;
-  const me = session.user as any;
+  const me = session.user as User;
 
   const challenges = await prisma.nominationChallenge.findMany({
     where: {
@@ -27,7 +28,9 @@ export default async function FeedPage() {
     },
   });
 
-  const availableChallenges = challenges.filter(c => c.nominations.length === 0);
+  const availableChallenges = challenges.filter(
+    (c) => c.nominations.length === 0
+  );
 
   const recs = await prisma.recognition.findMany({
     orderBy: { createdAt: "desc" },
@@ -119,7 +122,19 @@ export default async function FeedPage() {
                     />
                     <b>{name(r.sender)}</b>
                   </div>
-                  <p className="mt-2">{r.message}</p>
+                  <p className="mt-2">
+                    {r.message}{" "}
+                    {r.gifUrl && (
+                      <Image
+                        width={100}
+                        height={100}
+                        src={r.gifUrl}
+                        alt="shoutout gif"
+                        className="mt-3 rounded max-h-60"
+                      />
+                    )}
+                  </p>
+
                   <small className="text-gray-500">
                     {new Date(r.createdAt).toLocaleDateString("en-US", {
                       year: "numeric",
@@ -141,7 +156,10 @@ export default async function FeedPage() {
         <div id="actionItems" className="flex flex-col gap-4">
           <AvailablePointsCard />
           <AvailableRedeemPointsCard />
-          <NominationModal users={simpleUsers} challenges={availableChallenges}/>
+          <NominationModal
+            users={simpleUsers}
+            challenges={availableChallenges}
+          />
           <CoreValues />
         </div>
       </div>

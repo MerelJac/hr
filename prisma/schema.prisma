@@ -75,6 +75,7 @@ model Recognition {
   id        String   @id @default(cuid())
   senderId  String
   sender    User     @relation("SenderRecognitions", fields: [senderId], references: [id], onDelete: Cascade)
+  gifUrl    String?
   message   String
   createdAt DateTime @default(now())
 
