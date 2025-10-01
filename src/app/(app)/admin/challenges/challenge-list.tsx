@@ -5,22 +5,7 @@ import { Copy, Trash, Edit } from "lucide-react";
 import Link from "next/link";
 import GifPicker from "@/components/GifPicker";
 import Image from "next/image";
-type Challenge = {
-  id: string;
-  title: string;
-  description?: string;
-  qualification?: string;
-  isActive: boolean;
-  startDate: string;
-  endDate: string;
-  points: number;
-  requirements?: {
-    requiresNominee?: boolean;
-    requiresReason?: boolean;
-    requiresScreenshot?: boolean;
-  };
-  nominations?: { id: string; status: string }[];
-};
+import { Challenge } from "@/types/challenge";
 
 export default function ChallengeList({
   challenges,

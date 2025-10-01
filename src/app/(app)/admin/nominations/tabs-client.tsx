@@ -1,35 +1,7 @@
 "use client";
 
+import { Challenge } from "@/types/challenge";
 import { useState } from "react";
-
-type Challenge = {
-  id: string;
-  title: string;
-  description?: string;
-  qualification?: string;
-  isActive: boolean;
-  startDate: string;
-  endDate: string;
-  points: number;
-  requirements?: {
-    requiresNominee?: boolean;
-    requiresPostUrl?: boolean;
-  };
-  nominations: Nom[];
-};
-
-type Nom = {
-  id: string;
-  status: "PENDING" | "APPROVED" | "REJECTED" | "WON" | "SKIPPED";
-  reason?: string | null;
-  postUrl?: string | null;
-  nominee?: {
-    email?: string | null;
-    firstName?: string | null;
-    lastName?: string | null;
-  } | null;
-  createdAt: string | Date;
-};
 
 function SubmissionForm({
   challenge,
@@ -110,7 +82,7 @@ function ChallengePanel({ challenge }: { challenge: Challenge }) {
       <p className="text-sm font-medium">Worth {challenge.points} points</p>
 
       <h3 className="font-medium">Your Submissions</h3>
-      {challenge.nominations.length ? (
+      {challenge.nominations?.length ? (
         <ul className="space-y-2">
           {challenge.nominations.map((n) => (
             <li

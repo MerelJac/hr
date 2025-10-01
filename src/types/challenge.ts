@@ -1,19 +1,15 @@
 import { Nomination } from "./nomination";
-
+import { ChallengeRequirements } from "./challengeRequirements";
 export type Challenge = {
   id: string;
   title: string;
-  description?: string;
-  qualification?: string;
+  description?: string | null;
+  qualification?: string | null;
   isActive: boolean;
-  startDate: string;
-  endDate: string;
-  gifUrl?: string; 
+  startDate: string | Date;
+  endDate: string | Date;
   points: number;
-  requirements?: {
-    requiresNominee?: boolean;
-    requiresReason?: boolean;
-    requiresScreenshot?: boolean;
-  };
-  nominations?: Nomination
+  gifUrl?: string | null;
+  requirements?: ChallengeRequirements;
+  nominations?: Nomination[];
 };

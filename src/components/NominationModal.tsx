@@ -1,31 +1,23 @@
 "use client";
 
+import { Challenge } from "@/types/challenge";
+import { User } from "@/types/user";
 import { Rocket } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
-type SimpleUser = { id: string; label: string };
-type Challenge = {
-  id: string;
-  title: string;
-  description?: string;
-  qualification?: string;
-  points: number;
-  startDate: string;
-  endDate: string;
-  gifUrl?: string;
-  requirements: {
-    requiresNominee?: boolean;
-    requiresReason?: boolean;
-    requiresScreenshot?: boolean;
-  };
+type NominationPayload = {
+  challengeId: string;
+  nomineeId?: string;
+  reason?: string;
+  screenshot?: File; // or string if you plan to send it as base64 / URL
 };
 
 export default function NominationModal({
   users,
   challenges = [],
 }: {
-  users: SimpleUser[];
+  users: User[];
   challenges: Challenge[];
 }) {
   const [open, setOpen] = useState(false);
@@ -58,11 +50,11 @@ export default function NominationModal({
     e.preventDefault();
     if (!activeChallenge) return;
 
-    const body: any = { challengeId: activeChallenge.id };
-    if (activeChallenge.requirements.requiresNominee) {
+    const body: NominationPayload = { challengeId: activeChallenge.id };
+    if (activeChallenge.requirements?.requiresNominee) {
       body.nomineeId = nomineeId;
     }
-    if (activeChallenge.requirements.requiresReason) {
+    if (activeChallenge.requirements?.requiresReason) {
       body.reason = reason;
     }
     const res = await fetch("/api/nominations", {
@@ -154,7 +146,7 @@ export default function NominationModal({
                   <p className="text-xs text-gray-400 mt-2">No GIF selected</p>
                 )}
 
-                {activeChallenge.requirements.requiresNominee && (
+                {activeChallenge.requirements?.requiresNominee && (
                   <div>
                     <label className="block text-sm mb-1">Nominee</label>
                     <select
@@ -166,14 +158,15 @@ export default function NominationModal({
                       <option value="">Select a nominee</option>
                       {users.map((u) => (
                         <option key={u.id} value={u.id}>
-                          {u.label}
+                          {u.preferredName ??
+                            `${u.firstName ?? ""} ${u.lastName ?? ""}`}
                         </option>
                       ))}
                     </select>
                   </div>
                 )}
 
-                {activeChallenge.requirements.requiresReason && (
+                {activeChallenge.requirements?.requiresReason && (
                   <div>
                     <label className="block text-sm mb-1">
                       Briefly explain why you&#39;re claiming this challenge.
@@ -188,7 +181,7 @@ export default function NominationModal({
                   </div>
                 )}
 
-                {activeChallenge.requirements.requiresScreenshot && (
+                {activeChallenge.requirements?.requiresScreenshot && (
                   <div>
                     <label className="block text-sm mb-1">
                       Upload Screenshot
