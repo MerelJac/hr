@@ -1,6 +1,7 @@
 "use client";
 
 import { Rocket } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 
 type SimpleUser = { id: string; label: string };
@@ -12,6 +13,7 @@ type Challenge = {
   points: number;
   startDate: string;
   endDate: string;
+  gifUrl?: string;
   requirements: {
     requiresNominee?: boolean;
     requiresReason?: boolean;
@@ -138,6 +140,19 @@ export default function NominationModal({
                 <p className="text-sm text-gray-600">
                   {activeChallenge.description}
                 </p>
+
+                {activeChallenge.gifUrl ? (
+                  <Image
+                    src={activeChallenge.gifUrl}
+                    alt="Selected GIF"
+                    width={150}
+                    height={150}
+                    unoptimized
+                    className="max-h-40 rounded mt-2"
+                  />
+                ) : (
+                  <p className="text-xs text-gray-400 mt-2">No GIF selected</p>
+                )}
 
                 {activeChallenge.requirements.requiresNominee && (
                   <div>
