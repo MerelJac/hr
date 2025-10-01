@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
+import { handleApiError } from "@/lib/handleApiError";
 
 export async function POST(req: Request) {
   try {
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true, userId: user.id });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message ?? "Server error" }, { status: 500 });
+  }  catch (e: unknown) {
+      return handleApiError(e);
+    }
   }
-}

@@ -1,4 +1,4 @@
-import { NominationChallenge } from "@prisma/client";
+import { ChallengeRequirements } from "./challenge";
 
 export type Nomination = {
   id: string;
@@ -19,4 +19,19 @@ export type Nomination = {
     lastName?: string | null;
     email?: string | null;
   } | null;
+};
+
+export type NominationChallenge = {
+  id: string;
+  title: string;
+  description?: string | null;
+  qualification?: string | null;
+  isActive: boolean;
+  gifUrl?: string | null;
+  startDate: string | Date;
+  endDate: string | Date;
+  points: number;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  requirements?: ChallengeRequirements;
 };

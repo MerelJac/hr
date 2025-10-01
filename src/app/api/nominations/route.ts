@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { monthKeyFromDate } from "@/lib/nomination-constants";
 import { User } from "@/types/user";
-import { ChallengeRequirements } from "@/types/challengeRequirements";
+import { ChallengeRequirements } from "@/types/challenge";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);

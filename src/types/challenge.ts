@@ -1,5 +1,5 @@
 import { Nomination } from "./nomination";
-import { ChallengeRequirements } from "./challengeRequirements";
+
 export type Challenge = {
   id: string;
   title: string;
@@ -12,4 +12,11 @@ export type Challenge = {
   gifUrl?: string | null;
   requirements?: ChallengeRequirements;
   nominations?: Nomination[];
+};
+
+export type ChallengeRequirements = {
+  requiresNominee?: boolean;
+  requiresReason?: boolean;
+  requiresScreenshot?: boolean;
+  requiresPostUrl?: boolean;
 };

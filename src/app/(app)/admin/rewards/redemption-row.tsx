@@ -1,8 +1,9 @@
 "use client";
 
+import { Redemption } from "@/types/redepmtion";
 import { useEffect, useState } from "react";
 
-export default function RedemptionRow({ r }: { r: any }) {
+export default function RedemptionRow({ r }: { r: Redemption }) {
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState("");
   const [claimUrl, setClaimUrl] = useState("");

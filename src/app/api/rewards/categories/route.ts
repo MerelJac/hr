@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { handleApiError } from "@/lib/handleApiError";
 
 // GET all categories
 export async function GET() {
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
       data: { name },
     });
     return NextResponse.json(cat);
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
-  }
+  } catch (e: unknown) {
+      return handleApiError(e);
+    }
 }

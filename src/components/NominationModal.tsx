@@ -1,7 +1,7 @@
 "use client";
 
 import { Challenge } from "@/types/challenge";
-import { User } from "@/types/user";
+import { LightUser } from "@/types/user";
 import { Rocket } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -17,7 +17,7 @@ export default function NominationModal({
   users,
   challenges = [],
 }: {
-  users: User[];
+  users: LightUser[];
   challenges: Challenge[];
 }) {
   const [open, setOpen] = useState(false);

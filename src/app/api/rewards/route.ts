@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { handleApiError } from "@/lib/handleApiError";
 
 // GET all rewards
 export async function GET() {
@@ -26,7 +27,7 @@ export async function POST(req: Request) {
       },
     });
     return NextResponse.json(reward);
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
-  }
+  } catch (e: unknown) {
+      return handleApiError(e);
+    }
 }

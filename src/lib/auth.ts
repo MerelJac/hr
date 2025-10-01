@@ -1,8 +1,9 @@
 // src/lib/auth.ts
-import type { NextAuthOptions, Session } from "next-auth";
+import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import { compare } from "bcryptjs";
+import { User } from "@/types/user";
 
 // Extend the Session type to include id, role, and isActive
 declare module "next-auth" {
@@ -62,23 +63,25 @@ export const authOptions: NextAuthOptions = {
   ],
   // Optional: customize JWT/user fields
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.sub = user.id as string;
-        token.email = user.email as string;
-        token.name = user.name;
-        token.role = (user as any).role;
-        token.isActive = (user as any).isActive;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.sub as string;
-        (session.user as any).role = token.role;
-        (session.user as any).isActive = token.isActive;
-      }
-      return session;
-    },
+  async jwt({ token, user }) {
+    if (user) {
+      token.id = user.id;
+      token.email = user.email ?? undefined;
+      token.name = user.name ?? undefined;
+      token.role = (user as User).role;
+      token.isActive = (user as User).isActive;
+    }
+    return token;
   },
+
+  async session({ session, token }) {
+    if (session.user) {
+      session.user.id = token.id;
+      session.user.role = token.role;
+      session.user.isActive = token.isActive;
+    }
+    return session;
+  },
+},
+
 };

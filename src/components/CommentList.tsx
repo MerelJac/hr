@@ -1,12 +1,19 @@
 "use client";
+import { Comment } from "@/types/comment";
+import { User } from "@/types/user";
 import { useState, useEffect } from "react";
 
+type CommentListProps = {
+  recognitionId: string;
+  users: User[];
+  defaultRecipientId?: string;
+};
 export default function CommentList({
   recognitionId,
   users,
   defaultRecipientId,
-}: any) {
-  const [comments, setComments] = useState<any[]>([]);
+}: CommentListProps) {
+  const [comments, setComments] = useState<Comment[]>([]);
   const [message, setMessage] = useState("");
   const [points, setPoints] = useState(0);
   const [error, setError] = useState("");
@@ -85,9 +92,9 @@ export default function CommentList({
           >
             {!defaultRecipientId && <option value="">Who</option>}
 
-            {users.map((u: any) => (
+            {users.map((u: User) => (
               <option key={u.id} value={u.id}>
-                {u.label}
+                {u.preferredName ?? `${u.firstName ?? ""} ${u.lastName ?? ""}`}
               </option>
             ))}
           </select>

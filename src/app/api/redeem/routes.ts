@@ -2,25 +2,33 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { User } from "@/types/user";
+import { handleApiError } from "@/lib/handleApiError";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  const user = session?.user as any;
-  if (!user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const user = session?.user as User;
+  if (!user?.id)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { type, amount, deliverEmail, idemKey } = await req.json();
-  if (!type || !amount) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+  if (!type || !amount)
+    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
   // $1 = 10 points
   const pointsCost = amount * 10;
   if (amount < 10 || amount % 5 !== 0) {
-    return NextResponse.json({ error: "Minimum $10, increments of $5" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Minimum $10, increments of $5" },
+      { status: 400 }
+    );
   }
 
   try {
     const redemption = await prisma.$transaction(async (tx) => {
       const me = await tx.user.findUnique({ where: { id: user.id } });
-      if (!me || me.pointsBalance < pointsCost) throw new Error("Not enough points");
+      if (!me || me.pointsBalance < pointsCost)
+        throw new Error("Not enough points");
 
       // Deduct points
       await tx.user.update({
@@ -33,6 +41,10 @@ export async function POST(req: Request) {
         where: { type, label: { endsWith: "Custom" } },
       });
       if (!catalog) throw new Error("No catalog template found");
+
+      if (!user?.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
 
       // Create redemption
       return tx.redemption.create({
@@ -50,7 +62,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ ok: true, redemption });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message ?? "Failed to redeem" }, { status: 400 });
+  } catch (e: unknown) {
+    return handleApiError(e);
   }
 }

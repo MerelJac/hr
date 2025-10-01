@@ -1,12 +1,13 @@
 "use client";
 
+import { User } from "@/types/user";
 import { useState } from "react";
 
-export default function UsersList({ users }: { users: any[] }) {
+export default function UsersList({ users }: { users: User[] }) {
   const [open, setOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  function openEditModal(user: any) {
+  function openEditModal(user: User) {
     setSelectedUser(user);
     setOpen(true);
   }

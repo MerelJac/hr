@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { handleApiError } from "@/lib/handleApiError";
 
 // UPDATE category
 export async function PATCH(
@@ -13,10 +14,10 @@ export async function PATCH(
       data: { name },
     });
     return NextResponse.json(cat);
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  }  catch (e: unknown) {
+      return handleApiError(e);
+    }
   }
-}
 
 // DELETE category
 export async function DELETE(
@@ -28,7 +29,7 @@ export async function DELETE(
       where: { id: params.id },
     });
     return NextResponse.json({ success: true });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  } catch (e: unknown) {
+      return handleApiError(e);
+    }
   }
-}

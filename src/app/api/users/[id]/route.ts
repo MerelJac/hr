@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";   // your singleton client
+import { Prisma, Role } from "@prisma/client"; // Prisma types & enums
+
 
 async function requireSuper() {
   const session = await getServerSession(authOptions);
@@ -22,8 +24,17 @@ export async function PATCH(
   const body = await req.json();
 
   // build update data object
-  const data: any = {};
-  if (body.role) data.role = body.role;
+  const data: Prisma.UserUpdateInput = {}; // ✅ use Prisma type
+
+  if (body.role) {
+    // cast incoming string to Role enum
+    if (Object.values(Role).includes(body.role)) {
+      data.role = body.role as Role;
+    } else {
+      return NextResponse.json({ error: "Invalid role" }, { status: 400 });
+    }
+  }
+  
   if (typeof body.isActive === "boolean") data.isActive = body.isActive;
 
   if (body.firstName !== undefined) data.firstName = body.firstName;
@@ -32,6 +43,7 @@ export async function PATCH(
   if (body.department !== undefined) data.department = body.department;
   if (body.birthday) data.birthday = new Date(body.birthday);
   if (body.workAnniversary) data.workAnniversary = new Date(body.workAnniversary);
+    if (body.isActive !== undefined) data.isActive = body.isActive;
 
   if (Object.keys(data).length === 0) {
     return NextResponse.json({ error: "No changes provided" }, { status: 400 });

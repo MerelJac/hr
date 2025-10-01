@@ -9,9 +9,17 @@ export type User = {
   email?: string;
   profileImage?: string;
   department?: string;
-  birthday?: string;
-  workAnniversary?: string;
+  birthday?: string | Date;
+  workAnniversary?: string | Date;
   role?: string;
-  isActive?: boolean;
+  isActive: boolean;
   submittedNominations?: Nomination[];
+};
+
+export type LightUser = {
+  id: string;
+  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  preferredName?: string | null; // optional if you want
 };

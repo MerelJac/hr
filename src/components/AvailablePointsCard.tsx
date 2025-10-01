@@ -4,10 +4,11 @@ import { authOptions } from "@/lib/auth";
 import { getAvailablePoints } from "@/lib/recognition";
 import { MoveRight } from "lucide-react";
 import Link from "next/link";
+import { User } from "@/types/user";
 
 export default async function AvailablePointsCard() {
   const session = await getServerSession(authOptions);
-  const me = session?.user as any;
+  const me = session?.user as User;
   if (!me?.id) return null;
 
   const available = await getAvailablePoints(me.id);

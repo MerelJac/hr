@@ -4,10 +4,11 @@ import { authOptions } from "@/lib/auth";
 import { getAvailableRedeemPoints } from "@/lib/rewards";
 import Link from "next/link";
 import { MoveRight } from "lucide-react";
+import { User } from "@/types/user";
 
 export default async function AvailableRedeemPointsCard() {
   const session = await getServerSession(authOptions);
-  const me = session?.user as any;
+  const me = session?.user as User;
   if (!me?.id) return null;
 
   const available = await getAvailableRedeemPoints(me.id);

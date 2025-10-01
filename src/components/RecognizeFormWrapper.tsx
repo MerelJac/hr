@@ -3,10 +3,11 @@ import { getAvailablePoints } from "@/lib/recognition";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import RecognizeForm from "./RecognizeForm";
+import { User } from "@/types/user";
 
 export default async function RecognizeFormWrapper() {
   const session = await getServerSession(authOptions);
-  const me = session?.user as any;
+  const me = session?.user as User;
   if (!me?.id) return <div className="p-6">Please sign in.</div>;
 
   const [users, available] = await Promise.all([

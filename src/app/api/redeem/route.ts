@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { User } from "@/types/user";
+import { handleApiError } from "@/lib/handleApiError";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  const user = session?.user as any;
+  const user = session?.user as User;
   if (!user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { type, amount, deliverEmail, idemKey } = await req.json();
@@ -34,6 +36,9 @@ export async function POST(req: Request) {
       });
       if (!catalog) throw new Error("No catalog template found");
 
+if (!user?.id) {
+  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+}
       // Create redemption
       return tx.redemption.create({
         data: {
@@ -50,7 +55,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ ok: true, redemption });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message ?? "Failed to redeem" }, { status: 400 });
-  }
+  } catch (e: unknown) {
+      return handleApiError(e);
+    }
 }

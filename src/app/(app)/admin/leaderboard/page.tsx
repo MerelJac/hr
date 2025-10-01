@@ -2,10 +2,11 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import LeaderboardClient from "./leaderboard-client";
+import { User } from "@/types/user";
 
 export default async function LeaderboardPage() {
   const session = await getServerSession(authOptions);
-  if ((session?.user as any)?.role !== "SUPER_ADMIN") {
+  if ((session?.user as User)?.role !== "SUPER_ADMIN") {
     return <div className="p-6">Forbidden</div>;
   }
 

@@ -2,10 +2,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import RedeemClient from "./redeem-client";
+import { User } from "@/types/user";
 
 export default async function RewardsPage() {
   const session = await getServerSession(authOptions);
-  const me = session?.user as any;
+  const me = session?.user as User;
   if (!me?.id) return <div className="p-6">Please sign in.</div>;
 
   const [user, history, categories] = await Promise.all([

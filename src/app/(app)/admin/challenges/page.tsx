@@ -22,6 +22,7 @@ export default async function ChallengesAdminPage() {
       isActive: true,
       startDate: true,
       endDate: true,
+      gifUrl: true, 
       points: true,
       requirements: true,
       nominations: {

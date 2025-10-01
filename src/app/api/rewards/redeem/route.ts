@@ -4,10 +4,12 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
 import { inviteTemplate } from "@/lib/emailTemplates";
+import { User } from "@/types/user";
+import { handleApiError } from "@/lib/handleApiError";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  const user = session?.user as any;
+  const user = session?.user as User;
   if (!user?.id)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -34,6 +36,9 @@ export async function POST(req: Request) {
         if (existing) return existing;
       }
 
+      if (!user?.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
       const r = await tx.redemption.create({
         data: {
           userId: user.id,
@@ -60,10 +65,7 @@ export async function POST(req: Request) {
     // await sendEmail({ to: email, ...template });
 
     return NextResponse.json({ ok: true, redemption });
-  } catch (e: any) {
-    return NextResponse.json(
-      { error: e.message ?? "Failed to redeem" },
-      { status: 400 }
-    );
+  } catch (e: unknown) {
+    return handleApiError(e);
   }
 }

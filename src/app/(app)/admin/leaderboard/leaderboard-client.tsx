@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { LeaderboardData, LeaderboardRow } from "@/types/leaderboard";
 export default function LeaderboardClient() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<LeaderboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [range, setRange] = useState<"month" | "3months" | "all">("month");
 
@@ -87,13 +88,24 @@ export default function LeaderboardClient() {
   );
 }
 
-function LeaderboardTable({ title, rows, field }: any) {
+function LeaderboardTable({
+  title,
+  rows,
+  field,
+}: {
+  title: string;
+  rows: LeaderboardRow[];
+  field: "points" | "count";
+}) {
   return (
     <div className="border rounded-xl p-4 bg-white">
       <h2 className="text-lg font-semibold mb-3">{title}</h2>
       <ul className="space-y-2">
-        {rows.map((r: any, i: number) => (
-          <li key={r.user?.id || i} className="flex justify-between items-center">
+        {rows.map((r, i: number) => (
+          <li
+            key={r.user?.id || i}
+            className="flex justify-between items-center"
+          >
             <span className="flex flex-row items-center justify-start gap-2">
               <Image
                 src={r.user?.profileImage ?? "/default-profile-image.svg"}
