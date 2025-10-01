@@ -8,7 +8,7 @@ jest.mock("@/lib/prisma", () => ({
   prisma: {
     user: { update: jest.fn() },
     recognitionComment: { create: jest.fn(), findMany: jest.fn() },
-    $transaction: (fn: any) => fn(prisma),
+    $transaction: <T>(fn: (tx: unknown) => T) => fn(prisma),
   },
 }));
 

@@ -7,7 +7,7 @@ jest.mock("@/lib/prisma", () => ({
   prisma: {
     user: { update: jest.fn(), delete: jest.fn() },
     session: { deleteMany: jest.fn() },
-    $transaction: (fn: any) => fn(prisma),
+    $transaction: <T>(fn: (tx: unknown) => T) => fn(prisma),
   },
 }));
 
@@ -21,14 +21,17 @@ jest.mock("next-auth", () => ({
 
 describe("PATCH /api/users/[id]", () => {
   it("should update role and deactivate sessions", async () => {
-    (prisma.user.update as jest.Mock).mockResolvedValue({ id: "123", isActive: false });
+    (prisma.user.update as jest.Mock).mockResolvedValue({
+      id: "123",
+      isActive: false,
+    });
 
     const req = new Request("http://localhost", {
       method: "PATCH",
       body: JSON.stringify({ role: "EMPLOYEE", isActive: false }),
     });
 
-    const res = await PATCH(req, { params: Promise.resolve({ id: "123" }) });
+    const res = await PATCH(req, { params: { id: "123" } });
 
     const json = await res.json();
 
@@ -36,7 +39,9 @@ describe("PATCH /api/users/[id]", () => {
     expect(prisma.user.update).toHaveBeenCalledWith(
       expect.objectContaining({ where: { id: "123" } })
     );
-    expect(prisma.session.deleteMany).toHaveBeenCalledWith({ where: { userId: "123" } });
+    expect(prisma.session.deleteMany).toHaveBeenCalledWith({
+      where: { userId: "123" },
+    });
   });
 });
 
@@ -46,12 +51,14 @@ describe("DELETE /api/users/[id]", () => {
 
     const req = new Request("http://localhost", { method: "DELETE" });
 
-    const res = await DELETE(req, { params: Promise.resolve({ id: "123" }) });
+    const res = await DELETE(req, { params: { id: "123" } });
 
     const json = await res.json();
 
     expect(json.ok).toBe(true);
-    expect(prisma.session.deleteMany).toHaveBeenCalledWith({ where: { userId: "123" } });
+    expect(prisma.session.deleteMany).toHaveBeenCalledWith({
+      where: { userId: "123" },
+    });
     expect(prisma.user.delete).toHaveBeenCalledWith({ where: { id: "123" } });
   });
 });

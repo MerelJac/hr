@@ -59,14 +59,14 @@ export default async function FeedPage() {
     },
   });
 
-  function name(u: any) {
+  function name(u: User) {
     const full = [u.firstName, u.lastName].filter(Boolean).join(" ");
     return full || u.email;
   }
 
   const users = await prisma.user.findMany({
-    where: { id: { not: me.id }, role: "EMPLOYEE" },
-    select: { id: true, firstName: true, lastName: true, email: true },
+    where: { id: { not: me.id }, role: "EMPLOYEE", isActive: true },
+    select: { id: true, firstName: true, lastName: true, email: true , isActive: true},
   });
 
   const simpleUsers = users.map((u) => ({ id: u.id, label: name(u) }));

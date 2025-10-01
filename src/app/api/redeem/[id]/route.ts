@@ -2,14 +2,17 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { handleApiError } from "@/lib/handleApiError";
 
-export async function PATCH(req: Request, context: any) {
-  // works whether params is {id} or Promise<{id}>
-  const { id } = (await context.params) ?? {};
+export async function PATCH(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
   type User = {
     id: string;
     email?: string;
-    firstName?: string;
+    firstName?: string; 
     lastName?: string;
     role?: string;
     // add other properties as needed
@@ -52,7 +55,7 @@ export async function PATCH(req: Request, context: any) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  } catch (e: unknown) {
+      return handleApiError(e);
+    }
   }
-}

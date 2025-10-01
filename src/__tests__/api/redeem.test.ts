@@ -9,7 +9,7 @@ jest.mock("@/lib/prisma", () => ({
     user: { findUnique: jest.fn(), update: jest.fn() },
     rewardCatalog: { findFirst: jest.fn() },
     redemption: { create: jest.fn() },
-    $transaction: (fn: any) => fn(prisma),
+    $transaction: <T>(fn: (tx: unknown) => T) => fn(prisma),
   },
 }));
 
@@ -66,7 +66,10 @@ describe("POST /api/redeem", () => {
 
   it("should return 400 if user does not have enough points", async () => {
     mockedGetServerSession.mockResolvedValueOnce({ user: { id: "u1" } });
-    (prisma.user.findUnique as jest.Mock).mockResolvedValueOnce({ id: "u1", pointsBalance: 50 });
+    (prisma.user.findUnique as jest.Mock).mockResolvedValueOnce({
+      id: "u1",
+      pointsBalance: 50,
+    });
 
     const req = new Request("http://localhost/api/redeem", {
       method: "POST",
@@ -81,7 +84,11 @@ describe("POST /api/redeem", () => {
 
   it("should return 400 if no catalog found", async () => {
     mockedGetServerSession.mockResolvedValueOnce({ user: { id: "u1" } });
-    (prisma.user.findUnique as jest.Mock).mockResolvedValueOnce({ id: "u1", pointsBalance: 1000, email: "me@test.com" });
+    (prisma.user.findUnique as jest.Mock).mockResolvedValueOnce({
+      id: "u1",
+      pointsBalance: 1000,
+      email: "me@test.com",
+    });
     (prisma.rewardCatalog.findFirst as jest.Mock).mockResolvedValueOnce(null);
 
     const req = new Request("http://localhost/api/redeem", {
@@ -97,9 +104,18 @@ describe("POST /api/redeem", () => {
 
   it("should create redemption if valid", async () => {
     mockedGetServerSession.mockResolvedValueOnce({ user: { id: "u1" } });
-    (prisma.user.findUnique as jest.Mock).mockResolvedValueOnce({ id: "u1", pointsBalance: 1000, email: "me@test.com" });
-    (prisma.rewardCatalog.findFirst as jest.Mock).mockResolvedValueOnce({ id: "cat1" });
-    (prisma.redemption.create as jest.Mock).mockResolvedValueOnce({ id: "red1", status: "PENDING" });
+    (prisma.user.findUnique as jest.Mock).mockResolvedValueOnce({
+      id: "u1",
+      pointsBalance: 1000,
+      email: "me@test.com",
+    });
+    (prisma.rewardCatalog.findFirst as jest.Mock).mockResolvedValueOnce({
+      id: "cat1",
+    });
+    (prisma.redemption.create as jest.Mock).mockResolvedValueOnce({
+      id: "red1",
+      status: "PENDING",
+    });
 
     const req = new Request("http://localhost/api/redeem", {
       method: "POST",
