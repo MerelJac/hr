@@ -1,6 +1,7 @@
 // __tests__/api/comments.test.ts
 import { POST, GET } from "@/app/api/comments/route";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 
 // mock prisma
@@ -41,7 +42,9 @@ describe("POST /api/comments", () => {
 
   it("should create a comment without points", async () => {
     mockedGetServerSession.mockResolvedValueOnce({ user: { id: "sender1" } });
-    (prisma.recognitionComment.create as jest.Mock).mockResolvedValueOnce({ id: "c1" });
+    (prisma.recognitionComment.create as jest.Mock).mockResolvedValueOnce({
+      id: "c1",
+    });
 
     const req = new Request("http://localhost", {
       method: "POST",
@@ -76,7 +79,9 @@ describe("POST /api/comments", () => {
     (prisma.user.update as jest.Mock)
       .mockResolvedValueOnce({ id: "sender1", pointsBalance: 5 }) // sender update
       .mockResolvedValueOnce({ id: "user2", pointsBalance: 15 }); // recipient update
-    (prisma.recognitionComment.create as jest.Mock).mockResolvedValueOnce({ id: "c2" });
+    (prisma.recognitionComment.create as jest.Mock).mockResolvedValueOnce({
+      id: "c2",
+    });
 
     const req = new Request("http://localhost", {
       method: "POST",
@@ -112,7 +117,9 @@ describe("POST /api/comments", () => {
   it("should return 400 if sender doesn’t have enough points", async () => {
     mockedGetServerSession.mockResolvedValueOnce({ user: { id: "sender1" } });
 
-    (prisma.user.update as jest.Mock).mockResolvedValueOnce({ pointsBalance: -1 });
+    (prisma.user.update as jest.Mock).mockResolvedValueOnce({
+      pointsBalance: -1,
+    });
 
     const req = new Request("http://localhost", {
       method: "POST",
@@ -134,7 +141,13 @@ describe("POST /api/comments", () => {
   it("should return 404 on P2025 error", async () => {
     mockedGetServerSession.mockResolvedValueOnce({ user: { id: "sender1" } });
 
-    (prisma.user.update as jest.Mock).mockRejectedValueOnce({ code: "P2025", meta: { cause: "not found" } });
+    (prisma.user.update as jest.Mock).mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError("Record not found", {
+        code: "P2025",
+        clientVersion: "4.15.0", // any string, required by ctor
+        meta: { cause: "not found" },
+      })
+    );
 
     const req = new Request("http://localhost", {
       method: "POST",
@@ -155,7 +168,9 @@ describe("POST /api/comments", () => {
 
   it("should return 500 on unexpected error", async () => {
     mockedGetServerSession.mockResolvedValueOnce({ user: { id: "sender1" } });
-    (prisma.recognitionComment.create as jest.Mock).mockRejectedValueOnce(new Error("DB exploded"));
+    (prisma.recognitionComment.create as jest.Mock).mockRejectedValueOnce(
+      new Error("DB exploded")
+    );
 
     const req = new Request("http://localhost", {
       method: "POST",

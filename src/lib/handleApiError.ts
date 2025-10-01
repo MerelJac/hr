@@ -1,6 +1,7 @@
 // lib/handleApiError.ts
 import { NextResponse } from "next/server";
 import { AppError } from "./errors";
+import { Prisma } from "@prisma/client";
 
 export function handleApiError(e: unknown) {
   if (e instanceof AppError) {
@@ -8,6 +9,15 @@ export function handleApiError(e: unknown) {
       { error: e.message, code: e.code },
       { status: e.status }
     );
+  }
+
+  if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    if (e.code === "P2025") {
+      return NextResponse.json({ error: "Record not found" }, { status: 404 });
+    }
+    if (e.code === "P2002") {
+      return NextResponse.json({ error: "Unique constraint violation" }, { status: 409 });
+    }
   }
 
   if (e instanceof Error) {
