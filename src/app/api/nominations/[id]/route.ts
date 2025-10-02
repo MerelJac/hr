@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -6,10 +6,10 @@ import { EOM_WINNER_POINTS } from "@/lib/nomination-constants";
 import { handleApiError } from "@/lib/handleApiError";
 
 export async function PATCH(
-  req: Request,
-  context: { params: { id: string } }
+  req: NextRequest,
+  { params }: { params: Awaited<{ id: string }> }
 ) {
-  const { id } = context.params;
+  const { id } = params;
 
   const session = await getServerSession(authOptions);
   interface SessionUser {

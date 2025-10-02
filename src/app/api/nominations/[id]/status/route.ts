@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -6,8 +6,8 @@ import { User } from "@/types/user";
 import { Nomination } from "@/types/nomination";
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+ { params }: { params: Awaited<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if ((session?.user as User)?.role !== "SUPER_ADMIN") {

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";   // your singleton client
@@ -12,8 +12,8 @@ async function requireSuper() {
 }
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  { params }: { params: Awaited<{ id: string }> }
 ) {
   const userId = params.id;
   const session = await requireSuper();
@@ -68,7 +68,7 @@ export async function PATCH(
 
 export async function DELETE(
   _req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Awaited<{ id: string }> }
 ) {
   const userId = params.id;
 

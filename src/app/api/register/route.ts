@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import { handleApiError } from "@/lib/handleApiError";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const { firstName, lastName, email, password } = await req.json();
 

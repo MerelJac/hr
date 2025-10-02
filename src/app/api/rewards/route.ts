@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { handleApiError } from "@/lib/handleApiError";
 
@@ -12,7 +12,7 @@ export async function GET() {
 }
 
 // CREATE reward
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const { label, categoryId, valueCents, pointsCost, isActive } =
       await req.json();

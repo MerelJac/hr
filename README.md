@@ -27,3 +27,42 @@ to run after adjusting schema.prisma
 Dev → file:./dev.db → SQLite file stored locally in your project.
 
 Prod → Switch your .env DATABASE_URL to something like PostgreSQL or MySQL (e.g. on Supabase, PlanetScale, Neon, or RDS).
+
+
+## 🔹 Workflow for Database Changes
+1. In Dev (local or Amplify dev env)
+
+When you change your Prisma schema (prisma/schema.prisma), you generate & apply a new migration against your dev DB.
+
+npx prisma migrate dev --name add_user_invites
+
+
+Creates a new SQL migration in prisma/migrations/xxxx_add_user_invites/.
+
+Applies it to your Neon dev database immediately.
+
+Updates Prisma Client.
+
+You can repeat this workflow as much as you want in dev.
+
+2. Push to GitHub → Amplify Dev Build
+
+Amplify builds your branch (e.g. dev).
+
+It will run migrations if you include migrate deploy in amplify.yml (I’ll show this below).
+
+Your dev environment stays in sync automatically.
+
+3. Promote Migration to Prod
+
+Once you’re happy with the change:
+
+Commit & push your migration file (prisma/migrations/...) to your repo.
+
+Merge to main (or your prod branch).
+
+Amplify prod build kicks in:
+
+Runs npx prisma migrate deploy (not dev!)
+
+That safely applies all pending migrations to the prod Neon DB.

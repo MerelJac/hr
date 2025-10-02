@@ -2,10 +2,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { compare, hash } from "bcryptjs";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { handleApiError } from "@/lib/handleApiError";
 
-export async function PATCH(req: Request) {
+export async function PATCH(req: NextRequest) {
   try {
     // Ensure user is logged in
     const session = await getServerSession(authOptions);

@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { randomUUID } from "crypto";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { sendEmail } from "@/lib/email"; // your email util
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const { email } = await req.json();
   const user = await prisma.user.findUnique({ where: { email } });
 

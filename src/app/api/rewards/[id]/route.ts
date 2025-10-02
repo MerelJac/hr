@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { User } from "@/types/user";
 import { handleApiError } from "@/lib/handleApiError";
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest,  { params }: { params: Awaited<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const role = (session?.user as User)?.role;
   if (role !== "SUPER_ADMIN") {
@@ -26,7 +26,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
 }
 
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest,  { params }: { params: Awaited<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const role = (session?.user as User)?.role;
   if (role !== "SUPER_ADMIN") {

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -7,7 +7,7 @@ import { inviteTemplate } from "@/lib/emailTemplates";
 import { User } from "@/types/user";
 import { handleApiError } from "@/lib/handleApiError";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   const user = session?.user as User;
   if (!user?.id)

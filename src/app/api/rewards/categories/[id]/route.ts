@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { handleApiError } from "@/lib/handleApiError";
 
 // UPDATE category
 export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+ { params }: { params: Awaited<{ id: string }> }
 ) {
   try {
     const { name } = await req.json();
@@ -21,8 +21,8 @@ export async function PATCH(
 
 // DELETE category
 export async function DELETE(
-  _req: Request,
-  { params }: { params: { id: string } }
+  _req: NextRequest,
+ { params }: { params: Awaited<{ id: string }> }
 ) {
   try {
     await prisma.rewardCategory.delete({
