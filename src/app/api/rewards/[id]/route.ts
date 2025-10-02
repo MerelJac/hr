@@ -5,18 +5,23 @@ import { prisma } from "@/lib/prisma";
 import { User } from "@/types/user";
 import { handleApiError } from "@/lib/handleApiError";
 
-export async function PATCH(req: NextRequest,  { params }: { params: Awaited<{ id: string }> }) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   const session = await getServerSession(authOptions);
+  const { id } = await params;
   const role = (session?.user as User)?.role;
   if (role !== "SUPER_ADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   try {
-    const { label, categoryId, valueCents, pointsCost, isActive } = await req.json();
+    const { label, categoryId, valueCents, pointsCost, isActive } =
+      await req.json();
 
     const reward = await prisma.rewardCatalog.update({
-      where: { id: params.id },
+      where: { id },
       data: { label, categoryId, valueCents, pointsCost, isActive },
     });
 
@@ -26,7 +31,11 @@ export async function PATCH(req: NextRequest,  { params }: { params: Awaited<{ i
   }
 }
 
-export async function DELETE(_req: NextRequest,  { params }: { params: Awaited<{ id: string }> }) {
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   const role = (session?.user as User)?.role;
   if (role !== "SUPER_ADMIN") {
@@ -34,7 +43,7 @@ export async function DELETE(_req: NextRequest,  { params }: { params: Awaited<{
   }
 
   try {
-    await prisma.rewardCatalog.delete({ where: { id: params.id } });
+    await prisma.rewardCatalog.delete({ where: { id } });
     return NextResponse.json({ ok: true });
   } catch (e: unknown) {
     return handleApiError(e);

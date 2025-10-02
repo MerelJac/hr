@@ -7,14 +7,15 @@ import { Nomination } from "@/types/nomination";
 
 export async function PATCH(
   req: NextRequest,
- { params }: { params: Awaited<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   if ((session?.user as User)?.role !== "SUPER_ADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { status }: { status: Nomination["status"]} = await req.json();
+  const { status }: { status: Nomination["status"] } = await req.json();
 
   // validate input
   if (!["APPROVED", "REJECTED"].includes(status)) {
@@ -22,7 +23,7 @@ export async function PATCH(
   }
 
   const nomination = await prisma.nomination.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { challenge: true, submitter: true, nominee: true },
   });
 
@@ -35,7 +36,7 @@ export async function PATCH(
 
   const updated = await prisma.$transaction(async (tx) => {
     const updatedNomination = await tx.nomination.update({
-      where: { id: params.id },
+      where: { id },
       data: { status },
     });
 

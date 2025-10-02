@@ -11,5 +11,5 @@ export type Reward = {
   label: string;
   pointsCost: number;
   imageUrl: string | null;
-  category: RewardCategory; // required and always loaded
+  category?: RewardCategory;
 };

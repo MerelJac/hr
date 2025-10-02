@@ -11,7 +11,7 @@ export type Challenge = {
   points: number;
   gifUrl?: string | null;
   requirements?: ChallengeRequirements;
-  nominations?: Nomination[];
+  nominations?: ChallengeNominationLite[];
 };
 
 export type ChallengeRequirements = {
@@ -19,4 +19,9 @@ export type ChallengeRequirements = {
   requiresReason?: boolean;
   requiresScreenshot?: boolean;
   requiresPostUrl?: boolean;
+};
+
+export type ChallengeNominationLite = {
+  id: string;
+  status: string; // or NominationStatus
 };

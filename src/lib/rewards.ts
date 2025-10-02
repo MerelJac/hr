@@ -79,7 +79,7 @@ export async function listMyRedemptions(userId: string) {
   return prisma.redemption.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
-    include: { catalog: true },
+    include: { catalog: true, user: true },
   });
 }
 

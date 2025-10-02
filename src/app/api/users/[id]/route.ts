@@ -1,21 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";   // your singleton client
+import { prisma } from "@/lib/prisma"; // your singleton client
 import { Prisma, Role } from "@prisma/client"; // Prisma types & enums
-
 
 async function requireSuper() {
   const session = await getServerSession(authOptions);
   type UserWithRole = { role?: string };
-  return (session?.user as UserWithRole)?.role === "SUPER_ADMIN" ? session : null;
+  return (session?.user as UserWithRole)?.role === "SUPER_ADMIN"
+    ? session
+    : null;
 }
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Awaited<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const userId = params.id;
+  const { id } = await params;
   const session = await requireSuper();
   if (!session) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -34,7 +35,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
   }
-  
+
   if (typeof body.isActive === "boolean") data.isActive = body.isActive;
 
   if (body.firstName !== undefined) data.firstName = body.firstName;
@@ -42,8 +43,9 @@ export async function PATCH(
   if (body.preferredName !== undefined) data.preferredName = body.preferredName;
   if (body.department !== undefined) data.department = body.department;
   if (body.birthday) data.birthday = new Date(body.birthday);
-  if (body.workAnniversary) data.workAnniversary = new Date(body.workAnniversary);
-    if (body.isActive !== undefined) data.isActive = body.isActive;
+  if (body.workAnniversary)
+    data.workAnniversary = new Date(body.workAnniversary);
+  if (body.isActive !== undefined) data.isActive = body.isActive;
 
   if (Object.keys(data).length === 0) {
     return NextResponse.json({ error: "No changes provided" }, { status: 400 });
@@ -51,13 +53,13 @@ export async function PATCH(
 
   const result = await prisma.$transaction(async (tx) => {
     const updated = await tx.user.update({
-      where: { id: userId },
+      where: { id },
       data,
     });
 
     // if user is deactivated, clear their sessions
     if (data.isActive === false) {
-      await tx.session.deleteMany({ where: { userId } });
+      await tx.session.deleteMany({ where: { id } });
     }
 
     return updated;
@@ -68,9 +70,9 @@ export async function PATCH(
 
 export async function DELETE(
   _req: Request,
-  { params }: { params: Awaited<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const userId = params.id;
+  const { id } = await params;
 
   const session = await requireSuper();
   if (!session) {
@@ -78,8 +80,8 @@ export async function DELETE(
   }
 
   await prisma.$transaction(async (tx) => {
-    await tx.session.deleteMany({ where: { userId } });
-    await tx.user.delete({ where: { id: userId } });
+    await tx.session.deleteMany({ where: { id } });
+    await tx.user.delete({ where: { id } });
   });
 
   return NextResponse.json({ ok: true });

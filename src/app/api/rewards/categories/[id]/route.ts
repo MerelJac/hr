@@ -5,31 +5,33 @@ import { handleApiError } from "@/lib/handleApiError";
 // UPDATE category
 export async function PATCH(
   req: NextRequest,
- { params }: { params: Awaited<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { name } = await req.json();
     const cat = await prisma.rewardCategory.update({
-      where: { id: params.id },
+      where: { id },
       data: { name },
     });
     return NextResponse.json(cat);
-  }  catch (e: unknown) {
-      return handleApiError(e);
-    }
+  } catch (e: unknown) {
+    return handleApiError(e);
   }
+}
 
 // DELETE category
 export async function DELETE(
   _req: NextRequest,
- { params }: { params: Awaited<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     await prisma.rewardCategory.delete({
-      where: { id: params.id },
+      where: { id },
     });
     return NextResponse.json({ success: true });
   } catch (e: unknown) {
-      return handleApiError(e);
-    }
+    return handleApiError(e);
   }
+}

@@ -6,9 +6,9 @@ import { handleApiError } from "@/lib/handleApiError";
 
 export async function PATCH(
   req: NextRequest,
-   { params }: { params: Awaited<{ id: string }> }
+   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
   type User = {
     id: string;
     email?: string;

@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import ChallengeList from "./challenge-list";
 import { User } from "@/types/user";
+import { Challenge, ChallengeRequirements } from "@/types/challenge";
 
 export default async function ChallengesAdminPage() {
   const session = await getServerSession(authOptions);
@@ -12,7 +13,7 @@ export default async function ChallengesAdminPage() {
     return <div className="p-6">Forbidden</div>;
   }
 
-  const challenges = await prisma.nominationChallenge.findMany({
+  const rawChallenges = await prisma.nominationChallenge.findMany({
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
@@ -25,11 +26,17 @@ export default async function ChallengesAdminPage() {
       gifUrl: true, 
       points: true,
       requirements: true,
-      nominations: {
-        select: { id: true, status: true },
-      },
+      nominations:  {
+      select: { id: true, status: true }, // 👈 lite version
+    },
     },
   });
+
+    // Transform into Challenge[] with safe requirements
+  const challenges: Challenge[] = rawChallenges.map((c) => ({
+    ...c,
+    requirements: (c.requirements as ChallengeRequirements | null) ?? {}, // normalize
+  }));
 
   return (
     <main className="space-y-4 bg-white rounded-xl h-full">

@@ -6,8 +6,10 @@ import { User } from "@/types/user";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Awaited<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
+
   const session = await getServerSession(authOptions);
   if ((session?.user as User)?.role !== "SUPER_ADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -15,7 +17,7 @@ export async function PATCH(
 
   const body = await req.json();
   const challenge = await prisma.nominationChallenge.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       title: body.title,
       description: body.description,
@@ -34,13 +36,14 @@ export async function PATCH(
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: Awaited<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   if ((session?.user as User)?.role !== "SUPER_ADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  await prisma.nominationChallenge.delete({ where: { id: params.id } });
+  await prisma.nominationChallenge.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }

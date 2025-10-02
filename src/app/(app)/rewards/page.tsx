@@ -17,7 +17,7 @@ export default async function RewardsPage() {
     prisma.redemption.findMany({
       where: { userId: me.id },
       orderBy: { createdAt: "desc" },
-      include: { catalog: true },
+      include: { catalog: true, user: true },
       take: 20,
     }),
     prisma.rewardCategory.findMany({
