@@ -158,7 +158,7 @@ export default function ProfilePage() {
           <div className="space-y-2">
             <p><b>Name:</b> {user.firstName} {user.lastName}</p>
             <p><b>Email:</b> {user.email}</p>
-            <p><b>Work Anniversary:</b> {new Date(user.workAnniversary).toLocaleDateString()}</p>
+            <p><b>Work Anniversary:</b> {user.workAnniversary ? new Date(user.workAnniversary).toLocaleDateString() : "NA"}</p>
             {user.department && <p><b>Department:</b> {user.department}</p>}
           </div>
 
@@ -171,7 +171,7 @@ export default function ProfilePage() {
                 value={preferredName}
                 onChange={(e) => setPreferredName(e.target.value)}
                 className="border rounded-lg px-2 py-1 w-full"
-                placeholder={user.firstName}
+                placeholder={user.firstName ?? "Preferred Name"}
               />
             </div>
 
