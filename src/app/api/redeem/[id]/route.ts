@@ -48,7 +48,7 @@ export async function PATCH(
     } else if (action === "cancel") {
       await prisma.redemption.update({
         where: { id },
-        data: { status: "CANCELED" },
+        data: { status: "CANCELLED" },
       });
     } else {
       return NextResponse.json({ error: "Invalid action" }, { status: 400 });

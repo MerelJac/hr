@@ -11,7 +11,7 @@ CREATE TYPE "public"."NominationStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTE
 CREATE TYPE "public"."RewardType" AS ENUM ('AMAZON', 'VISA');
 
 -- CreateEnum
-CREATE TYPE "public"."RedemptionStatus" AS ENUM ('PENDING', 'APPROVED', 'FULFILLED', 'FAILED', 'CANCELED');
+CREATE TYPE "public"."RedemptionStatus" AS ENUM ('PENDING', 'APPROVED', 'FULFILLED', 'FAILED', 'CANCELLED');
 
 -- CreateTable
 CREATE TABLE "public"."User" (

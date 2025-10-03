@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { Redemption } from "@/types/redepmtion";
 
 type RewardWithCategory = Prisma.PromiseReturnType<
-  typeof prisma.rewardCatalog.findMany
+  typeof prisma.rewardCatalog.findMany<{ include: { category: true } }>
 >[number];
 
 type RewardCategory = Prisma.PromiseReturnType<

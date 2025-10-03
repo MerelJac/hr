@@ -157,7 +157,7 @@ enum RedemptionStatus {
   APPROVED // approved to fulfill (optional step)
   FULFILLED // provider returned a code / delivered
   FAILED
-  CANCELED
+  CANCELLED
 }
 
 model RewardCategory {

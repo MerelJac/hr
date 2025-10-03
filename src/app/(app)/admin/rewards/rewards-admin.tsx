@@ -139,7 +139,7 @@ export default function RewardsAdmin({
                 <p className="text-sm">
                   {r.category?.name === "Gift Card"
                     ? "Flexible amount"
-                    : `Value: ${(r.valueCents / 100).toFixed(2)} ${r.pointsCost} pts`}
+                    : `Value: ${(r.valueCents ?? 0 / 100).toFixed(2)} ${r.pointsCost} pts`}
                   
                 </p>
                 <span
@@ -286,7 +286,7 @@ export default function RewardsAdmin({
                   });
 
                   const { url } = await res.json();
-                  setSelected({ ...selected, imageUrl: url });
+                  setSelected({ ...selected, imageUrl: url});
                 }}
               />
               <label className="flex items-center gap-2">
