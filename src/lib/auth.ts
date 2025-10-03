@@ -19,7 +19,10 @@ declare module "next-auth" {
   }
 }
 
+console.log("NEXTAUTH_SECRET at runtime:", process.env.NEXTAUTH_SECRET);
+
 export const authOptions: NextAuthOptions = {
+  
   secret: process.env.NEXTAUTH_SECRET, // ensure set in .env
   session: { strategy: "jwt" }, // we’re not using the Session table
   pages: {
