@@ -22,5 +22,5 @@ export type LightUser = {
   email: string | null;
   firstName: string | null;
   lastName: string | null;
-  preferredName: string | null; // optional if you want
+  preferredName?: string | null; // optional if you want
 };

@@ -36,24 +36,10 @@ export default async function FeedPage() {
     orderBy: { createdAt: "desc" },
     take: 50,
     include: {
-      sender: {
-        select: {
-          firstName: true,
-          lastName: true,
-          email: true,
-          profileImage: true,
-        },
-      },
+      sender: true,
       recipients: {
         include: {
-          recipient: {
-            select: {
-              firstName: true,
-              lastName: true,
-              email: true,
-              profileImage: true,
-            },
-          },
+          recipient: true
         },
       },
     },
@@ -66,10 +52,7 @@ export default async function FeedPage() {
 
   const users = await prisma.user.findMany({
     where: { id: { not: me.id }, role: "EMPLOYEE", isActive: true },
-    select: { id: true, firstName: true, lastName: true, email: true , isActive: true},
   });
-
-  const simpleUsers = users.map((u) => ({ id: u.id, label: name(u) }));
 
   return (
     <main className="p-6 space-y-4 p-6 bg-gradient-to-t from-blue-500 to-indigo-500 h-full">
@@ -145,8 +128,7 @@ export default async function FeedPage() {
                 </li>
                 <CommentList
                   recognitionId={r.id}
-                  users={simpleUsers}
-                  currentUserId={me.id}
+                  users={users}
                   defaultRecipientId={r.recipients[0]?.id}
                 />
               </React.Fragment>
@@ -156,10 +138,7 @@ export default async function FeedPage() {
         <div id="actionItems" className="flex flex-col gap-4">
           <AvailablePointsCard />
           <AvailableRedeemPointsCard />
-          <NominationModal
-            users={simpleUsers}
-            challenges={availableChallenges}
-          />
+          <NominationModal users={users} challenges={availableChallenges} />
           <CoreValues />
         </div>
       </div>
