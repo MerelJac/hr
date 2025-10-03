@@ -24,7 +24,9 @@ export default function ManageRewards({
   rewards: RewardWithCategory[];
   categories: RewardCategory[];
 }) {
-  const [activeTab, setActiveTab] = useState<"redemption" | "manage">("redemption");
+  const [activeTab, setActiveTab] = useState<"redemption" | "manage">(
+    "redemption"
+  );
 
   return (
     <section className="space-y-6">
@@ -63,7 +65,13 @@ export default function ManageRewards({
         )}
 
         {activeTab === "manage" && (
-          <RewardsAdmin rewards={rewards} categories={categories} />
+          <RewardsAdmin
+            rewards={rewards.map((r) => ({
+              ...r,
+              valueCents: r.valueCents ?? 0, // ✅ ensure number
+            }))}
+            categories={categories}
+          />
         )}
       </div>
     </section>

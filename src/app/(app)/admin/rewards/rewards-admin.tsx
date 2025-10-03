@@ -1,5 +1,6 @@
 "use client";
 
+import { Reward } from "@/types/reward";
 import { useState } from "react";
 
 type RewardCategory = {
@@ -7,15 +8,6 @@ type RewardCategory = {
   name: string;
 };
 
-type Reward = {
-  id: string;
-  categoryId: string;
-  category: RewardCategory;
-  label: string;
-  valueCents: number;
-  pointsCost: number;
-  isActive: boolean;
-};
 
 export default function RewardsAdmin({
   rewards,
@@ -286,7 +278,8 @@ export default function RewardsAdmin({
                   });
 
                   const { url } = await res.json();
-                  setSelected({ ...selected, imageUrl: url});
+                 setSelected((prev) => prev ? { ...prev, imageUrl: url } : prev);
+
                 }}
               />
               <label className="flex items-center gap-2">
