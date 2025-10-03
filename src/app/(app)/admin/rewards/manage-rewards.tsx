@@ -5,10 +5,7 @@ import RewardsAdmin from "./rewards-admin";
 import RedemptionRow from "./redemption-row";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-
-type RedemptionWithRelations = Prisma.PromiseReturnType<
-  typeof prisma.redemption.findMany
->[number];
+import { Redemption } from "@/types/redepmtion";
 
 type RewardWithCategory = Prisma.PromiseReturnType<
   typeof prisma.rewardCatalog.findMany
@@ -23,7 +20,7 @@ export default function ManageRewards({
   rewards,
   categories,
 }: {
-  rows: RedemptionWithRelations[];
+  rows: Redemption[];
   rewards: RewardWithCategory[];
   categories: RewardCategory[];
 }) {

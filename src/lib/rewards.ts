@@ -40,7 +40,7 @@ export async function redeemItem(userId: string, catalogId: string, deliverEmail
         catalogId: item.id,
         type: item.type,
         pointsSpent: item.pointsCost,
-        valueCents: item.valueCents,
+        valueCents: item.valueCents ?? 0, 
         deliverEmail: deliverEmail ?? user.email,
         provider: process.env.REWARD_PROVIDER || "mock",
         status: "PENDING",

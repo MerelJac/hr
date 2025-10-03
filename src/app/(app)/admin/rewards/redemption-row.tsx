@@ -43,7 +43,7 @@ export default function RedemptionRow({ r }: { r: Redemption }) {
         <b>{r.type}</b> • ${r.valueCents / 100} • {r.pointsSpent} pts •{" "}
         <span className="font-semibold">{r.status}</span>
       </div>
-      <div>User: {r.user.email}</div>
+      <div>User: {r.user.email }</div>
 
       {r.code && (
         <div>
