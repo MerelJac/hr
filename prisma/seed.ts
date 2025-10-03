@@ -48,8 +48,7 @@ async function reward() {
         categoryId: giftCardCategory.id,
         label: "Amazon Gift Card",
         valueCents: 0,
-        pointsCost: 0,
-        type: "AMAZON",
+        pointsCost: 0
       },
     });
 
@@ -60,8 +59,7 @@ async function reward() {
         categoryId: giftCardCategory.id,
         label: "Visa Gift Card",
         valueCents: 0,
-        pointsCost: 0,
-        type: "VISA",
+        pointsCost: 0
       },
     });
   }

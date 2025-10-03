@@ -12,8 +12,8 @@ export async function POST(req: NextRequest) {
   if (!user?.id)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { type, amount, deliverEmail, idemKey } = await req.json();
-  if (!type || !amount)
+  const {  amount, deliverEmail, idemKey } = await req.json();
+  if ( !amount)
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
   // $1 = 10 points
@@ -37,9 +37,9 @@ export async function POST(req: NextRequest) {
         data: { pointsBalance: { decrement: pointsCost } },
       });
 
-      // Find the “custom catalog” template for this type
+      // Find the “custom catalog” template for this
       const catalog = await tx.rewardCatalog.findFirst({
-        where: { type, label: { endsWith: "Custom" } },
+        where: {  label: { endsWith: "Custom" } },
       });
       if (!catalog) {
         throw new AppError("No catalog template found", 400);
@@ -53,7 +53,6 @@ export async function POST(req: NextRequest) {
         data: {
           userId: user.id,
           catalogId: catalog.id,
-          type,
           valueCents: amount * 100,
           pointsSpent: pointsCost,
           deliverEmail: deliverEmail ?? me.email,

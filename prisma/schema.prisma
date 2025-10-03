@@ -147,11 +147,6 @@ model Nomination {
   @@unique([submitterId, challengeId, monthKey], map: "uniq_submitter_challenge_month")
 }
 
-enum RewardType {
-  AMAZON
-  VISA
-}
-
 enum RedemptionStatus {
   PENDING // created, awaiting provider or admin
   APPROVED // approved to fulfill (optional step)
@@ -172,7 +167,6 @@ model RewardCatalog {
   id          String         @id @default(cuid())
   categoryId  String
   category    RewardCategory @relation(fields: [categoryId], references: [id])
-  type        RewardType?
   label       String         @unique
   valueCents  Int?
   pointsCost  Int
@@ -183,7 +177,6 @@ model RewardCatalog {
   redemptions Redemption[]   @relation("CatalogRedemptions")
 
   @@index([categoryId, isActive])
-  @@index([type, isActive])
 }
 
 model Redemption {
@@ -194,7 +187,6 @@ model Redemption {
   catalogId String?
   catalog   RewardCatalog? @relation("CatalogRedemptions", fields: [catalogId], references: [id], onDelete: Restrict)
 
-  type        RewardType
   pointsSpent Int
   valueCents  Int
   status      RedemptionStatus @default(PENDING)

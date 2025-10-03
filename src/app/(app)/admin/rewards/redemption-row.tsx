@@ -25,22 +25,22 @@ export default function RedemptionRow({ r }: { r: Redemption }) {
   }
 
   useEffect(() => {
-    if (r.type === "AMAZON") {
+    if (r.catalogId === "AMAZON") {
       setAccessUrl(
         `https://www.amazon.com/dp/B07MP6B4Y5?ref=altParentAsins_treatment_text_from_Amazon_to_Appreciation&th=1&gpo=${
           r.pointsSpent / 10
         }`
       );
-    } else if (r.type === "VISA") {
+    } else if (r.catalogId === "VISA") {
       // set an external Visa provider link if you have one
       setAccessUrl("");
     }
-  }, [r.type, r.pointsSpent]);
+  }, [r.pointsSpent]);
 
   return (
     <li className="border-2 bg-white rounded-lg p-3 text-sm space-y-2">
       <div>
-        <b>{r.type}</b> • ${r.valueCents / 100} • {r.pointsSpent} pts •{" "}
+        <b>{r.catalogId}</b> • ${r.valueCents / 100} • {r.pointsSpent} pts •{" "}
         <span className="font-semibold">{r.status}</span>
       </div>
       <div>User: {r.user.email }</div>
@@ -59,7 +59,7 @@ export default function RedemptionRow({ r }: { r: Redemption }) {
             rel="noopener noreferrer"
             className="text-blue-600 underline"
           >
-            Access {r.type}
+            Access {r.catalogId}
           </a>
         </div>
       )}

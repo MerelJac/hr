@@ -13,8 +13,8 @@ export async function POST(req: NextRequest) {
   if (!user?.id)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { type, amount, deliverEmail, idemKey } = await req.json();
-  if (!type || !amount || amount < 10 || amount % 5 !== 0) {
+  const {  amount, deliverEmail, idemKey } = await req.json();
+  if ( !amount || amount < 10 || amount % 5 !== 0) {
     return NextResponse.json(
       { error: "Invalid redemption request" },
       { status: 400 }
@@ -42,7 +42,6 @@ export async function POST(req: NextRequest) {
       const r = await tx.redemption.create({
         data: {
           userId: user.id,
-          type,
           pointsSpent: pointsCost,
           valueCents,
           deliverEmail: deliverEmail ?? dbUser.email,

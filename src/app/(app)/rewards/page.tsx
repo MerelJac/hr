@@ -55,7 +55,7 @@ export default async function RewardsPage() {
           {history.map((r) => (
             <li key={r.id} className="border-2 rounded-xl bg-white p-3">
               <div className="text-sm">
-                <b>{r.catalog?.label || r.type}</b> —{" "}
+                <b>{r.catalog?.label || r.catalogId}</b> —{" "}
                 {r.valueCents
                   ? `$${r.valueCents / 100}`
                   : `${r.pointsSpent} pts`}

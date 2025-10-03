@@ -3,8 +3,8 @@ export type RedemptionType = "AMAZON" | "VISA" | "OTHER";
 
 export interface Redemption {
   id: string;
-  type: RedemptionType;
   valueCents: number;
+  catalogId: string |null;
   pointsSpent: number;
   status: RedemptionStatus;
   code?: string | null;

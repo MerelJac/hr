@@ -29,7 +29,7 @@ describe("POST /api/redeem", () => {
 
     const req = new Request("http://localhost/api/redeem", {
       method: "POST",
-      body: JSON.stringify({ type: "AMAZON", amount: 20 }),
+      body: JSON.stringify({  amount: 20 }),
     });
 
     const res = await POST(req);
