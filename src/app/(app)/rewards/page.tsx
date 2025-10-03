@@ -26,6 +26,14 @@ export default async function RewardsPage() {
     }),
   ]);
 
+  const safeCategories = categories.map(c => ({
+  ...c,
+  rewards: c.rewards.map(r => ({
+    ...r,
+    valueCents: r.valueCents ?? 0, // normalize null → 0
+  })),
+}));
+
   return (
     <main className="space-y-6 bg-white rounded-xl">
       <div className="flex items-center justify-between p-6 shadow-md">
@@ -38,7 +46,7 @@ export default async function RewardsPage() {
       <RedeemClient
         balance={user?.pointsBalance ?? 0}
         defaultEmail={me.email ?? user?.email ?? ""}
-        categories={categories}
+        categories={safeCategories}
       />
 
       <section className="space-y-2">
