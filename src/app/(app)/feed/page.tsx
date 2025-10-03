@@ -10,6 +10,7 @@ import CoreValues from "@/components/CoreValues";
 import React from "react";
 import Image from "next/image";
 import { User } from "@/types/user";
+import { Challenge, ChallengeRequirements } from "@/types/challenge";
 
 export default async function FeedPage() {
   const session = await getServerSession(authOptions);
@@ -28,9 +29,14 @@ export default async function FeedPage() {
     },
   });
 
-  const availableChallenges = challenges.filter(
-    (c) => c.nominations.length === 0
-  );
+const availableChallenges: Challenge[] = challenges
+  .filter(c => c.nominations.length === 0)
+  .map(c => ({
+    ...c,
+    requirements: c.requirements
+      ? (c.requirements as ChallengeRequirements)  // ✅ cast/parse
+      : undefined,
+  }));
 
   const recs = await prisma.recognition.findMany({
     orderBy: { createdAt: "desc" },
