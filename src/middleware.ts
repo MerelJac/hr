@@ -10,10 +10,11 @@ export async function middleware(req: NextRequest) {
   const publicPaths = [
     "/login",
     "/register",
-    "/api/auth",      // NextAuth endpoints (all under /api/auth)
+    "/api/auth", // NextAuth endpoints (all under /api/auth)
     "/api/register",
-    "/_next",         // Next internals
+    "/_next", // Next internals
     "/favicon.ico",
+    "/api/debug-env", // ENV testing
     "/images",
     "/public",
   ];
