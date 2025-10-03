@@ -6,9 +6,10 @@ applications:
         preBuild:
           commands:
             - npm install
-            - npx prisma generate
         build:
           commands:
+            - echo "DATABASE_URL=$DATABASE_URL" >> .env
+            - npx prisma generate
             # Apply migrations in Neon
             - npx prisma migrate deploy
             # Build Next.js app
