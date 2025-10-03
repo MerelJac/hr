@@ -6,6 +6,7 @@ applications:
         preBuild:
           commands:
             - npm install
+            - npx prisma generate
         build:
           commands:
             # Apply migrations in Neon
