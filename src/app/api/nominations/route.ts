@@ -1,72 +1,51 @@
 // src/app/api/nominations/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { EOM_SUBMIT_POINTS, monthKeyFromDate } from "@/lib/nomination-constants";
+import { monthKeyFromDate } from "@/lib/nomination-constants";
+import { User } from "@/types/user";
+import { ChallengeRequirements } from "@/types/challenge";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  const submitterId = (session?.user as any)?.id;
-  if (!submitterId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const submitterId = (session?.user as User)?.id;
+  if (!submitterId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { challengeId, nomineeId, reason } = await req.json();
+  const challenge = await prisma.nominationChallenge.findUnique({ where: { id: challengeId } });
+
+  if (!challenge) return NextResponse.json({ error: "Challenge not found" }, { status: 404 });
+
+  const now = new Date();
+  if (!challenge.isActive || challenge.startDate > now || challenge.endDate < now) {
+    return NextResponse.json({ error: "Challenge not currently active" }, { status: 400 });
   }
 
-  // Expect JSON for both types now
-  const body = await req.json().catch(() => ({} as any));
-  const type = body.type as "EOM" | "LINKEDIN" | undefined;
-  const nomineeId: string | undefined = body.nomineeId;
-  const reason: string | undefined = body.reason;
   const monthKey = monthKeyFromDate();
-
-  if (type !== "EOM" && type !== "LINKEDIN") {
-    return NextResponse.json({ error: "Invalid type." }, { status: 400 });
+  const existing = await prisma.nomination.findFirst({
+    where: { submitterId, challengeId, monthKey },
+    select: { id: true },
+  });
+  if (existing) {
+    return NextResponse.json({ error: "Already submitted this challenge this month" }, { status: 409 });
   }
 
-  try {
-    // ---- pre-check to avoid hitting the unique constraint
-    const existing = await prisma.nomination.findFirst({
-      where: { submitterId, type, monthKey },
-      select: { id: true },
-    });
-    if (existing) {
-      return NextResponse.json(
-        { error: "You’ve already submitted this nomination type this month." },
-        { status: 409 }
-      );
-    }
+  // enforce challenge requirements
+  const reqs = (challenge.requirements ?? {}) as ChallengeRequirements;
+  if (reqs.requiresNominee && !nomineeId) return NextResponse.json({ error: "Nominee required" }, { status: 400 });
+  if (reqs.requiresReason && !reason) return NextResponse.json({ error: "Reason required" }, { status: 400 });
 
-    if (type === "EOM") {
-      if (!nomineeId) {
-        return NextResponse.json({ error: "Nominee required." }, { status: 400 });
-      }
-      const nominee = await prisma.user.findUnique({ where: { id: nomineeId } });
-      if (!nominee) {
-        return NextResponse.json({ error: "Nominee not found." }, { status: 400 });
-      }
+  const nomination = await prisma.nomination.create({
+    data: {
+      submitterId,
+      challengeId,
+      nomineeId,
+      reason,
+      monthKey,
+      status: "PENDING", // always pending, admin reviews
+    },
+  });
 
-      await prisma.$transaction(async (tx) => {
-        await tx.nomination.create({
-          data: { type: "EOM", submitterId, nomineeId, reason, monthKey },
-        });
-        await tx.user.update({
-          where: { id: submitterId },
-          data: { pointsBalance: { increment: EOM_SUBMIT_POINTS } },
-        });
-      });
-
-      return NextResponse.json({ ok: true });
-    }
-
-  } catch (err: any) {
-    // use code string (Turbopack can break instanceof)
-    if (err?.code === "P2002") {
-      return NextResponse.json(
-        { error: "You’ve already submitted this nomination type this month." },
-        { status: 409 }
-      );
-    }
-    console.error("Nomination POST error:", err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
-  }
+  return NextResponse.json(nomination);
 }

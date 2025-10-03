@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { randomUUID } from "crypto";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { sendEmail } from "@/lib/email"; // your email util
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const { email } = await req.json();
   const user = await prisma.user.findUnique({ where: { email } });
 
@@ -16,9 +16,13 @@ export async function POST(req: Request) {
     });
 
     const resetUrl = `${process.env.APP_URL}/reset-password?token=${token}`;
-    await sendEmail(user.email, "Reset your password", `
-      Click here to reset your password: ${resetUrl}
-    `);
+    await sendEmail({
+      to: user.email,
+      subject: "Reset your password",
+      html: `
+        Click here to reset your password: ${resetUrl}
+      `,
+    });
   }
 
   // Always respond success

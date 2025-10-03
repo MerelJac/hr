@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
-import { hash } from "bcrypt";
+import { NextResponse, NextRequest } from "next/server";
+import { hash } from "bcryptjs";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const { token, newPassword } = await req.json();
 
   const reset = await prisma.passwordResetToken.findUnique({ where: { token } });

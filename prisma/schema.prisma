@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -30,6 +30,8 @@ model User {
   emailVerified            DateTime?
   birthday                 DateTime?
   workAnniversary          DateTime?
+  preferredName            String?
+  department               String?
   createdAt                DateTime               @default(now())
   updatedAt                DateTime               @updatedAt
   sessions                 Session[]
@@ -53,18 +55,27 @@ model Session {
 }
 
 model UserInvite {
-  id          String    @id @default(cuid())
-  email       String    @unique
-  role        Role      @default(EMPLOYEE)
-  createdById String
-  createdAt   DateTime  @default(now())
-  consumedAt  DateTime?
+  id              String    @id @default(cuid())
+  email           String    @unique
+  role            Role      @default(EMPLOYEE)
+  createdById     String
+  createdAt       DateTime  @default(now())
+  consumedAt      DateTime?
+  // new optional fields
+  firstName       String?
+  lastName        String?
+  preferredName   String?
+  birthday        DateTime?
+  workAnniversary DateTime?
+  department      String?
+  sendEmail       Boolean   @default(true)
 }
 
 model Recognition {
   id        String   @id @default(cuid())
   senderId  String
   sender    User     @relation("SenderRecognitions", fields: [senderId], references: [id], onDelete: Cascade)
+  gifUrl    String?
   message   String
   createdAt DateTime @default(now())
 
@@ -85,41 +96,55 @@ model RecognitionRecipient {
 
 enum NominationType {
   EOM // Employee of the Month
+  LINKEDIN
 }
 
 enum NominationStatus {
   PENDING
   APPROVED
   REJECTED
-  WON // used for EOM winner
+  WON
+  SKIPPED
+}
+
+model NominationChallenge {
+  id            String   @id @default(cuid())
+  title         String   @unique
+  description   String?
+  qualification String? // free text about how to qualify
+  isActive      Boolean  @default(true)
+  gifUrl        String?
+  startDate     DateTime
+  endDate       DateTime
+  points        Int      @default(0)
+  // Optional JSON field for flexible requirements (e.g. upload screenshot, URL, notes)
+  requirements  Json?
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  nominations Nomination[]
 }
 
 model Nomination {
-  id          String           @id @default(cuid())
-  type        NominationType
-  status      NominationStatus @default(PENDING)
+  id          String @id @default(cuid())
   submitterId String
-  submitter   User             @relation("SubmittedNominations", fields: [submitterId], references: [id], onDelete: Cascade)
+  submitter   User   @relation("SubmittedNominations", fields: [submitterId], references: [id], onDelete: Cascade)
 
-  // EOM
+  challengeId String
+  challenge   NominationChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
   nomineeId String?
   nominee   User?   @relation("NomineeUser", fields: [nomineeId], references: [id], onDelete: SetNull)
 
-  // LinkedIn
-  postUrl String?
-  caption String?
+  reason     String?
+  screenshot String?
 
-  reason    String?
-  monthKey  String? // e.g., "2025-09" for EOM grouping
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status    NominationStatus @default(PENDING)
+  monthKey  String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 
-  @@unique([submitterId, type, monthKey], map: "uniq_submitter_type_month")
-}
-
-enum RewardType {
-  AMAZON
-  VISA
+  @@unique([submitterId, challengeId, monthKey], map: "uniq_submitter_challenge_month")
 }
 
 enum RedemptionStatus {
@@ -127,21 +152,31 @@ enum RedemptionStatus {
   APPROVED // approved to fulfill (optional step)
   FULFILLED // provider returned a code / delivered
   FAILED
-  CANCELED
+  CANCELLED
+}
+
+model RewardCategory {
+  id        String          @id @default(cuid())
+  name      String          @unique
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  rewards   RewardCatalog[]
 }
 
 model RewardCatalog {
-  id          String       @id @default(cuid())
-  type        RewardType
-  label       String       @unique
-  valueCents  Int // e.g., 2500 => $25 card value
-  pointsCost  Int // how many points it costs
-  isActive    Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  redemptions Redemption[] @relation("CatalogRedemptions")
+  id          String         @id @default(cuid())
+  categoryId  String
+  category    RewardCategory @relation(fields: [categoryId], references: [id])
+  label       String         @unique
+  valueCents  Int?
+  pointsCost  Int
+  imageUrl    String?
+  isActive    Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  redemptions Redemption[]   @relation("CatalogRedemptions")
 
-  @@index([type, isActive])
+  @@index([categoryId, isActive])
 }
 
 model Redemption {
@@ -152,7 +187,6 @@ model Redemption {
   catalogId String?
   catalog   RewardCatalog? @relation("CatalogRedemptions", fields: [catalogId], references: [id], onDelete: Restrict)
 
-  type        RewardType
   pointsSpent Int
   valueCents  Int
   status      RedemptionStatus @default(PENDING)

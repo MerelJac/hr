@@ -25,7 +25,9 @@ describe("POST /api/invites", () => {
   });
 
   it("should return 403 if not SUPER_ADMIN", async () => {
-    mockedGetServerSession.mockResolvedValueOnce({ user: { role: "EMPLOYEE" } });
+    mockedGetServerSession.mockResolvedValueOnce({
+      user: { role: "EMPLOYEE" },
+    });
 
     const req = new Request("http://localhost", {
       method: "POST",
@@ -37,7 +39,9 @@ describe("POST /api/invites", () => {
   });
 
   it("should return 400 if email is missing", async () => {
-    mockedGetServerSession.mockResolvedValueOnce({ user: { id: "1", role: "SUPER_ADMIN" } });
+    mockedGetServerSession.mockResolvedValueOnce({
+      user: { id: "1", role: "SUPER_ADMIN" },
+    });
 
     const req = new Request("http://localhost", {
       method: "POST",
@@ -52,8 +56,13 @@ describe("POST /api/invites", () => {
   });
 
   it("should create or refresh invite when SUPER_ADMIN", async () => {
-    mockedGetServerSession.mockResolvedValueOnce({ user: { id: "super1", role: "SUPER_ADMIN" } });
-    (prisma.userInvite.upsert as jest.Mock).mockResolvedValueOnce({ id: "inv1", email: "test@example.com" });
+    mockedGetServerSession.mockResolvedValueOnce({
+      user: { id: "super1", role: "SUPER_ADMIN" },
+    });
+    (prisma.userInvite.upsert as jest.Mock).mockResolvedValueOnce({
+      id: "inv1",
+      email: "test@example.com",
+    });
 
     const req = new Request("http://localhost", {
       method: "POST",
@@ -74,7 +83,10 @@ describe("POST /api/invites", () => {
           role: "ADMIN",
           createdById: "super1",
         }),
-        update: { role: "ADMIN", consumedAt: null },
+        update: expect.objectContaining({
+          role: "ADMIN",
+          consumedAt: null,
+        }),
       })
     );
   });
@@ -86,20 +98,29 @@ describe("DELETE /api/invites", () => {
   });
 
   it("should return 403 if not SUPER_ADMIN", async () => {
-    mockedGetServerSession.mockResolvedValueOnce({ user: { role: "EMPLOYEE" } });
-
-    const req = new Request("http://localhost/api/invites?email=test@example.com", {
-      method: "DELETE",
+    mockedGetServerSession.mockResolvedValueOnce({
+      user: { role: "EMPLOYEE" },
     });
+
+    const req = new Request(
+      "http://localhost/api/invites?email=test@example.com",
+      {
+        method: "DELETE",
+      }
+    );
 
     const res = await DELETE(req);
     expect(res.status).toBe(403);
   });
 
   it("should return 400 if email is missing", async () => {
-    mockedGetServerSession.mockResolvedValueOnce({ user: { role: "SUPER_ADMIN" } });
+    mockedGetServerSession.mockResolvedValueOnce({
+      user: { role: "SUPER_ADMIN" },
+    });
 
-    const req = new Request("http://localhost/api/invites", { method: "DELETE" });
+    const req = new Request("http://localhost/api/invites", {
+      method: "DELETE",
+    });
 
     const res = await DELETE(req);
     const json = await res.json();
@@ -109,18 +130,25 @@ describe("DELETE /api/invites", () => {
   });
 
   it("should delete invite if SUPER_ADMIN and email is provided", async () => {
-    mockedGetServerSession.mockResolvedValueOnce({ user: { role: "SUPER_ADMIN" } });
+    mockedGetServerSession.mockResolvedValueOnce({
+      user: { role: "SUPER_ADMIN" },
+    });
     (prisma.userInvite.delete as jest.Mock).mockResolvedValueOnce({});
 
-    const req = new Request("http://localhost/api/invites?email=test@example.com", {
-      method: "DELETE",
-    });
+    const req = new Request(
+      "http://localhost/api/invites?email=test@example.com",
+      {
+        method: "DELETE",
+      }
+    );
 
     const res = await DELETE(req);
     const json = await res.json();
 
     expect(res.status).toBe(200);
     expect(json).toEqual({ ok: true });
-    expect(prisma.userInvite.delete).toHaveBeenCalledWith({ where: { email: "test@example.com" } });
+    expect(prisma.userInvite.delete).toHaveBeenCalledWith({
+      where: { email: "test@example.com" },
+    });
   });
 });

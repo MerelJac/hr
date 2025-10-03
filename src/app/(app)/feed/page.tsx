@@ -9,53 +9,59 @@ import RecognizeFormWrapper from "@/components/RecognizeFormWrapper";
 import CoreValues from "@/components/CoreValues";
 import React from "react";
 import Image from "next/image";
+import { User } from "@/types/user";
+import { Challenge, ChallengeRequirements } from "@/types/challenge";
 
 export default async function FeedPage() {
   const session = await getServerSession(authOptions);
   if (!session) return <div className="p-6">Please sign in.</div>;
-  const me = session.user as any;
+  const me = session.user as User;
+
+  const challenges = await prisma.nominationChallenge.findMany({
+    where: {
+      isActive: true,
+      startDate: { lte: new Date() },
+      endDate: { gte: new Date() },
+    },
+    orderBy: { createdAt: "desc" },
+    include: {
+      nominations: true,
+    },
+  });
+
+const availableChallenges: Challenge[] = challenges
+  .filter(c => c.nominations.length === 0)
+  .map(c => ({
+    ...c,
+    requirements: c.requirements
+      ? (c.requirements as ChallengeRequirements)  // ✅ cast/parse
+      : undefined,
+  }));
 
   const recs = await prisma.recognition.findMany({
     orderBy: { createdAt: "desc" },
     take: 50,
     include: {
-      sender: {
-        select: {
-          firstName: true,
-          lastName: true,
-          email: true,
-          profileImage: true,
-        },
-      },
+      sender: true,
       recipients: {
         include: {
-          recipient: {
-            select: {
-              firstName: true,
-              lastName: true,
-              email: true,
-              profileImage: true,
-            },
-          },
+          recipient: true
         },
       },
     },
   });
 
-  function name(u: any) {
+  function name(u: User) {
     const full = [u.firstName, u.lastName].filter(Boolean).join(" ");
     return full || u.email;
   }
 
   const users = await prisma.user.findMany({
-    where: { id: { not: me.id }, role: "EMPLOYEE" },
-    select: { id: true, firstName: true, lastName: true, email: true },
+    where: { id: { not: me.id }, role: "EMPLOYEE", isActive: true },
   });
 
-  const simpleUsers = users.map((u) => ({ id: u.id, label: name(u) }));
-
   return (
-    <main className="p-6 space-y-4">
+    <main className="p-6 space-y-4 p-6 bg-gradient-to-t from-blue-500 to-indigo-500 h-full">
       <div className="flex flex-row gap-4 justify-between">
         <div className="min-w-[70%]">
           <RecognizeFormWrapper />
@@ -105,7 +111,19 @@ export default async function FeedPage() {
                     />
                     <b>{name(r.sender)}</b>
                   </div>
-                  <p className="mt-2">{r.message}</p>
+                  <p className="mt-2">
+                    {r.message}{" "}
+                    {r.gifUrl && (
+                      <Image
+                        width={100}
+                        height={100}
+                        src={r.gifUrl}
+                        alt="shoutout gif"
+                        className="mt-3 rounded max-h-60"
+                      />
+                    )}
+                  </p>
+
                   <small className="text-gray-500">
                     {new Date(r.createdAt).toLocaleDateString("en-US", {
                       year: "numeric",
@@ -116,8 +134,7 @@ export default async function FeedPage() {
                 </li>
                 <CommentList
                   recognitionId={r.id}
-                  users={simpleUsers}
-                  currentUserId={me.id}
+                  users={users}
                   defaultRecipientId={r.recipients[0]?.id}
                 />
               </React.Fragment>
@@ -127,7 +144,7 @@ export default async function FeedPage() {
         <div id="actionItems" className="flex flex-col gap-4">
           <AvailablePointsCard />
           <AvailableRedeemPointsCard />
-          <NominationModal users={simpleUsers} />
+          <NominationModal users={users} challenges={availableChallenges} />
           <CoreValues />
         </div>
       </div>

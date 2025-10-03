@@ -1,26 +1,35 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { User } from "@/types/user";
+import { handleApiError } from "@/lib/handleApiError";
+import { AppError } from "@/lib/errors";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  const user = session?.user as any;
-  if (!user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const user = session?.user as User;
+  if (!user?.id)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { type, amount, deliverEmail, idemKey } = await req.json();
-  if (!type || !amount) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+  const {  amount, deliverEmail, idemKey } = await req.json();
+  if ( !amount)
+    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
   // $1 = 10 points
   const pointsCost = amount * 10;
   if (amount < 10 || amount % 5 !== 0) {
-    return NextResponse.json({ error: "Minimum $10, increments of $5" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Minimum $10, increments of $5" },
+      { status: 400 }
+    );
   }
 
   try {
     const redemption = await prisma.$transaction(async (tx) => {
       const me = await tx.user.findUnique({ where: { id: user.id } });
-      if (!me || me.pointsBalance < pointsCost) throw new Error("Not enough points");
+      if (!me || me.pointsBalance < pointsCost)
+        throw new AppError("Not enough points", 400);
 
       // Deduct points
       await tx.user.update({
@@ -28,18 +37,22 @@ export async function POST(req: Request) {
         data: { pointsBalance: { decrement: pointsCost } },
       });
 
-      // Find the “custom catalog” template for this type
+      // Find the “custom catalog” template for this
       const catalog = await tx.rewardCatalog.findFirst({
-        where: { type, label: { endsWith: "Custom" } },
+        where: {  label: { endsWith: "Custom" } },
       });
-      if (!catalog) throw new Error("No catalog template found");
+      if (!catalog) {
+        throw new AppError("No catalog template found", 400);
+      }
 
+      if (!user?.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
       // Create redemption
       return tx.redemption.create({
         data: {
           userId: user.id,
           catalogId: catalog.id,
-          type,
           valueCents: amount * 100,
           pointsSpent: pointsCost,
           deliverEmail: deliverEmail ?? me.email,
@@ -50,7 +63,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ ok: true, redemption });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message ?? "Failed to redeem" }, { status: 400 });
+  } catch (e: unknown) {
+    return handleApiError(e);
   }
 }

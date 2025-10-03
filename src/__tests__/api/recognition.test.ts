@@ -10,7 +10,7 @@ jest.mock("@/lib/prisma", () => ({
     user: { findMany: jest.fn(), update: jest.fn() },
     recognition: { create: jest.fn() },
     recognitionRecipient: { createMany: jest.fn() },
-    $transaction: (fn: any) => fn(prisma),
+    $transaction: <T>(fn: (tx: unknown) => T) => fn(prisma),
   },
 }));
 

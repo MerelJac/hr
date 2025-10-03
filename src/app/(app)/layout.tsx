@@ -9,7 +9,7 @@ export default function AppShellLayout({ children }: { children: React.ReactNode
       </div>
 
       {/* Content: scrolls next to sidebar */}
-      <div className="ml-64 flex-1 overflow-y-auto p-6 bg-gradient-to-t from-blue-500 to-indigo-500">
+      <div className="ml-64 flex-1 overflow-y-auto ">
         {children}
       </div>
     </main>

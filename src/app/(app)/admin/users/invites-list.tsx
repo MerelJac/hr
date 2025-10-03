@@ -1,6 +1,8 @@
 "use client";
 
-export default function InvitesList({ invites }: { invites: any[] }) {
+import { Invite } from "@/types/invite";
+
+export default function InvitesList({ invites }: { invites: Invite[] }) {
   async function remove(email: string) {
     const res = await fetch(`/api/invites?email=${encodeURIComponent(email)}`, { method: "DELETE" });
     if (res.ok) location.reload();

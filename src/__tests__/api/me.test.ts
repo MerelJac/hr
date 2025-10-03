@@ -67,7 +67,17 @@ describe("GET /api/me", () => {
         lastName: true,
         email: true,
         birthday: true,
+        preferredName: true,
         workAnniversary: true,
+        department: true,
+        profileImage: true,
+        nominationsAsNominee: false,
+        submittedNominations: {
+          include: {
+            challenge: { select: { id: true, title: true, points: true } },
+          },
+          orderBy: { createdAt: "desc" },
+        },
       },
     });
   });

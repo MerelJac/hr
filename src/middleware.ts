@@ -1,8 +1,8 @@
 // src/middleware.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-export async function middleware(req: any) {
+export async function middleware(req: NextRequest) {
   const url = req.nextUrl as URL;
   const pathname = url.pathname;
 
@@ -10,10 +10,11 @@ export async function middleware(req: any) {
   const publicPaths = [
     "/login",
     "/register",
-    "/api/auth",      // NextAuth endpoints (all under /api/auth)
+    "/api/auth", // NextAuth endpoints (all under /api/auth)
     "/api/register",
-    "/_next",         // Next internals
+    "/_next", // Next internals
     "/favicon.ico",
+    "/api/debug-env", // ENV testing
     "/images",
     "/public",
   ];

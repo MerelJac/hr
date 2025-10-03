@@ -4,7 +4,7 @@ import { getRewardProvider } from "@/lib/rewardProvider";
 export async function listCatalog() {
   return prisma.rewardCatalog.findMany({
     where: { isActive: true },
-    orderBy: [{ type: "asc" }, { valueCents: "asc" }],
+    orderBy: [{ valueCents: "asc" }],
   });
 }
 
@@ -38,9 +38,8 @@ export async function redeemItem(userId: string, catalogId: string, deliverEmail
       data: {
         userId,
         catalogId: item.id,
-        type: item.type,
         pointsSpent: item.pointsCost,
-        valueCents: item.valueCents,
+        valueCents: item.valueCents ?? 0, 
         deliverEmail: deliverEmail ?? user.email,
         provider: process.env.REWARD_PROVIDER || "mock",
         status: "PENDING",
@@ -56,8 +55,7 @@ export async function redeemItem(userId: string, catalogId: string, deliverEmail
 
     // Call provider (outside DB, but we're still in logical flow)
     const issued = await provider.issueGiftCard({
-      type: item.type,
-      valueCents: item.valueCents,
+      valueCents: item.valueCents ?? 0,
       email: deliverEmail ?? user.email ?? undefined,
     });
 
@@ -79,7 +77,7 @@ export async function listMyRedemptions(userId: string) {
   return prisma.redemption.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
-    include: { catalog: true },
+    include: { catalog: true, user: true },
   });
 }
 

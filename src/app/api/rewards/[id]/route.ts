@@ -1,51 +1,51 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { User } from "@/types/user";
+import { handleApiError } from "@/lib/handleApiError";
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
-  const role = (session?.user as any)?.role;
+  const { id } = await params;
+  const role = (session?.user as User)?.role;
   if (role !== "SUPER_ADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { action, code, claimUrl } = await req.json();
+  try {
+    const { label, categoryId, valueCents, pointsCost, isActive } =
+      await req.json();
+
+    const reward = await prisma.rewardCatalog.update({
+      where: { id },
+      data: { label, categoryId, valueCents, pointsCost, isActive },
+    });
+
+    return NextResponse.json(reward);
+  } catch (e: unknown) {
+    return handleApiError(e);
+  }
+}
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const session = await getServerSession(authOptions);
+  const role = (session?.user as User)?.role;
+  if (role !== "SUPER_ADMIN") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   try {
-    if (action === "approve") {
-      await prisma.redemption.update({
-        where: { id: params.id },
-        data: { status: "APPROVED" },
-      });
-    } else if (action === "fulfill") {
-      await prisma.redemption.update({
-        where: { id: params.id },
-        data: {
-          status: "FULFILLED",
-          code,
-          claimUrl,
-        },
-      });
-    } else if (action === "fail") {
-      await prisma.redemption.update({
-        where: { id: params.id },
-        data: { status: "FAILED" },
-      });
-    } else if (action === "cancel") {
-      await prisma.redemption.update({
-        where: { id: params.id },
-        data: { status: "CANCELED" },
-      });
-    } else {
-      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
-    }
-
+    await prisma.rewardCatalog.delete({ where: { id } });
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  } catch (e: unknown) {
+    return handleApiError(e);
   }
 }

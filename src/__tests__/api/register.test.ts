@@ -1,7 +1,7 @@
 // __tests__/api/register.test.ts
 import { POST } from "@/app/api/register/route";
 import { prisma } from "@/lib/prisma";
-import { hash } from "bcrypt";
+import { hash } from "bcryptjs";
 
 // mock prisma
 jest.mock("@/lib/prisma", () => ({
@@ -11,8 +11,8 @@ jest.mock("@/lib/prisma", () => ({
   },
 }));
 
-// mock bcrypt
-jest.mock("bcrypt", () => ({
+// mock bcryptjs
+jest.mock("bcryptjs", () => ({
   hash: jest.fn(() => "hashedpw"),
 }));
 

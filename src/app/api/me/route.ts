@@ -1,17 +1,36 @@
-import { NextResponse } from "next/server";
+// src/app/api/me/route.ts
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  const userId = (session?.user as any)?.id;
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-  const me = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { id: true, firstName: true, lastName: true, email: true, birthday: true, workAnniversary: true, },
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      birthday: true,
+      preferredName: true,
+      workAnniversary: true,
+      department: true,
+      profileImage: true,
+      nominationsAsNominee: false, // don’t need this here
+      submittedNominations: {
+        include: {
+          challenge: { select: { id: true, title: true, points: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      },
+    },
   });
 
-  return NextResponse.json(me);
+  return NextResponse.json(user);
 }

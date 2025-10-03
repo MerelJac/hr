@@ -1,5 +1,4 @@
 export type IssueParams = {
-  type: "AMAZON" | "VISA";
   valueCents: number;
   email?: string;
 };
@@ -20,7 +19,7 @@ class MockProvider implements RewardProvider {
     const suffix = Math.random().toString(36).slice(2, 8).toUpperCase();
     return {
       externalId: `mock_${Date.now()}`,
-      code: `${params.type}-EGIFT-${suffix}`,
+      code: `EGIFT-${suffix}`,
       claimUrl: undefined,
     };
   }
