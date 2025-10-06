@@ -15,6 +15,7 @@ import Image from "next/image";
 import LogoutButton from "./login/logoutButton";
 import logo from "@/assets/logo.png";
 import { User } from "@/types/user";
+import SupportButton from "@/components/SupportButton";
 
 export default async function Sidebar() {
   const session = await getServerSession(authOptions);
@@ -80,7 +81,10 @@ export default async function Sidebar() {
           <UserIcon size={18} />
           <span>My Profile</span>
         </Link>
-        <LogoutButton />
+        <div className="flex flex-row gap-3 justify-center items-center">
+          <LogoutButton />
+          <SupportButton />
+        </div>
       </div>
     </aside>
   );
