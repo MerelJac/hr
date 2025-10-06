@@ -28,61 +28,66 @@ export default function LeaderboardClient() {
       .finally(() => setLoading(false));
   }, [range]);
 
-  if (loading) return <p>Loading...</p>;
-  if (!data) return <p>No data</p>;
-
   return (
     <section className="space-y-6 p-6">
       {/* Filters */}
       <div className="flex gap-3">
-        <button
-          className={`px-3 py-1 rounded ${
-            range === "month" ? "bg-blue-500 text-white" : "bg-gray-100"
-          }`}
-          onClick={() => setRange("month")}
-        >
-          Last Month
-        </button>
-        <button
-          className={`px-3 py-1 rounded ${
-            range === "3months" ? "bg-blue-500 text-white" : "bg-gray-100"
-          }`}
-          onClick={() => setRange("3months")}
-        >
-          Last 3 Months
-        </button>
-        <button
-          className={`px-3 py-1 rounded ${
-            range === "all" ? "bg-blue-500 text-white" : "bg-gray-100"
-          }`}
-          onClick={() => setRange("all")}
-        >
-          All Time
-        </button>
+
+
+            <button
+              className={`px-3 py-1 rounded ${
+                range === "month" ? "bg-blue-500 text-white" : "bg-gray-100"
+              }`}
+              onClick={() => setRange("month")}
+            >
+              Last Month
+            </button>
+            <button
+              className={`px-3 py-1 rounded ${
+                range === "3months" ? "bg-blue-500 text-white" : "bg-gray-100"
+              }`}
+              onClick={() => setRange("3months")}
+            >
+              Last 3 Months
+            </button>
+            <button
+              className={`px-3 py-1 rounded ${
+                range === "all" ? "bg-blue-500 text-white" : "bg-gray-100"
+              }`}
+              onClick={() => setRange("all")}
+            >
+              All Time
+            </button>
       </div>
 
       {/* Leaderboards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <LeaderboardTable
-          title="Most Points Received"
-          rows={data.received}
-          field="points"
-        />
-        <LeaderboardTable
-          title="Most Points Given"
-          rows={data.given}
-          field="points"
-        />
-        <LeaderboardTable
-          title="Most Shoutouts Given"
-          rows={data.shoutoutsGiven}
-          field="count"
-        />
-        <LeaderboardTable
-          title="Most Shoutouts Received"
-          rows={data.shoutoutsReceived}
-          field="count"
-        />
+        {loading || !data ? (
+          <p>Loading...</p>
+        ) : (
+          <>
+            <LeaderboardTable
+              title="Most Points Received"
+              rows={data.received}
+              field="points"
+            />
+            <LeaderboardTable
+              title="Most Points Given"
+              rows={data.given}
+              field="points"
+            />
+            <LeaderboardTable
+              title="Most Shoutouts Given"
+              rows={data.shoutoutsGiven}
+              field="count"
+            />
+            <LeaderboardTable
+              title="Most Shoutouts Received"
+              rows={data.shoutoutsReceived}
+              field="count"
+            />
+          </>
+        )}
       </div>
     </section>
   );
