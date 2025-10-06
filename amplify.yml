@@ -5,8 +5,6 @@ applications:
       phases:
         preBuild:
           commands:
-            - echo "Clearing Next.js cache"
-            - rm -rf .next
             - npm install
         build:
           commands:
@@ -14,9 +12,6 @@ applications:
             - npx prisma generate
             # Apply migrations in Neon
             - npx prisma migrate deploy
-            # Clear cache again to avoid stale SSR chunks
-            - echo "Clearing .next cache again to avoid stale SSR chunks"
-            - rm -rf .next
             # Build Next.js app
             - npm run build
       artifacts:
