@@ -148,12 +148,13 @@ export default function ProfilePage() {
               Hi, {user.preferredName || `${user.firstName} ${user.lastName}`}
             </h1>
             <div className="relative">
-              <img
+              <Image
                 src={profileImage ?? "/default-profile-image.svg"}
                 alt="Profile"
+                width={80}
+                height={80}
                 className="rounded-full w-20 h-20 border-2 border-blue-500"
               />
-
               <label className="absolute bottom-0 right-0 bg-blue-600 text-white text-xs px-2 py-1 rounded cursor-pointer hover:bg-blue-700">
                 Update
                 <input
