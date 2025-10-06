@@ -133,7 +133,7 @@ export default function NominationModal({
                   {activeChallenge.description}
                 </p>
 
-                {activeChallenge.gifUrl ? (
+                {activeChallenge.gifUrl && (
                   <Image
                     src={activeChallenge.gifUrl}
                     alt="Selected GIF"
@@ -142,8 +142,6 @@ export default function NominationModal({
                     unoptimized
                     className="max-h-40 rounded mt-2"
                   />
-                ) : (
-                  <p className="text-xs text-gray-400 mt-2">No GIF selected</p>
                 )}
 
                 {activeChallenge.requirements?.requiresNominee && (
