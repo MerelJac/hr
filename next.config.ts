@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "media*.giphy.com", // allow all Giphy CDN subdomains
       },
+      {
+        protocol: "https",
+        hostname: "ignite-assets-bucket.s3.us-east-2.amazonaws.com", // Whitelist S3 bucket domain
+      },
     ],
   },
   env: {

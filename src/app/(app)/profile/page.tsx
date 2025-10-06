@@ -24,6 +24,8 @@ export default function ProfilePage() {
     fetch("/api/me")
       .then((res) => res.json())
       .then((data) => {
+        if (!data || data.error) return;
+
         setUser(data);
         if (data.birthday) {
           setBirthday(new Date(data.birthday).toISOString().split("T")[0]);
@@ -38,20 +40,36 @@ export default function ProfilePage() {
   }, []);
 
   async function uploadProfileImage(file: File) {
-    const formData = new FormData();
-    formData.append("file", file);
+    try {
+      // 1️⃣ Ask the backend for a presigned URL
+      const res = await fetch(
+        `/api/profile/upload-url?contentType=${encodeURIComponent(file.type)}`
+      );
+      const { uploadUrl, publicUrl } = await res.json();
 
-    const res = await fetch("/api/profile/image", {
-      method: "POST",
-      body: formData,
-    });
+      // 2️⃣ Upload directly to S3 (PUT)
+      const uploadRes = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
 
-    const data = await res.json();
-    if (res.ok) {
-      setProfileImage(data.profileImage);
-      setMessage("Profile image updated!");
-    } else {
-      setMessage("Failed to upload image.");
+      if (!uploadRes.ok) throw new Error("S3 upload failed");
+
+      // 3️⃣ Save the image URL in your app DB
+      const saveRes = await fetch("/api/profile/images", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl: publicUrl }),
+      });
+
+      if (!saveRes.ok) throw new Error("Failed to save image URL");
+
+      setProfileImage(publicUrl);
+      setMessage("Profile image uploaded successfully!");
+    } catch (err) {
+      console.error(err);
+      setMessage("Upload failed. Please try again.");
     }
   }
 
@@ -69,7 +87,7 @@ export default function ProfilePage() {
     }
   }
 
-    async function changePassword() {
+  async function changePassword() {
     setPasswordMessage("");
     if (newPassword !== confirmPassword) {
       setPasswordMessage("New passwords do not match.");
@@ -92,7 +110,6 @@ export default function ProfilePage() {
       setPasswordMessage(data.error || "Failed to update password.");
     }
   }
-
 
   if (!user) return <div className="p-6 text-gray-600">Loading...</div>;
 
@@ -123,7 +140,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Tab Content */}
-           {activeTab === "settings" && (
+      {activeTab === "settings" && (
         <div className="space-y-6">
           {/* Profile Info */}
           <div className="flex items-center justify-between">
@@ -131,13 +148,12 @@ export default function ProfilePage() {
               Hi, {user.preferredName || `${user.firstName} ${user.lastName}`}
             </h1>
             <div className="relative">
-              <Image
+              <img
                 src={profileImage ?? "/default-profile-image.svg"}
                 alt="Profile"
-                width={80}
-                height={80}
                 className="rounded-full w-20 h-20 border-2 border-blue-500"
               />
+
               <label className="absolute bottom-0 right-0 bg-blue-600 text-white text-xs px-2 py-1 rounded cursor-pointer hover:bg-blue-700">
                 Update
                 <input
@@ -156,16 +172,31 @@ export default function ProfilePage() {
 
           {/* Basic Info */}
           <div className="space-y-2">
-            <p><b>Name:</b> {user.firstName} {user.lastName}</p>
-            <p><b>Email:</b> {user.email}</p>
-            <p><b>Work Anniversary:</b> {user.workAnniversary ? new Date(user.workAnniversary).toLocaleDateString() : "NA"}</p>
-            {user.department && <p><b>Department:</b> {user.department}</p>}
+            <p>
+              <b>Name:</b> {user.firstName} {user.lastName}
+            </p>
+            <p>
+              <b>Email:</b> {user.email}
+            </p>
+            <p>
+              <b>Work Anniversary:</b>{" "}
+              {user.workAnniversary
+                ? new Date(user.workAnniversary).toLocaleDateString()
+                : "NA"}
+            </p>
+            {user.department && (
+              <p>
+                <b>Department:</b> {user.department}
+              </p>
+            )}
           </div>
 
           {/* Editable Fields */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium">Preferred Name</label>
+              <label className="block text-sm font-medium">
+                Preferred Name
+              </label>
               <input
                 type="text"
                 value={preferredName}
@@ -242,7 +273,6 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
-
 
       {activeTab === "challenges" && (
         <div>
