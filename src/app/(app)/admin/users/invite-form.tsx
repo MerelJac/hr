@@ -29,7 +29,7 @@ export default function InviteForm() {
         birthday,
         workAnniversary,
         sendEmail,
-        department
+        department,
       }),
     });
     if (res.ok) {
@@ -116,6 +116,9 @@ export default function InviteForm() {
                 />
               </label>
 
+
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-gray-600">Permission Status</span>
               <select
                 className="border rounded-xl px-3 py-2"
                 value={role}
@@ -126,13 +129,19 @@ export default function InviteForm() {
                 <option>ADMIN</option>
                 <option>SUPER_ADMIN</option>
               </select>
+              </label>
 
-              <input
-                className="border rounded-xl px-3 py-2"
-                placeholder="Department"
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-              />
+
+
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-gray-600">Department</span>
+                <input
+                  className="border rounded-xl px-3 py-2"
+                  placeholder="Department"
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                />
+              </label>
 
               <label className="flex items-center gap-2">
                 <input

@@ -224,30 +224,36 @@ export default function UsersList({ users }: { users: User[] }) {
                 />
               </label>
 
-              <input
-                className="border rounded-xl px-3 py-2"
-                placeholder="Department"
-                value={selectedUser.department || ""}
-                onChange={(e) =>
-                  setSelectedUser({
-                    ...selectedUser,
-                    department: e.target.value,
-                  })
-                }
-              />
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-gray-600">Department</span>
+                <input
+                  className="border rounded-xl px-3 py-2"
+                  placeholder="Department"
+                  value={selectedUser.department || ""}
+                  onChange={(e) =>
+                    setSelectedUser({
+                      ...selectedUser,
+                      department: e.target.value,
+                    })
+                  }
+                />
+              </label>
 
-              <select
-                className="border rounded-xl px-3 py-2"
-                value={selectedUser.role}
-                onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, role: e.target.value })
-                }
-              >
-                <option>EMPLOYEE</option>
-                <option>MANAGER</option>
-                <option>ADMIN</option>
-                <option>SUPER_ADMIN</option>
-              </select>
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-gray-600">Permission Status</span>
+                <select
+                  className="border rounded-xl px-3 py-2"
+                  value={selectedUser.role}
+                  onChange={(e) =>
+                    setSelectedUser({ ...selectedUser, role: e.target.value })
+                  }
+                >
+                  <option>EMPLOYEE</option>
+                  <option>MANAGER</option>
+                  <option>ADMIN</option>
+                  <option>SUPER_ADMIN</option>
+                </select>
+              </label>
 
               <button
                 type="submit"

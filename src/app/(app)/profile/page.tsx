@@ -183,7 +183,7 @@ export default function ProfilePage() {
               <b>Work Anniversary:</b>{" "}
               {user.workAnniversary
                 ? new Date(user.workAnniversary).toLocaleDateString()
-                : "NA"}
+                : "Not set"}
             </p>
             {user.department && (
               <p>
