@@ -66,3 +66,9 @@ Amplify prod build kicks in:
 Runs npx prisma migrate deploy (not dev!)
 
 That safely applies all pending migrations to the prod Neon DB.
+
+
+
+## 🔹 Workflow for Scheduled tasks
+1. Add daily or monthly tasks to route in api/[time]/route.ts
+2. Automatically scheudled in AWS Lambda and AWS EventBridge 
