@@ -3,7 +3,7 @@
 
 import { prisma } from "@/lib/prisma";
 
-async function grantBirthdayPoints() {
+export async function grantBirthdayPoints() {
   const today = new Date();
   const month = today.getMonth() + 1; // JS months are 0–11
   const day = today.getDate();

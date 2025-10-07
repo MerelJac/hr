@@ -3,7 +3,7 @@
 
 import { prisma } from "@/lib/prisma";
 
-async function grantMonthlyPoints() {
+export async function grantMonthlyPoints() {
   const result = await prisma.user.updateMany({
     where: { role: "EMPLOYEE" }, // Only employees
     data: { monthlyBudget: 50 }, // Reset to 50, will not exceed 50
