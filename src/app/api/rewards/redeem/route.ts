@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { sendEmail } from "@/lib/email";
-import { inviteTemplate } from "@/lib/emailTemplates";
+import { sendRecognitionEmail } from "@/lib/emailTemplates";
 import { User } from "@/types/user";
 import { handleApiError } from "@/lib/handleApiError";
 
@@ -13,8 +12,8 @@ export async function POST(req: NextRequest) {
   if (!user?.id)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const {  amount, deliverEmail, idemKey } = await req.json();
-  if ( !amount || amount < 10 || amount % 5 !== 0) {
+  const { amount, deliverEmail, idemKey } = await req.json();
+  if (!amount || amount < 10 || amount % 5 !== 0) {
     return NextResponse.json(
       { error: "Invalid redemption request" },
       { status: 400 }
@@ -59,9 +58,10 @@ export async function POST(req: NextRequest) {
       return r;
     });
 
-    // Notify admin = TODO enable
-    //   const template = recognitionTemplate(link);
-    // await sendEmail({ to: email, ...template });
+    // Notify user via email
+    if (deliverEmail) {
+      await sendRecognitionEmail(user.email);
+    }
 
     return NextResponse.json({ ok: true, redemption });
   } catch (e: unknown) {

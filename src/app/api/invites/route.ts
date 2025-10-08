@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { User } from "@/types/user";
 import { UserInvite } from "@prisma/client";
+import { sendWelcomeEmail } from "@/lib/emailTemplates";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -57,7 +58,7 @@ export async function POST(req: NextRequest) {
 
   // ⚡ If you later want to actually *send* the email, trigger it here.
   if (sendEmail) {
-    // await sendInviteEmail(invite.email, { ...invite });
+    await sendWelcomeEmail(invite.email);
   }
 
   return NextResponse.json(invite);

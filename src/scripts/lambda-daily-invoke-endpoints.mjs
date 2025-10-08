@@ -4,7 +4,7 @@ export const handler = async () => {
   // Add whichever endpoints you want to hit
   const endpoints = [
     "https://dev.d1gq2pjaahdqa3.amplifyapp.com/api/cron/daily", // DEV
-    "https://d1gq2pjaahdqa3.amplifyapp.com/api/cron/daily", // PROD
+    "https://callone.igniteappreciation.com/api/cron/daily", // PROD
   ];
 
   for (const url of endpoints) {

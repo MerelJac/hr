@@ -1,29 +1,83 @@
 // lib/emailTemplates.ts
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
-export function inviteTemplate(link: string) {
-  return {
-    subject: "You are invited to join our app!",
-    html: `<p>Hello!</p>
-           <p>You’ve been invited to join. Click <a href="${link}">here</a> to register.</p>`,
-    text: `You’ve been invited to join. Open this link: ${link}`,
+// Initialize once for all sends
+const ses = new SESClient({
+  region: process.env.AWS_REGION!, // ← use AWS_* to match Amplify env vars
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+});
+
+/**
+ * Generic SES send helper
+ */
+async function sendEmail({
+  to,
+  subject,
+  html,
+  text,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+  text: string;
+}) {
+  const params = {
+    Source: process.env.SES_FROM_ADDRESS!,
+    Destination: { ToAddresses: [to] },
+    Message: {
+      Subject: { Data: subject },
+      Body: {
+        Html: { Data: html },
+        Text: { Data: text },
+      },
+    },
   };
+
+  await ses.send(new SendEmailCommand(params));
+  console.log(`✅ Email sent to ${to}`);
 }
 
-export function resetPasswordTemplate(link: string) {
-  return {
-    subject: "Reset your password",
-    html: `<p>We received a request to reset your password.</p>
-           <p><a href="${link}">Click here</a> to set a new password.</p>`,
-    text: `Reset your password: ${link}`,
-  };
+/**
+ * Welcome email
+ */
+export async function sendWelcomeEmail(to: string) {
+  return sendEmail({
+    to,
+    subject: "Welcome to Ignite Appreciation!",
+    html: `
+      <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+        <h2>Welcome to Ignite Appreciation 🔥</h2>
+        <p>Thanks for signing up — you’re officially part of the appreciation movement!</p>
+        <p>We’re excited to have you on board.</p>
+        <br/>
+        <p style="font-size: 0.9rem; color: #888;">— Call One, Inc Team</p>
+      </div>
+    `,
+    text:
+      "Welcome to Ignite Appreciation! You're officially part of the appreciation movement 🔥",
+  });
 }
 
-export function recognitionTemplate(sender: string, message: string) {
-  return {
-    subject: `${sender} recognized you! 🎉`,
-    html: `<p>${sender} says: "${message}"</p>
-           <p>Check your dashboard to see more.</p>`,
-    text: `${sender} recognized you! Message: "${message}"`,
-  };
+/**
+ * Recognition / redemption email
+ */
+export async function sendRecognitionEmail(to: string) {
+  return sendEmail({
+    to,
+    subject: "Your Ignite Appreciation Recognition 🎉",
+    html: `
+      <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+        <h2>You’ve been recognized! 🎉</h2>
+        <p>Someone just celebrated your hard work through Ignite Appreciation.</p>
+        <p>Log in to view the details and keep the appreciation going!</p>
+        <br/>
+        <p style="font-size: 0.9rem; color: #888;">— Call One, Inc Team</p>
+      </div>
+    `,
+    text:
+      "You’ve been recognized! Someone celebrated your hard work through Ignite Appreciation. Log in to view the details!",
+  });
 }
-
