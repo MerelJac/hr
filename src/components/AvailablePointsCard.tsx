@@ -19,13 +19,6 @@ export default async function AvailablePointsCard() {
         <h2 className="text-2xl font-bold">{available}</h2>
         <p className="text-lg">Stars to Give</p>
       </div>
-
-       <Link
-          href="/recognize"
-          className="flex items-center gap-2 hover:text-blue-600"
-        >
-          <MoveRight size={18} />
-        </Link>
     </div>
   );
 }

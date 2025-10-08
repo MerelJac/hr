@@ -135,7 +135,7 @@ const availableChallenges: Challenge[] = challenges
                 <CommentList
                   recognitionId={r.id}
                   users={users}
-                  defaultRecipientId={r.recipients[0]?.id}
+                  defaultRecipientId={r.recipients[0]?.recipient?.id}
                 />
               </React.Fragment>
             ))}

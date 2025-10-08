@@ -7,6 +7,7 @@ import Image from "next/image";
 import logo from "@/assets/logo.png";
 
 export default function RegisterPage() {
+  const [message, setMessage] = useState("");
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -26,7 +27,8 @@ export default function RegisterPage() {
     if (res.ok) router.push("/login");
     else {
       const data = await res.json();
-      alert(data.error || "Registration failed");
+      setMessage("Registration failed");
+      console.error("Registration failure:", data.error);
     }
   }
 
@@ -74,6 +76,11 @@ export default function RegisterPage() {
           >
             Login
           </Link>
+          {message && (
+            <p className="block text-xs text-center w-full text-red py-2">
+              {message}
+            </p>
+          )}
         </form>
       </main>
     </section>

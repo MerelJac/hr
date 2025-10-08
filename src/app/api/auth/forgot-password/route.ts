@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
     const resetUrl = `${process.env.APP_URL}/reset-password?token=${token}`;
     try {
       await sendForgotPasswordEmail(user.email, resetUrl);
+      console.error("Sent forgot-password email", user.email);
     } catch (err) {
       console.error("❌ Error sending forgot-password email:", err);
     }
