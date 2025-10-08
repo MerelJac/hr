@@ -9,12 +9,14 @@ import logo from "@/assets/logo.png";
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
   const router = useRouter();
   const sp = useSearchParams();
   const callbackUrl = sp.get("callbackUrl") || "/";
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setMessage(""); // reset message
     const res = await signIn("credentials", {
       email,
       password,
@@ -22,7 +24,7 @@ function LoginForm() {
       callbackUrl,
     });
     if (res?.ok) router.push(callbackUrl);
-    else alert(res?.error || "Login failed");
+    else setMessage("Login failed");
   }
 
   return (
@@ -60,6 +62,11 @@ function LoginForm() {
       >
         Forgot password?
       </Link>
+      {message && (
+        <p className="block text-xs text-center w-full text-red py-2">
+          {message}
+        </p>
+      )}
     </form>
   );
 }
