@@ -44,6 +44,8 @@ async function sendEmail({
  * Welcome email
  */
 export async function sendWelcomeEmail(to: string) {
+  const appUrl = process.env.APP_URL || "https://callone.igniteappreciation.com";
+
   return sendEmail({
     to,
     subject: "Welcome to Ignite Appreciation!",
@@ -52,14 +54,21 @@ export async function sendWelcomeEmail(to: string) {
         <h2>Welcome to Ignite Appreciation 🔥</h2>
         <p>Thanks for signing up — you’re officially part of the appreciation movement!</p>
         <p>We’re excited to have you on board.</p>
+        <p>
+          <a href="${appUrl}/register" 
+             style="display:inline-block; background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+            Click here to get started
+          </a>
+        </p>
         <br/>
         <p style="font-size: 0.9rem; color: #888;">— Call One, Inc Team</p>
       </div>
     `,
-    text:
-      "Welcome to Ignite Appreciation! You're officially part of the appreciation movement 🔥",
+    text: `Welcome to Ignite Appreciation! You're officially part of the appreciation movement 🔥
+Get started here: ${appUrl}/register`,
   });
 }
+
 
 /**
  * Recognition / redemption email
