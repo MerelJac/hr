@@ -3,10 +3,10 @@ import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
 // Initialize once for all sends
 const ses = new SESClient({
-  region: process.env.AWS_REGION!, // ← use AWS_* to match Amplify env vars
+  region: process.env.SES_REGION!, // ← use SES_* to match Amplify env vars
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    accessKeyId: process.env.SES_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.SES_SECRET_ACCESS_KEY!,
   },
 });
 
