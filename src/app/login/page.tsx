@@ -54,6 +54,12 @@ function LoginForm() {
       >
         Register
       </Link>
+      <Link
+        href="/forgot-password"
+        className="block text-xs text-end w-full text-black py-2 hover:text-gray-300"
+      >
+        Forgot password?
+      </Link>
     </form>
   );
 }

@@ -17,6 +17,8 @@ export async function middleware(req: NextRequest) {
     "/api/debug-env", // ENV testing
     "/images",
     "/public",
+    "/forgot-password",
+    "/reset-password",
   ];
   if (publicPaths.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
     return NextResponse.next();
