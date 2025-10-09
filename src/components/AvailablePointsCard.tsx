@@ -2,8 +2,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getAvailablePoints } from "@/lib/recognition";
-import { MoveRight } from "lucide-react";
-import Link from "next/link";
 import { User } from "@/types/user";
 
 export default async function AvailablePointsCard() {

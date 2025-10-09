@@ -1,14 +1,7 @@
 "use client";
 import { useState } from "react";
-
-type Reward = {
-  id: string;
-  categoryId: string;
-  label: string;
-  valueCents: number;
-  pointsCost: number;
-  isActive: boolean;
-};
+import { Reward } from "@/types/reward";
+import Image from "next/image";
 
 type RewardCategory = {
   id: string;
@@ -121,11 +114,11 @@ export default function RedeemClient({
                   }`}
                 >
                   <span className="font-semibold">{r.label}</span>
+                  {r.imageUrl && <Image src={r.imageUrl} alt={r.label} width={80} height={80} />}
                   <span className="text-sm text-gray-600">
                     {currentCategory.name === "Gift Card"
                       ? "Flexible amount"
-                      : `$${(r.valueCents / 100).toFixed(2)}`}{" "}
-                    · {r.pointsCost} pts
+                      : `${r.pointsCost} pts`}
                   </span>
                 </button>
               ))}

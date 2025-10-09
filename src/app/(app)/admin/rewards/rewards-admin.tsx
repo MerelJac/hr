@@ -8,7 +8,6 @@ type RewardCategory = {
   name: string;
 };
 
-
 export default function RewardsAdmin({
   rewards,
   categories,
@@ -66,6 +65,31 @@ export default function RewardsAdmin({
     const res = await fetch(`/api/rewards/${id}`, { method: "DELETE" });
     if (res.ok) location.reload();
     else alert("Failed to delete reward");
+  }
+
+  async function uploadRewardImage(file: File) {
+    try {
+      if (!file) return;
+
+      // 1️⃣ Ask the backend for a presigned URL
+      const res = await fetch(
+        `/api/util/images?contentType=${encodeURIComponent(file.type)}`
+      );
+      const { uploadUrl, publicUrl } = await res.json();
+
+      // 2️⃣ Upload directly to S3 (PUT)
+      const uploadRes = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+
+      if (!uploadRes.ok) throw new Error("S3 upload failed");
+      console.log("Image uploaded to S3:", publicUrl);
+      setSelected((prev) => (prev ? { ...prev, imageUrl: publicUrl } : prev));
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   return (
@@ -131,8 +155,9 @@ export default function RewardsAdmin({
                 <p className="text-sm">
                   {r.category?.name === "Gift Card"
                     ? "Flexible amount"
-                    : `Value: ${(r.valueCents ?? 0 / 100).toFixed(2)} ${r.pointsCost} pts`}
-                  
+                    : `Value: ${(r.valueCents ?? 0 / 100).toFixed(2)} ${
+                        r.pointsCost
+                      } pts`}
                 </p>
                 <span
                   className={`px-2 py-1 rounded text-xs font-medium ${
@@ -228,6 +253,7 @@ export default function RewardsAdmin({
                   valueCents: Number(formData.get("valueCents")) ?? 0, // defauly 0
                   pointsCost: Number(formData.get("pointsCost")),
                   isActive: formData.get("isActive") === "on",
+                  imageUrl: selected?.imageUrl, // from S3 upload
                 });
               }}
               className="space-y-3"
@@ -264,22 +290,10 @@ export default function RewardsAdmin({
               <input
                 type="file"
                 accept="image/*"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-
-                  // Example: upload to /api/upload or Cloudinary/S3
-                  const formData = new FormData();
-                  formData.append("file", file);
-
-                  const res = await fetch("/api/upload", {
-                    method: "POST",
-                    body: formData,
-                  });
-
-                  const { url } = await res.json();
-                 setSelected((prev) => prev ? { ...prev, imageUrl: url } : prev);
-
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    uploadRewardImage(e.target.files[0]);
+                  }
                 }}
               />
               <label className="flex items-center gap-2">
