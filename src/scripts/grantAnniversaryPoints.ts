@@ -54,4 +54,4 @@ export async function grantAnniversaryPoints() {
   console.log(`✅ Finished processing ${matchingUsers.length} anniversaries`);
 }
 
-grantAnniversaryPoints().finally(() => prisma.$disconnect());
+// grantAnniversaryPoints().finally(() => prisma.$disconnect());

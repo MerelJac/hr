@@ -12,4 +12,5 @@ export async function grantMonthlyPoints() {
   console.log(`✅ Reset ${result.count} employees' monthly points to 50`);
 }
 
-grantMonthlyPoints().finally(() => prisma.$disconnect());
+
+// grantMonthlyPoints().finally(() => prisma.$disconnect());

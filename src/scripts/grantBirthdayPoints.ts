@@ -57,4 +57,4 @@ export async function grantBirthdayPoints() {
   console.log(`🎉 Granted 500 birthday points to ${updates.length} employees!`);
 }
 
-grantBirthdayPoints().finally(() => prisma.$disconnect());
+// grantBirthdayPoints().finally(() => prisma.$disconnect());
