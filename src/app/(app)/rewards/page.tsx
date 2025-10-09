@@ -49,8 +49,8 @@ export default async function RewardsPage() {
         categories={safeCategories}
       />
 
-      <section className="space-y-2">
-        <h2 className="text-lg font-semibold text-white">Recent Redemptions</h2>
+      <section className="space-y-2 p-6 max-w-2xl">
+        <h2 className="text-lg font-semibold text-black">Recent Redemptions</h2>
         <ul className="space-y-2">
           {history.map((r) => (
             <li key={r.id} className="border-2 rounded-xl bg-white p-3">

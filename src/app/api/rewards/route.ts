@@ -14,7 +14,7 @@ export async function GET() {
 // CREATE reward
 export async function POST(req: NextRequest) {
   try {
-    const { label, categoryId, valueCents, pointsCost, isActive } =
+    const { label, categoryId, valueCents, pointsCost, isActive, imageUrl } =
       await req.json();
 
     const reward = await prisma.rewardCatalog.create({
@@ -23,7 +23,8 @@ export async function POST(req: NextRequest) {
         categoryId,
         valueCents,
         pointsCost,
-        isActive
+        isActive,
+        imageUrl, // default empty string
       },
     });
     return NextResponse.json(reward);

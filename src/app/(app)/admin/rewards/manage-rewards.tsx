@@ -29,7 +29,7 @@ export default function ManageRewards({
   );
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6 p-6">
       <div className="w-full">
         {/* Tabs */}
         <div className="flex border-b mb-4">

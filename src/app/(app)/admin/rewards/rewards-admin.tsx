@@ -3,6 +3,7 @@
 import { Reward } from "@/types/reward";
 import { useState } from "react";
 import Image from "next/image";
+import { Edit, Trash } from "lucide-react";
 
 type RewardCategory = {
   id: string;
@@ -20,6 +21,9 @@ export default function RewardsAdmin({
   const [selected, setSelected] = useState<Reward | null>(null);
   const [catOpen, setCatOpen] = useState(false);
   const [selectedCat, setSelectedCat] = useState<RewardCategory | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(
+    selected?.imageUrl ?? null
+  );
 
   async function saveCategory(data: Partial<RewardCategory>) {
     const method = selectedCat?.id ? "PATCH" : "POST";
@@ -38,7 +42,9 @@ export default function RewardsAdmin({
 
   async function deleteCategory(id: string) {
     if (!confirm("Delete this category permanently?")) return;
-    const res = await fetch(`/api/rewards/categories/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/rewards/categories/${id}`, {
+      method: "DELETE",
+    });
     if (res.ok) location.reload();
     else alert("Failed to delete category");
   }
@@ -66,7 +72,9 @@ export default function RewardsAdmin({
   async function uploadRewardImage(file: File) {
     try {
       if (!file) return;
-      const res = await fetch(`/api/util/images?contentType=${encodeURIComponent(file.type)}`);
+      const res = await fetch(
+        `/api/util/images?contentType=${encodeURIComponent(file.type)}`
+      );
       const { uploadUrl, publicUrl } = await res.json();
       const uploadRes = await fetch(uploadUrl, {
         method: "PUT",
@@ -74,7 +82,7 @@ export default function RewardsAdmin({
         body: file,
       });
       if (!uploadRes.ok) throw new Error("S3 upload failed");
-      setSelected((prev) => (prev ? { ...prev, imageUrl: publicUrl } : prev));
+      setImageUrl(publicUrl);
     } catch (err) {
       console.error(err);
     }
@@ -92,15 +100,28 @@ export default function RewardsAdmin({
       <section>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Reward Categories</h2>
-          <button
-            onClick={() => {
-              setSelectedCat(null);
-              setCatOpen(true);
-            }}
-            className="bg-blue-600 text-white px-3 py-2 rounded-xl"
-          >
-            + Add Category
-          </button>
+          <div className="flex justify-end gap-6">
+            <button
+              onClick={() => {
+                setSelectedCat(null);
+                setCatOpen(true);
+              }}
+              className="bg-blue-600 text-white px-3 py-2 rounded-xl"
+            >
+              + Add Category
+            </button>
+
+            {/* Reward Add button */}
+            <button
+              onClick={() => {
+                setSelected(null);
+                setOpen(true);
+              }}
+              className="bg-green-600 text-white px-4 py-2 rounded-xl shadow"
+            >
+              + Add Reward
+            </button>
+          </div>
         </div>
 
         {/* Category list with sublists of rewards */}
@@ -118,7 +139,7 @@ export default function RewardsAdmin({
                     }}
                     className="text-blue-600 hover:underline"
                   >
-                    Edit
+                    <Edit size={16} />
                   </button>
                   <button
                     onClick={(e) => {
@@ -127,13 +148,13 @@ export default function RewardsAdmin({
                     }}
                     className="text-red-600 hover:underline"
                   >
-                    Delete
+                    <Trash size={16} />
                   </button>
                 </div>
               </summary>
 
               {/* Rewards under this category */}
-              <ul className="pl-6 pb-4 space-y-3 bg-gray-50 border-t border-gray-100">
+              <ul className="p-4 space-y-3 bg-gray-50 border-t border-gray-100">
                 {cat.rewards.length === 0 && (
                   <li className="text-sm text-gray-500 italic px-3 py-2">
                     No rewards in this category yet.
@@ -149,8 +170,8 @@ export default function RewardsAdmin({
                         <Image
                           src={r.imageUrl}
                           alt={r.label}
-                          width={48}
-                          height={48}
+                          width={80}
+                          height={80}
                           className="rounded-md"
                         />
                       )}
@@ -181,13 +202,13 @@ export default function RewardsAdmin({
                         }}
                         className="text-blue-600 hover:underline"
                       >
-                        Edit
+                        <Edit size={16} />
                       </button>
                       <button
                         onClick={() => deleteReward(r.id)}
                         className="text-red-600 hover:underline"
                       >
-                        Delete
+                        <Trash size={16} />
                       </button>
                     </div>
                   </li>
@@ -197,19 +218,6 @@ export default function RewardsAdmin({
           ))}
         </div>
       </section>
-
-      {/* Reward Add button */}
-      <div className="flex justify-end">
-        <button
-          onClick={() => {
-            setSelected(null);
-            setOpen(true);
-          }}
-          className="bg-green-600 text-white px-4 py-2 rounded-xl shadow"
-        >
-          + Add Reward
-        </button>
-      </div>
 
       {/* Category Modal */}
       {catOpen && (
@@ -265,13 +273,21 @@ export default function RewardsAdmin({
               onSubmit={(e) => {
                 e.preventDefault();
                 const formData = new FormData(e.currentTarget);
+                console.log("form data", {
+                  label: formData.get("label"),
+                  categoryId: formData.get("categoryId"),
+                  valueCents: formData.get("valueCents"),
+                  pointsCost: formData.get("pointsCost"),
+                  isActive: formData.get("isActive"),
+                  imageUrl: imageUrl,
+                });
                 saveReward({
                   label: formData.get("label") as string,
                   categoryId: formData.get("categoryId") as string,
                   valueCents: Number(formData.get("valueCents")) ?? 0,
                   pointsCost: Number(formData.get("pointsCost")),
                   isActive: formData.get("isActive") === "on",
-                  imageUrl: selected?.imageUrl,
+                  imageUrl,
                 });
               }}
               className="space-y-3"
@@ -305,10 +321,10 @@ export default function RewardsAdmin({
                 required
               />
               <label className="block text-sm font-medium">Image</label>
-              {selected?.imageUrl && (
+              {imageUrl && (
                 <div className="mb-2">
                   <Image
-                    src={selected.imageUrl}
+                    src={imageUrl}
                     alt="Reward Image"
                     width={80}
                     height={80}

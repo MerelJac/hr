@@ -104,7 +104,7 @@ export default function RedeemClient({
                 <button
                   key={r.id}
                   onClick={() => setSelectedReward(r)}
-                  className={`rounded-lg p-4 border flex flex-col items-center justify-center ${
+                  className={`rounded-lg p-4 border flex flex-col items-center justify-center max-w-xl ${
                     selectedReward?.id === r.id
                       ? "ring-2 ring-blue-500 bg-blue-100"
                       : "bg-white"
@@ -115,8 +115,8 @@ export default function RedeemClient({
                     <Image
                       src={r.imageUrl}
                       alt={r.label}
-                      width={80}
-                      height={80}
+                      width={150}
+                      height={150}
                     />
                   )}
                   <span className="text-sm text-gray-600">
