@@ -20,7 +20,7 @@ export default function AppShellLayout({
           overflow-y-auto 
           w-full
           md:ml-64
-          pb-20   /* 👈 leaves space for bottom nav on mobile */
+          pb-20
         "
       >
         {children}
