@@ -28,6 +28,10 @@ export default function CommentList({
 
   async function submitComment() {
     try {
+      if (!message.trim()) {
+        setError("Comment cannot be empty");
+        return;
+      }
       const res = await fetch("/api/comments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -126,7 +130,7 @@ export default function CommentList({
           </button>
         </div>
       ) : (
-        <div className="mt-2">
+        <div className="mt-2 flex justify-end">
           <button
             onClick={() => setShowCommentBox(true)}
             className="bg-gray-200 px-3 py-1 rounded-lg"

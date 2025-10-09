@@ -104,7 +104,7 @@ export default function RedeemClient({
                 <button
                   key={r.id}
                   onClick={() => setSelectedReward(r)}
-                  className={`rounded-lg p-4 border flex flex-col items-center justify-center max-w-xl ${
+                  className={`rounded-lg p-4 border flex flex-col items-center justify-center max-w-xl min-w-sm ${
                     selectedReward?.id === r.id
                       ? "ring-2 ring-blue-500 bg-blue-100"
                       : "bg-white"

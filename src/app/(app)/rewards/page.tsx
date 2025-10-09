@@ -26,21 +26,22 @@ export default async function RewardsPage() {
     }),
   ]);
 
-  const safeCategories = categories.map(c => ({
-  ...c,
-  rewards: c.rewards.map(r => ({
-    ...r,
-    valueCents: r.valueCents ?? 0, // normalize null → 0
-  })),
-}));
+  const safeCategories = categories.map((c) => ({
+    ...c,
+    rewards: c.rewards.map((r) => ({
+      ...r,
+      valueCents: r.valueCents ?? 0, // normalize null → 0
+    })),
+  }));
 
   return (
     <main className="space-y-6 bg-white rounded-xl">
       <div className="flex items-center justify-between p-6 shadow-md">
         <h1 className="text-2xl font-semibold">Redeem Points</h1>
-        <p className="text-2xl font-semibold text-blue bg-white p-4 rounded-xl">
-          {user?.pointsBalance ?? 0} stars to redeem
-        </p>
+
+        <div className="bg-blue-50 text-blue-700 px-6 py-3 rounded-xl text-lg font-semibold mt-4 sm:mt-0">
+          ⭐ {user?.pointsBalance ?? 0} points available
+        </div>
       </div>
 
       <RedeemClient
@@ -49,39 +50,73 @@ export default async function RewardsPage() {
         categories={safeCategories}
       />
 
-      <section className="space-y-2 p-6 max-w-2xl">
-        <h2 className="text-lg font-semibold text-black">Recent Redemptions</h2>
-        <ul className="space-y-2">
-          {history.map((r) => (
-            <li key={r.id} className="border-2 rounded-xl bg-white p-3">
-              <div className="text-sm">
-                <b>{r.catalog?.label || r.catalogId}</b> —{" "}
-                {r.valueCents
-                  ? `$${r.valueCents / 100}`
-                  : `${r.pointsSpent} pts`}
-                {" · "}status: {r.status}
-              </div>
-              {r.code && (
-                <div className="text-xs mt-1">
-                  Code: <code>{r.code}</code>
+      {/* Redemption History */}
+      <section className="bg-white rounded-2xl shadow p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">
+          Recent Redemptions
+        </h2>
+        {history.length === 0 ? (
+          <p className="text-sm text-gray-500 italic">No redemptions yet.</p>
+        ) : (
+          <ul className="space-y-3">
+            {history.map((r) => (
+              <li
+                key={r.id}
+                className="border border-gray-200 rounded-xl p-4 hover:bg-gray-50 transition"
+              >
+                <div className="flex justify-between items-center">
+                  <div>
+                    <div className="font-medium text-gray-900">
+                      {r.catalog?.label || r.catalogId}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {r.valueCents
+                        ? `$${(r.valueCents / 100).toFixed(2)}`
+                        : `${r.pointsSpent} pts`}
+                      {" · "}
+                      <span
+                        className={`${
+                          r.status === "FULFILLED"
+                            ? "text-green-600"
+                            : r.status === "FAILED" || r.status === "CANCELLED"
+                            ? "text-red-600"
+                            : "text-yellow-600"
+                        }`}
+                      >
+                        {r.status}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {new Date(r.createdAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </div>
                 </div>
-              )}
-              {r.claimUrl && (
-                <div className="text-xs">
-                  Claim:{" "}
-                  <a className="underline" href={r.claimUrl} target="_blank">
-                    link
-                  </a>
-                </div>
-              )}
-              <div className="text-xs text-gray-500">
-                {new Date(r.createdAt).toLocaleString("en-US", {
-                  timeZone: "UTC",
-                })}
-              </div>
-            </li>
-          ))}
-        </ul>
+
+                {r.code && (
+                  <div className="text-xs mt-1">
+                    Code: <code>{r.code}</code>
+                  </div>
+                )}
+                {r.claimUrl && (
+                  <div className="text-xs">
+                    Claim:{" "}
+                    <a
+                      className="underline text-blue-600"
+                      href={r.claimUrl}
+                      target="_blank"
+                    >
+                      link
+                    </a>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </main>
   );
