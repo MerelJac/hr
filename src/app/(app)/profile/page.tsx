@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { User } from "@/types/user";
+import LogoutButton from "@/app/login/logoutButton";
+import SupportButton from "@/components/SupportButton";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -271,6 +273,10 @@ export default function ProfilePage() {
                 <p className="text-sm text-gray-600">{passwordMessage}</p>
               )}
             </div>
+          </div>
+          <div className="flex flex-row gap-3 justify-center items-center">
+            <LogoutButton />
+            <SupportButton/>
           </div>
         </div>
       )}

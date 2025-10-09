@@ -1,4 +1,3 @@
-// src/app/sidebar.tsx (server)
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import {
@@ -22,9 +21,12 @@ export default async function Sidebar() {
   const role = (session?.user as User)?.role;
 
   return (
-    <aside className="flex flex-col w-[15rem] p-4 space-y-3 h-screen justify-between">
+    <aside className="hidden md:flex flex-col w-[15rem] p-4 space-y-3 h-screen justify-between shadow-md bg-white sticky top-0">
       <div className="flex flex-col space-y-3">
-        <Image src={logo} alt="Logo" />
+        {/* Centered logo */}
+        <div className="flex justify-center">
+          <Image src={logo} alt="Logo" className="w-32 mb-2" />
+        </div>{" "}
         <Link
           href="/feed"
           className="flex items-center gap-2 hover:text-blue-600"
@@ -37,42 +39,45 @@ export default async function Sidebar() {
           className="flex items-center gap-2 hover:text-blue-600"
         >
           <Gift size={18} />
-          <span> Rewards</span>
+          <span>Rewards</span>
         </Link>
         {role === "SUPER_ADMIN" && (
           <>
-            <small>ADMIN</small>
+            <small className="text-gray-400 uppercase text-xs mt-2">
+              Admin
+            </small>
             <Link
               href="/admin/challenges"
               className="flex items-center gap-2 hover:text-blue-600"
             >
               <Rocket size={18} />
-              <span> Challenges</span>
+              <span>Challenges</span>
             </Link>
             <Link
               href="/admin/rewards"
               className="flex items-center gap-2 hover:text-blue-600"
             >
               <Handbag size={18} />
-              <span> Manage Rewards</span>
+              <span>Manage Rewards</span>
             </Link>
             <Link
               href="/admin/leaderboard"
               className="flex items-center gap-2 hover:text-blue-600"
             >
               <AlignEndHorizontal size={18} />
-              <span> Leaderboard</span>
+              <span>Leaderboard</span>
             </Link>
             <Link
               href="/admin/users"
               className="flex items-center gap-2 hover:text-blue-600"
             >
               <Users size={18} />
-              <span> Users & Invites</span>
+              <span>Users & Invites</span>
             </Link>
           </>
         )}
       </div>
+
       <div className="flex flex-col space-y-3">
         <Link
           href="/profile"
