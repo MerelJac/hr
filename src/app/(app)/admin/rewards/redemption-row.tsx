@@ -11,7 +11,8 @@ export default function RedemptionRow({ r }: { r: Redemption }) {
 
   async function act(action: string) {
     setLoading(true);
-    const res = await fetch(`/api/rewards/${r.id}`, {
+    console.log('reward id', r.id)
+    const res = await fetch(`/api/redeem/${r.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action, code, claimUrl }),
@@ -40,10 +41,12 @@ export default function RedemptionRow({ r }: { r: Redemption }) {
   return (
     <li className="border-2 bg-white rounded-lg p-3 text-sm space-y-2">
       <div>
-        <b>{r.catalogId}</b> • ${r.valueCents / 100} • {r.pointsSpent} pts •{" "}
-        <span className="font-semibold">{r.status}</span>
+        <b>{r.catalog?.label}</b>{" "}
+        {r.valueCents > 0 && <>• ${(r.valueCents / 100).toFixed(2)} </>}•{" "}
+        {r.pointsSpent} pts • <span className="font-semibold">{r.status}</span>
       </div>
-      <div>User: {r.user.email }</div>
+
+      <div>User: {r.user.email}</div>
 
       {r.code && (
         <div>

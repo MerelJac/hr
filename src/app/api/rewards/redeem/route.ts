@@ -9,21 +9,42 @@ import { handleApiError } from "@/lib/handleApiError";
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   const user = session?.user as User;
-  if (!user?.id)
+  if (!user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const { amount, deliverEmail, idemKey } = await req.json();
-  if (!amount || amount < 10 || amount % 5 !== 0) {
-    return NextResponse.json(
-      { error: "Invalid redemption request" },
-      { status: 400 }
-    );
   }
 
-  const pointsCost = amount * 10;
-  const valueCents = amount * 100;
-
   try {
+    const body = await req.json();
+    const { catalogId, pointsCost, deliverEmail, idemKey } = body;
+
+    if (!catalogId || !pointsCost) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    // 🔹 Fetch reward to check if it's a Gift Card or custom
+    const reward = await prisma.rewardCatalog.findUnique({
+      where: { id: catalogId },
+      include: { category: true },
+    });
+
+    if (!reward)
+      return NextResponse.json({ error: "Reward not found" }, { status: 404 });
+
+    // 🔹 Determine conversion
+    let valueCents: number | null = null;
+
+    if (reward.category?.name === "Gift Card") {
+      // Gift cards use 10 pts = $1
+      valueCents = (pointsCost / 10) * 100; // convert points → cents
+    } else {
+      // Custom rewards: pointsCost *is* the cost, but you can optionally assign a valueCents
+      valueCents = reward.valueCents ?? 0;
+    }
+
+    // 🔹 Transaction
     const redemption = await prisma.$transaction(async (tx) => {
       const dbUser = await tx.user.findUnique({ where: { id: user.id } });
       if (!dbUser) throw new Error("User not found");
@@ -35,12 +56,10 @@ export async function POST(req: NextRequest) {
         if (existing) return existing;
       }
 
-      if (!user?.id) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
       const r = await tx.redemption.create({
         data: {
           userId: user.id,
+          catalogId: reward.id,
           pointsSpent: pointsCost,
           valueCents,
           deliverEmail: deliverEmail ?? dbUser.email,
@@ -58,13 +77,13 @@ export async function POST(req: NextRequest) {
       return r;
     });
 
-    // Notify user via email
+    // 🔹 Notify via email
     if (deliverEmail) {
-      await sendRecognitionEmail(user.email);
+      await sendRecognitionEmail(deliverEmail);
     }
 
     return NextResponse.json({ ok: true, redemption });
-  } catch (e: unknown) {
+  } catch (e) {
     return handleApiError(e);
   }
 }

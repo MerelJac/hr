@@ -48,15 +48,12 @@ export default function RedeemClient({
 
     const idemKey = `redeem_${selectedReward?.id}_${Date.now()}`;
 
-    const payload =
-      currentCategory?.name === "Gift Card"
-        ? {
-            catalogId: selectedReward?.id,
-            amount,
-            deliverEmail: email,
-            idemKey,
-          }
-        : { catalogId: selectedReward?.id, deliverEmail: email, idemKey };
+    const payload = {
+      catalogId: selectedReward?.id,
+      pointsCost,
+      deliverEmail: email,
+      idemKey,
+    };
 
     const res = await fetch("/api/rewards/redeem", {
       method: "POST",
@@ -114,7 +111,14 @@ export default function RedeemClient({
                   }`}
                 >
                   <span className="font-semibold">{r.label}</span>
-                  {r.imageUrl && <Image src={r.imageUrl} alt={r.label} width={80} height={80} />}
+                  {r.imageUrl && (
+                    <Image
+                      src={r.imageUrl}
+                      alt={r.label}
+                      width={80}
+                      height={80}
+                    />
+                  )}
                   <span className="text-sm text-gray-600">
                     {currentCategory.name === "Gift Card"
                       ? "Flexible amount"

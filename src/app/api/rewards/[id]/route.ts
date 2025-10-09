@@ -17,12 +17,12 @@ export async function PATCH(
   }
 
   try {
-    const { label, categoryId, valueCents, pointsCost, isActive, imageUrl } =
+    const { label, categoryId, valueCents, pointsCost, isActive } =
       await req.json();
 
     const reward = await prisma.rewardCatalog.update({
       where: { id },
-      data: { label, categoryId, valueCents, pointsCost, isActive, imageUrl },
+      data: { label, categoryId, valueCents, pointsCost, isActive },
     });
 
     return NextResponse.json(reward);
