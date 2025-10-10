@@ -10,7 +10,7 @@ export async function grantAnniversaryPoints() {
 
   // Find employees with anniversaries
   const anniversaryUsers = await prisma.user.findMany({
-    where: { role: "EMPLOYEE", workAnniversary: { not: null } },
+    where: { workAnniversary: { not: null } },
   });
 
   const matchingUsers = anniversaryUsers.filter((u) => {

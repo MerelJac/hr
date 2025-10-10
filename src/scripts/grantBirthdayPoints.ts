@@ -8,10 +8,9 @@ export async function grantBirthdayPoints() {
   const month = today.getMonth() + 1; // JS months are 0–11
   const day = today.getDate();
 
-  // Find employees whose birthday matches today (month + day)
+  // Find faculty whose birthday matches today (month + day)
   const birthdayUsers = await prisma.user.findMany({
     where: {
-      role: "EMPLOYEE",
       birthday: {
         not: null,
       },
