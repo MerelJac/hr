@@ -1,6 +1,7 @@
 // src/scripts/grantBirthdayPoints.ts
 // Run with: npx tsx src/scripts/grantBirthdayPoints.ts
 
+import { sendBirthdayEmail } from "@/lib/emailTemplates";
 import { prisma } from "@/lib/prisma";
 
 export async function grantBirthdayPoints() {
@@ -42,6 +43,9 @@ export async function grantBirthdayPoints() {
       },
     });
   }
+
+  // Send one email to all birthday users (parallel)
+  await Promise.all(matchingUsers.map((u) => sendBirthdayEmail(u.email)));
 
   // Update all birthday users
   const updates = await Promise.all(

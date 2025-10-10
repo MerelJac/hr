@@ -1,6 +1,7 @@
 // src/scripts/grantAnniversaryPoints.ts
 // Run with: npx tsx src/scripts/grantAnniversaryPoints.ts
 
+import { sendWorkAnniversaryEmail } from "@/lib/emailTemplates";
 import { prisma } from "@/lib/prisma";
 
 export async function grantAnniversaryPoints() {
@@ -32,7 +33,9 @@ export async function grantAnniversaryPoints() {
     await prisma.recognition.create({
       data: {
         senderId: process.env.SYSTEM_ADMIN_ID || "", // must be a valid User.id
-        message: `Happy Work Anniversary! 🎉 It's been a wonderful ${years} year${years > 1 ? "s" : ""} with you here at Call One / Hello Direct!`,
+        message: `Happy Work Anniversary! 🎉 It's been a wonderful ${years} year${
+          years > 1 ? "s" : ""
+        } with you here at Call One / Hello Direct!`,
         recipients: {
           create: {
             recipientId: u.id,
@@ -47,8 +50,14 @@ export async function grantAnniversaryPoints() {
       where: { id: u.id },
       data: { pointsBalance: { increment: 500 } },
     });
+    // Send one email to all anniversary users (parallel)
+    await Promise.all(
+      matchingUsers.map((u) => sendWorkAnniversaryEmail(u.email))
+    );
 
-    console.log(`🎉 Granted 500 anniversary points to ${u.email} (${years} yrs)`);
+    console.log(
+      `🎉 Granted 500 anniversary points to ${u.email} (${years} yrs)`
+    );
   }
 
   console.log(`✅ Finished processing ${matchingUsers.length} anniversaries`);

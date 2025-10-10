@@ -96,6 +96,81 @@ export async function sendRecognitionEmail(to: string) {
 }
 
 /**
+ * Birthday email
+ */
+export async function sendBirthdayEmail(to: string) {
+  return sendEmail({
+    to,
+    subject: "Happy Birthday 🎉",
+    html: `
+      <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+        <h2>Happy Birthday! 🎉</h2>
+        <p>You've been awarded some Ignite Appreciation to help celebrate your birthday.</p>
+        <p>
+          <a href="https://callone.igniteappreciation.com/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+              Check it out!
+            </a>
+        </p>
+        <p>Log in to view the details and keep the appreciation going!</p>
+        <br/>
+        <p style="font-size: 0.9rem; color: #888;">— Call One, Inc Team</p>
+      </div>
+    `,
+    text: "Happy Birthday! You've been awarded some Ignite Appreciation to help celebrate your birthday. Log in to view the details!",
+  });
+}
+
+/**
+ * Work Anniversary email
+ */
+export async function sendWorkAnniversaryEmail(to: string) {
+  return sendEmail({
+    to,
+    subject: "Happy Work Anniversary 🎉",
+    html: `
+      <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+        <h2>Happy Work Anniversary! 🎉</h2>
+        <p>Thank you for all your time spend with Call One, Inc. Here are some points as a token of our appreciation!</p>
+        <p>
+          <a href="https://callone.igniteappreciation.com/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+              Check it out!
+            </a>
+        </p>
+        <p>Log in to view the details and keep the appreciation going!</p>
+        <br/>
+        <p style="font-size: 0.9rem; color: #888;">— Call One, Inc Team</p>
+      </div>
+    `,
+    text: "Happy Work Anniversary! Thank you for all your time spend with Call One, Inc. Here are some points as a token of our appreciation! Log in to view the details!",
+  });
+}
+
+/**
+ * Monthly Points email
+ */
+export async function sendMonthlyPointsNotification(to: string) {
+  return sendEmail({
+    to,
+    subject: "You've been allotted points! 🎉",
+    html: `
+      <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+        <h2>Your account has been granted more monthly points!🎉</h2>
+        <p>Start sending some kudos! 🎉 Log in to keep the appreciation going!</p>
+        <p>
+          <a href="https://callone.igniteappreciation.com/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+              Check it out!
+            </a>
+        </p>
+        <p>Log in to view to keep the appreciation going!</p>
+        <br/>
+        <p style="font-size: 0.9rem; color: #888;">— Call One, Inc Team</p>
+      </div>
+    `,
+    text: "Your account has been granted more monthly points! Start sending some kudos! 🎉 Log in to keep the appreciation going!",
+  });
+}
+
+/**
  * Forgot password email
  */
 export async function sendForgotPasswordEmail(to: string, resetUrl: string) {

@@ -20,6 +20,27 @@ async function user() {
       department: "Human Resources",
     },
   });
+  // System Admin
+  const systemEmail = "mjacobs+system@calloneonline.com";
+  const systemId = process.env.SYSTEM_ADMIN_ID;
+  if (!systemId) {
+    throw new Error("SYSTEM_ADMIN_ID environment variable is not set.");
+  }
+  if (!process.env.SYSTEM_ADMIN_PASSWORD) {
+    throw new Error("SYSTEM_ADMIN_PASSWORD environment variable is not set.");
+  }
+  await prisma.user.upsert({
+    where: { email: systemEmail },
+    update: { role: Role.SUPER_ADMIN },
+    create: {
+      email,
+      passwordHash,
+      role: Role.SUPER_ADMIN,
+      firstName: "System",
+      lastName: "Admin",
+      department: "Human Resources",
+    },
+  });
 }
 
 async function reward() {
@@ -48,7 +69,7 @@ async function reward() {
         categoryId: giftCardCategory.id,
         label: "Amazon Gift Card",
         valueCents: 0,
-        pointsCost: 0
+        pointsCost: 0,
       },
     });
 
@@ -59,7 +80,7 @@ async function reward() {
         categoryId: giftCardCategory.id,
         label: "Visa Gift Card",
         valueCents: 0,
-        pointsCost: 0
+        pointsCost: 0,
       },
     });
   }
@@ -73,8 +94,10 @@ async function nominationChallenge() {
     update: {},
     create: {
       title: "Employee of the Month",
-      description: "Recognize outstanding employees who go above and beyond this month.",
-      qualification: "Nominate a coworker who demonstrates leadership, teamwork, and initiative.",
+      description:
+        "Recognize outstanding employees who go above and beyond this month.",
+      qualification:
+        "Nominate a coworker who demonstrates leadership, teamwork, and initiative.",
       startDate: new Date("2025-09-01"),
       endDate: new Date("2025-09-30"),
       isActive: true,
@@ -94,7 +117,8 @@ async function setupBonus() {
     update: {},
     create: {
       title: "Setup Bonus",
-      description: "Earn 5 points by uploading your profile picture and sending your first shoutout.",
+      description:
+        "Earn 5 points by uploading your profile picture and sending your first shoutout.",
       qualification: "Upload a profile picture and recognize a colleague.",
       startDate: new Date("2025-01-01T00:00:00Z"),
       endDate: new Date("2099-12-31T23:59:59Z"),
@@ -115,7 +139,8 @@ async function employeeReferral() {
     update: {},
     create: {
       title: "Employee Referral",
-      description: "After 90 days of employment for your referral, you will receive 1000 points!",
+      description:
+        "After 90 days of employment for your referral, you will receive 1000 points!",
       qualification: "Briefly explain why you're claiming this challenge.",
       startDate: new Date("2025-01-01T00:00:00Z"),
       endDate: new Date("2099-12-31T23:59:59Z"),

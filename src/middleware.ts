@@ -19,6 +19,7 @@ export async function middleware(req: NextRequest) {
     "/public",
     "/forgot-password",
     "/reset-password",
+    "/api/cron", // cron jobs
   ];
   if (publicPaths.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
     return NextResponse.next();
