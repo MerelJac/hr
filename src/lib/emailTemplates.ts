@@ -44,7 +44,8 @@ async function sendEmail({
  * Welcome email
  */
 export async function sendWelcomeEmail(to: string) {
-  const appUrl = process.env.APP_URL || "https://callone.igniteappreciation.com";
+  const appUrl =
+    process.env.APP_URL || "https://callone.igniteappreciation.com";
 
   return sendEmail({
     to,
@@ -69,25 +70,28 @@ Get started here: ${appUrl}/register`,
   });
 }
 
-
 /**
  * Recognition / redemption email
  */
 export async function sendRecognitionEmail(to: string) {
   return sendEmail({
     to,
-    subject: "Your Ignite Appreciation Recognition 🎉",
+    subject: "Ignite Appreciation Recognition 🎉",
     html: `
       <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
         <h2>You’ve been recognized! 🎉</h2>
         <p>Someone just celebrated your hard work through Ignite Appreciation.</p>
+        <p>
+          <a href="https://callone.igniteappreciation.com/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+              Check it out!
+            </a>
+        </p>
         <p>Log in to view the details and keep the appreciation going!</p>
         <br/>
         <p style="font-size: 0.9rem; color: #888;">— Call One, Inc Team</p>
       </div>
     `,
-    text:
-      "You’ve been recognized! Someone celebrated your hard work through Ignite Appreciation. Log in to view the details!",
+    text: "You’ve been recognized! Someone celebrated your hard work through Ignite Appreciation. Log in to view the details!",
   });
 }
 
@@ -96,9 +100,9 @@ export async function sendRecognitionEmail(to: string) {
  */
 export async function sendForgotPasswordEmail(to: string, resetUrl: string) {
   return sendEmail({
-      to,
-      subject: "Reset your Ignite Appreciation password",
-      html: `
+    to,
+    subject: "Reset your Ignite Appreciation password",
+    html: `
         <div style="font-family:sans-serif; line-height:1.5; color:#333;">
           <h2>Password reset requested</h2>
           <p>We received a request to reset your password.</p>
@@ -112,7 +116,6 @@ export async function sendForgotPasswordEmail(to: string, resetUrl: string) {
           <p style="font-size:0.9rem; color:#888;">— Call One, Inc Team</p>
         </div>
       `,
-    text:
-      "Reset your password! Click the link to reset: " + resetUrl,
+    text: "Reset your password! Click the link to reset: " + resetUrl,
   });
 }
