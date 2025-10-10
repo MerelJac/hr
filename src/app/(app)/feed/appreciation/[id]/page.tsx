@@ -3,6 +3,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import CommentList from "@/components/CommentList";
 import { User } from "@/types/user";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 function name(u: User) {
   const full = [u.firstName, u.lastName].filter(Boolean).join(" ");
@@ -31,8 +33,12 @@ export default async function AppreciationPage({
 
   return (
     <main className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Appreciation</h1>
-
+      <Link href={`/feed`}>
+        <button className="text-gray-700 text-xs flex flex-row w-full items-center gap-2 mb-4">
+          <ArrowLeft size={12} />
+          Back to Feed
+        </button>
+      </Link>{" "}
       <ul className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
         {/* Header: recipient(s) + points */}
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -41,17 +47,14 @@ export default async function AppreciationPage({
               <div key={rr.id} className="flex items-center gap-2">
                 <Image
                   src={
-                    rr.recipient.profileImage ??
-                    "/default-profile-image.svg"
+                    rr.recipient.profileImage ?? "/default-profile-image.svg"
                   }
                   alt="Profile"
                   width={64}
                   height={64}
                   className="rounded-full w-12 h-12 border-2 border-blue-500"
                 />
-                <b className="text-gray-900 text-lg">
-                  {name(rr.recipient)}
-                </b>
+                <b className="text-gray-900 text-lg">{name(rr.recipient)}</b>
                 {i < recognition.recipients.length - 1 && <span>,</span>}
               </div>
             ))}
@@ -67,8 +70,7 @@ export default async function AppreciationPage({
           recognized by
           <Image
             src={
-              recognition.sender.profileImage ??
-              "/default-profile-image.svg"
+              recognition.sender.profileImage ?? "/default-profile-image.svg"
             }
             alt="Profile"
             width={32}
@@ -101,7 +103,6 @@ export default async function AppreciationPage({
           })}
         </small>
       </ul>
-
       <div className="mt-8">
         <CommentList
           recognitionId={recognition.id}

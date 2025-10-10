@@ -36,9 +36,10 @@ async function user() {
       email,
       passwordHash,
       role: Role.SUPER_ADMIN,
-      firstName: "System",
-      lastName: "Admin",
+      firstName: "Call One",
+      lastName: "Inc",
       department: "Human Resources",
+      profileImage: "https://ignite-assets-bucket.s3.us-east-2.amazonaws.com/dev/profiles/cmgig6ajv0000s4179qaj1j66/62f0701f-3f6c-40d8-8986-e2a63cc9be4e.png"
     },
   });
 }
