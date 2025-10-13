@@ -20,12 +20,25 @@ export async function POST(req: NextRequest) {
     preferredName,
     birthday,
     workAnniversary,
-    department,
     sendEmail,
+    departmentId,
   } = await req.json();
 
   if (!email) {
     return NextResponse.json({ error: "Email required" }, { status: 400 });
+  }
+
+  // ✅ Optional: validate the departmentId exists
+  if (departmentId) {
+    const deptExists = await prisma.department.findUnique({
+      where: { id: departmentId },
+    });
+    if (!deptExists) {
+      return NextResponse.json(
+        { error: "Invalid department ID" },
+        { status: 400 }
+      );
+    }
   }
 
   const invite = await prisma.userInvite.upsert({
@@ -40,7 +53,7 @@ export async function POST(req: NextRequest) {
       preferredName,
       birthday: birthday ? new Date(birthday) : null,
       workAnniversary: workAnniversary ? new Date(workAnniversary) : null,
-      department,
+      departmentId,
       sendEmail: sendEmail ?? true,
     },
     update: {
@@ -51,7 +64,7 @@ export async function POST(req: NextRequest) {
       preferredName,
       birthday: birthday ? new Date(birthday) : null,
       workAnniversary: workAnniversary ? new Date(workAnniversary) : null,
-      department,
+      departmentId,
       sendEmail: sendEmail ?? true,
     },
   });

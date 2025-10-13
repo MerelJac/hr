@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import DepartmentsManager from "@/components/DepartmentManager";
+import { Department } from "@/types/department";
+import { useEffect, useState } from "react";
 
 export default function InviteForm() {
   const [open, setOpen] = useState(false);
-
+  const [departmentOpen, setDepartmentOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("EMPLOYEE");
   const [firstName, setFirstName] = useState("");
@@ -13,7 +15,17 @@ export default function InviteForm() {
   const [birthday, setBirthday] = useState("");
   const [workAnniversary, setWorkAnniversary] = useState("");
   const [sendEmail, setSendEmail] = useState(true);
-  const [department, setDepartment] = useState("");
+  const [departmentId, setDepartmentId] = useState("");
+  const [departments, setDepartments] = useState<Department[]>([]);
+
+  useEffect(() => {
+    if (open) {
+      fetch("/api/departments")
+        .then((res) => res.json())
+        .then((data) => setDepartments(data))
+        .catch((err) => console.error("Failed to load departments:", err));
+    }
+  }, [open]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -29,7 +41,7 @@ export default function InviteForm() {
         birthday,
         workAnniversary,
         sendEmail,
-        department,
+        departmentId,
       }),
     });
     if (res.ok) {
@@ -43,12 +55,21 @@ export default function InviteForm() {
   return (
     <>
       {/* Button to open modal */}
-      <button
-        onClick={() => setOpen(true)}
-        className="bg-black text-white px-3 py-2 rounded-xl"
-      >
-        + User
-      </button>
+      <div className="flex flex-row gap-2">
+        {" "}
+        <button
+          onClick={() => setOpen(true)}
+          className="bg-black text-white px-3 py-2 rounded-xl"
+        >
+          + User
+        </button>
+        <button
+          onClick={() => setDepartmentOpen(true)}
+          className="bg-black text-white px-3 py-2 rounded-xl"
+        >
+          + Departments
+        </button>
+      </div>
 
       {/* Modal overlay */}
       {open && (
@@ -116,31 +137,35 @@ export default function InviteForm() {
                 />
               </label>
 
-
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-gray-600">Permission Status</span>
-              <select
-                className="border rounded-xl px-3 py-2"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-              >
-                <option>EMPLOYEE</option>
-                <option>MANAGER</option>
-                <option>ADMIN</option>
-                <option>SUPER_ADMIN</option>
-              </select>
+                <select
+                  className="border rounded-xl px-3 py-2"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                >
+                  <option>EMPLOYEE</option>
+                  <option>MANAGER</option>
+                  <option>ADMIN</option>
+                  <option>SUPER_ADMIN</option>
+                </select>
               </label>
-
-
 
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-gray-600">Department</span>
-                <input
+                <select
                   className="border rounded-xl px-3 py-2"
-                  placeholder="Department"
-                  value={department}
-                  onChange={(e) => setDepartment(e.target.value)}
-                />
+                  value={departmentId}
+                  onChange={(e) => setDepartmentId(e.target.value)}
+                  required
+                >
+                  <option value="">Select a department</option>
+                  {departments.map((dept) => (
+                    <option key={dept.id} value={dept.id}>
+                      {dept.name}
+                    </option>
+                  ))}
+                </select>
               </label>
 
               <label className="flex items-center gap-2">
@@ -162,6 +187,10 @@ export default function InviteForm() {
           </div>
         </div>
       )}
+      <DepartmentsManager
+        open={departmentOpen}
+        onClose={() => setDepartmentOpen(false)}
+      />
     </>
   );
 }

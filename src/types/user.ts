@@ -12,6 +12,7 @@ export type User = {
   birthday: string | Date | null;
   workAnniversary: string | Date | null;
   role: string;
+  departmentId?: string | null;
   isActive: boolean;
   submittedNominations?: Nomination[];
 };

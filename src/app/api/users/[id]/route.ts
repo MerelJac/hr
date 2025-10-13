@@ -41,7 +41,7 @@ export async function PATCH(
   if (body.firstName !== undefined) data.firstName = body.firstName;
   if (body.lastName !== undefined) data.lastName = body.lastName;
   if (body.preferredName !== undefined) data.preferredName = body.preferredName;
-  if (body.department !== undefined) data.department = body.department;
+  if (body.departmentId !== undefined) data.departmentId = body.departmentId;
   if (body.birthday) data.birthday = new Date(body.birthday);
   if (body.workAnniversary)
     data.workAnniversary = new Date(body.workAnniversary);

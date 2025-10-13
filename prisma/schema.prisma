@@ -18,20 +18,22 @@ enum Role {
 }
 
 model User {
-  id                       String                 @id @default(cuid())
-  firstName                String?
-  lastName                 String?
-  email                    String                 @unique
-  profileImage             String?
-  passwordHash             String
-  role                     Role                   @default(EMPLOYEE)
-  pointsBalance            Int                    @default(0)
-  monthlyBudget            Int                    @default(50)
-  emailVerified            DateTime?
-  birthday                 DateTime?
-  workAnniversary          DateTime?
-  preferredName            String?
-  department               String?
+  id              String      @id @default(cuid())
+  firstName       String?
+  lastName        String?
+  email           String      @unique
+  profileImage    String?
+  passwordHash    String
+  role            Role        @default(EMPLOYEE)
+  pointsBalance   Int         @default(0)
+  monthlyBudget   Int         @default(50)
+  emailVerified   DateTime?
+  birthday        DateTime?
+  workAnniversary DateTime?
+  preferredName   String?
+  departmentId    String?
+  department      Department? @relation(fields: [departmentId], references: [id])
+
   createdAt                DateTime               @default(now())
   updatedAt                DateTime               @updatedAt
   sessions                 Session[]
@@ -55,11 +57,11 @@ model Session {
 }
 
 model UserInvite {
-  id              String    @id @default(cuid())
-  email           String    @unique
-  role            Role      @default(EMPLOYEE)
+  id              String      @id @default(cuid())
+  email           String      @unique
+  role            Role        @default(EMPLOYEE)
   createdById     String
-  createdAt       DateTime  @default(now())
+  createdAt       DateTime    @default(now())
   consumedAt      DateTime?
   // new optional fields
   firstName       String?
@@ -67,8 +69,9 @@ model UserInvite {
   preferredName   String?
   birthday        DateTime?
   workAnniversary DateTime?
-  department      String?
-  sendEmail       Boolean   @default(true)
+  departmentId    String?
+  department      Department? @relation(fields: [departmentId], references: [id])
+  sendEmail       Boolean     @default(true)
 }
 
 model Recognition {
@@ -230,4 +233,15 @@ model PasswordResetToken {
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+model Department {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // ✅ All users belonging to this department
+  users      User[]
+  UserInvite UserInvite[]
 }

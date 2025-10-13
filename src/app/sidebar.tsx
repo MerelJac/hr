@@ -72,7 +72,7 @@ export default async function Sidebar() {
               className="flex items-center gap-2 hover:text-blue-600"
             >
               <Users size={18} />
-              <span>Users & Invites</span>
+              <span>Users</span>
             </Link>
           </>
         )}
