@@ -41,7 +41,13 @@ export async function PATCH(
   if (body.firstName !== undefined) data.firstName = body.firstName;
   if (body.lastName !== undefined) data.lastName = body.lastName;
   if (body.preferredName !== undefined) data.preferredName = body.preferredName;
-  if (body.departmentId !== undefined) data.departmentId = body.departmentId;
+  if (body.departmentId !== undefined) {
+    if (body.departmentId === "" || body.departmentId === null) {
+      data.department = { disconnect: true };
+    } else {
+      data.department = { connect: { id: body.departmentId } };
+    }
+  }
   if (body.birthday) data.birthday = new Date(body.birthday);
   if (body.workAnniversary)
     data.workAnniversary = new Date(body.workAnniversary);
@@ -80,7 +86,7 @@ export async function DELETE(
   }
 
   await prisma.$transaction(async (tx) => {
-    await tx.session.deleteMany({ where: { id } });
+    await tx.session.deleteMany({ where: { userId: id } });
     await tx.user.delete({ where: { id } });
   });
 

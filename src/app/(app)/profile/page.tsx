@@ -187,9 +187,9 @@ export default function ProfilePage() {
                 ? new Date(user.workAnniversary).toLocaleDateString()
                 : "Not set"}
             </p>
-            {user.department && (
+            {user.department?.name && (
               <p>
-                <b>Department:</b> {user.department}
+                <b>Department:</b> {user.department.name}
               </p>
             )}
           </div>
