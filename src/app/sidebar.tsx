@@ -19,7 +19,6 @@ import SupportButton from "@/components/SupportButton";
 
 export default async function Sidebar() {
   const session = await getServerSession(authOptions);
-  console.log("Session in Sidebar:", session);
   const role = (session?.user as User)?.role;
 
   return (

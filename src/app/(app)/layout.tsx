@@ -9,7 +9,7 @@ export default function AppShellLayout({
   return (
     <main className="min-h-screen flex bg-gray-50">
       {/* Sidebar: hidden on mobile */}
-      <div className="md:top-0 md:left-0 md:h-screen max-w-[15%] md:bg-white md:shadow-md md:block">
+      <div className="md:top-0 md:left-0 md:h-screen  md:bg-white md:shadow-md md:block">
         <Sidebar />
       </div>
 
