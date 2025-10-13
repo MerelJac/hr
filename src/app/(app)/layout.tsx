@@ -9,29 +9,19 @@ export default function AppShellLayout({
   return (
     <main className="min-h-screen flex bg-gray-50">
       {/* Sidebar: hidden on mobile */}
-      <div className="md:top-0 md:left-0 md:h-screen md:w-64 md:bg-white md:shadow-md md:block">
+      <div className="md:top-0 md:left-0 md:h-screen max-w-[15%] md:bg-white md:shadow-md md:block">
         <Sidebar />
       </div>
 
-      {/* Content Area */}
-      <div
-        className="md:hidden
-          flex-1 
-          overflow-y-auto 
-          w-full
-          md:ml-64
-          pb-20
-        "
-      >
+      {/* Content Area MOBILE */}
+      <div className="md:hidden flex-1 overflow-y-auto w-[85%] md:ml-64 pb-20">
         {children}
       </div>
 
-      {/* Content Area */}
+      {/* Content Area WEB*/}
       <div
-        className="hidden md:block
-          overflow-y-auto 
-          w-full
-        "
+        className="
+    hidden md:block ml-[15rem] w-[calc(100%-15rem)]"
       >
         {children}
       </div>

@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { Home, Rocket, User as UserIcon, Gift } from "lucide-react";
+import { Home, Rocket, User as UserIcon, Gift, Laugh } from "lucide-react";
 import Link from "next/link";
 
 import { User } from "@/types/user";
@@ -36,6 +36,15 @@ export default async function MobileNav() {
         </Link>
       )}
 
+      {role === "MANAGER" && (
+        <Link
+          href="/manager/department"
+          className="flex flex-col items-center text-gray-700 hover:text-blue-600"
+        >
+          <Laugh size={20} />
+          <span className="text-xs">Department</span>
+        </Link>
+      )}
       <Link
         href="/profile"
         className="flex flex-col items-center text-gray-700 hover:text-blue-600"

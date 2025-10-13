@@ -35,7 +35,7 @@ export default function ManagerDepartmentsClient({
   }
 
   return (
-    <section className="space-y-6 p-6">
+    <section className="space-y-6">
       {/* Tabs */}
       <div className="flex border-b mb-4">
         <button
@@ -59,10 +59,12 @@ export default function ManagerDepartmentsClient({
           Team
         </button>
       </div>
+            {/* Feed tab */}
+      {activeTab === "feed" && <RecognitionList recs={recs} users={users} />}
 
       {/* Team tab */}
       {activeTab === "team" && (
-        <div className="border rounded-lg p-4 shadow-sm">
+        <div className="rounded-lg p-4 ">
           <h3 className="text-lg font-semibold mb-2">
             {manager.department.name} Department
           </h3>
@@ -86,15 +88,13 @@ export default function ManagerDepartmentsClient({
                     {u.firstName} {u.lastName}
                   </span>
                   <span className="text-gray-500 text-sm">({u.email})</span>
+                  <small>{u.role}</small>
                 </li>
               ))}
             </ul>
           )}
         </div>
       )}
-
-      {/* Feed tab */}
-      {activeTab === "feed" && <RecognitionList recs={recs} users={users} />}
     </section>
   );
 }

@@ -8,7 +8,7 @@ import {
   Gift,
   Users,
   Handbag,
-  Heart,
+  Laugh,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -23,7 +23,18 @@ export default async function Sidebar() {
   const role = (session?.user as User)?.role;
 
   return (
-    <aside className="hidden md:flex flex-col w-[15rem] p-4 space-y-3 h-screen justify-between shadow-md bg-white sticky top-0">
+    <aside
+      className="
+    hidden md:flex flex-col 
+    fixed top-0 left-0 
+    h-screen 
+    p-4 space-y-3 
+    justify-between 
+    shadow-md bg-white 
+    z-50
+    w-[15%]"
+    >
+      {" "}
       <div className="flex flex-col space-y-3">
         {/* Centered logo */}
         <div className="flex justify-center">
@@ -73,7 +84,7 @@ export default async function Sidebar() {
               href="/admin/department"
               className="flex items-center gap-2 hover:text-blue-600"
             >
-              <Heart size={18} />
+              <Laugh size={18} />
               <span>Departments</span>
             </Link>
             <Link
@@ -95,13 +106,12 @@ export default async function Sidebar() {
               href="/manager/department"
               className="flex items-center gap-2 hover:text-blue-600"
             >
-              <Heart size={18} />
+              <Laugh size={18} />
               <span>My Department</span>
             </Link>
           </>
         )}
       </div>
-
       <div className="flex flex-col space-y-3">
         <Link
           href="/profile"
