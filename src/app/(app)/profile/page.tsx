@@ -187,6 +187,11 @@ export default function ProfilePage() {
                 ? new Date(user.workAnniversary).toLocaleDateString()
                 : "Not set"}
             </p>
+            {user.role && (
+              <p>
+                <b>Role:</b> {user.role}
+              </p>
+            )}
             {user.department?.name && (
               <p>
                 <b>Department:</b> {user.department.name}
@@ -274,9 +279,9 @@ export default function ProfilePage() {
               )}
             </div>
           </div>
-          <div className="flex flex-row gap-3 justify-center items-center">
+          <div className="flex flex-row gap-3 justify-center items-center md:hidden">
             <LogoutButton />
-            <SupportButton/>
+            <SupportButton />
           </div>
         </div>
       )}

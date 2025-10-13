@@ -8,6 +8,7 @@ import {
   Gift,
   Users,
   Handbag,
+  Heart,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,6 +19,7 @@ import SupportButton from "@/components/SupportButton";
 
 export default async function Sidebar() {
   const session = await getServerSession(authOptions);
+  console.log("Session in Sidebar:", session);
   const role = (session?.user as User)?.role;
 
   return (
@@ -68,11 +70,33 @@ export default async function Sidebar() {
               <span>Leaderboard</span>
             </Link>
             <Link
+              href="/admin/department"
+              className="flex items-center gap-2 hover:text-blue-600"
+            >
+              <Heart size={18} />
+              <span>Departments</span>
+            </Link>
+            <Link
               href="/admin/users"
               className="flex items-center gap-2 hover:text-blue-600"
             >
               <Users size={18} />
               <span>Users</span>
+            </Link>
+          </>
+        )}
+        {role === "MANAGER" && (
+          <>
+            <small className="text-gray-400 uppercase text-xs mt-2">
+              Admin
+            </small>
+
+            <Link
+              href="/manager/department"
+              className="flex items-center gap-2 hover:text-blue-600"
+            >
+              <Heart size={18} />
+              <span>My Department</span>
             </Link>
           </>
         )}
