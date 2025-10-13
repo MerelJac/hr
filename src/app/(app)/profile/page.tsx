@@ -116,7 +116,7 @@ export default function ProfilePage() {
   if (!user) return <div className="p-6 text-gray-600">Loading...</div>;
 
   return (
-    <main className="p-6 bg-white rounded-xl w-full">
+    <main className="p-6 bg-white rounded-xl w-full h-screen">
       {/* Tabs */}
       <div className="flex border-b mb-6">
         <button

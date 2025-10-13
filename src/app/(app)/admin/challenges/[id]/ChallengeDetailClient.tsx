@@ -1,7 +1,9 @@
 "use client";
 
+import UserInsightsModal from "@/components/UserInsightsModal";
+import { Spotlight } from "lucide-react";
 import Image from "next/image";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 
 type ChallengeDetailProps = {
   challenge: {
@@ -37,6 +39,7 @@ export default function ChallengeDetailClient({
   challenge,
 }: ChallengeDetailProps) {
   const [isPending, startTransition] = useTransition();
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   async function updateStatus(id: string, status: "APPROVED" | "REJECTED") {
     const res = await fetch(`/api/nominations/${id}/status`, {
@@ -94,10 +97,18 @@ export default function ChallengeDetailClient({
           <ul className="divide-y border rounded-xl">
             {challenge.nominations.map((n) => (
               <li key={n.id} className="p-4 space-y-2">
-                <p>
-                  <b>Submitted by:</b> {n.submitter?.firstName}{" "}
-                  {n.submitter?.lastName} ({n.submitter?.email})
+                <p className="gap-2 flex items-center">
+                  <b>Submitted by: </b>
+                  {n.submitter?.firstName} {n.submitter?.lastName} (
+                  {n.submitter?.email})
+                  <button
+                    onClick={() => setSelectedUserId(n.id)}
+                    className="text-blue-600 text-sm underline"
+                  >
+                    <Spotlight size={16} />
+                  </button>
                 </p>
+
                 {n.nominee && (
                   <p>
                     <b>Nominee:</b> {n.nominee.firstName} {n.nominee.lastName} (
@@ -140,6 +151,12 @@ export default function ChallengeDetailClient({
               </li>
             ))}
           </ul>
+        )}
+        {selectedUserId && (
+          <UserInsightsModal
+            userId={selectedUserId}
+            onClose={() => setSelectedUserId(null)}
+          />
         )}
       </section>
     </>

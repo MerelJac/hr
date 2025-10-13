@@ -4,12 +4,15 @@ import DepartmentsManager from "@/components/DepartmentManager";
 import { useState } from "react";
 import { DepartmentWithUsers } from "@/types/department";
 import Image from "next/image";
+import UserInsightsModal from "@/components/UserInsightsModal";
+import { Spotlight } from "lucide-react";
 export function AllDepartments({
   departments,
 }: {
   departments: DepartmentWithUsers[];
 }) {
   const [departmentOpen, setDepartmentOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   return (
     <div className="space-y-6 ">
@@ -17,7 +20,7 @@ export function AllDepartments({
         onClick={() => setDepartmentOpen(true)}
         className="bg-black text-white px-3 py-2 rounded-xl"
       >
-        + Departments
+        + Department
       </button>
       <DepartmentsManager
         open={departmentOpen}
@@ -49,9 +52,21 @@ export function AllDepartments({
                   <span className="ml-auto text-xs px-2 py-0.5 rounded bg-gray-100">
                     {u.role}
                   </span>
+                  <button
+                    onClick={() => setSelectedUserId(u.id)}
+                    className="text-blue-600 text-sm underline"
+                  >
+                     <Spotlight size={16} />
+                  </button>
                 </li>
               ))}
             </ul>
+          )}
+          {selectedUserId && (
+            <UserInsightsModal
+              userId={selectedUserId}
+              onClose={() => setSelectedUserId(null)}
+            />
           )}
         </div>
       ))}

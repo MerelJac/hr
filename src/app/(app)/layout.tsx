@@ -20,9 +20,7 @@ export default function AppShellLayout({
 
       {/* Content Area WEB*/}
       <div
-        className="
-    hidden md:block ml-[15rem] w-[calc(100%-15rem)]"
-      >
+        className="hidden md:block ml-[15%] w-[calc(100%-15%)]">
         {children}
       </div>
 

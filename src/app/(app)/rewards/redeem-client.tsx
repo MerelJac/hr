@@ -97,20 +97,20 @@ export default function RedeemClient({
       {/* Rewards for active category */}
       {currentCategory && (
         <>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {currentCategory.rewards
               .filter((r) => r.isActive)
               .map((r) => (
                 <button
                   key={r.id}
                   onClick={() => setSelectedReward(r)}
-                  className={`rounded-lg p-4 border flex flex-col items-center justify-center max-w-xl ${
+                  className={`rounded-lg p-4 border-2 flex flex-col items-center justify-center max-w-sm ${
                     selectedReward?.id === r.id
                       ? "ring-2 ring-blue-500 bg-blue-100"
                       : "bg-white"
                   }`}
                 >
-                  <span className="font-semibold">{r.label}</span>
+                  <span className="font-semibold pb-2">{r.label}</span>
                   {r.imageUrl && (
                     <Image
                       src={r.imageUrl}
@@ -119,11 +119,12 @@ export default function RedeemClient({
                       height={150}
                     />
                   )}
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-gray-600 py-2">
                     {currentCategory.name === "Gift Card"
                       ? "Flexible amount"
                       : `${r.pointsCost} pts`}
                   </span>
+                  <p className="bg-red-500 text-white px-4 py-2 rounded min-w-[80%]">Select Reward</p>
                 </button>
               ))}
           </div>

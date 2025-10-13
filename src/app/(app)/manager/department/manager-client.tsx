@@ -5,6 +5,8 @@ import { useState } from "react";
 import RecognitionList from "@/components/RecognitionList";
 import { User } from "@/types/user";
 import { Recognition } from "@/types/recognition";
+import UserInsightsModal from "@/components/UserInsightsModal";
+import { Spotlight } from "lucide-react";
 type ManagerDepartmentsClientProps = {
   manager: {
     department?: {
@@ -28,6 +30,8 @@ export default function ManagerDepartmentsClient({
   recs,
   users,
 }: ManagerDepartmentsClientProps) {
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+
   const [activeTab, setActiveTab] = useState<"feed" | "team">("feed");
 
   if (!manager?.department) {
@@ -59,16 +63,12 @@ export default function ManagerDepartmentsClient({
           Team
         </button>
       </div>
-            {/* Feed tab */}
+      {/* Feed tab */}
       {activeTab === "feed" && <RecognitionList recs={recs} users={users} />}
 
       {/* Team tab */}
       {activeTab === "team" && (
         <div className="rounded-lg p-4 ">
-          <h3 className="text-lg font-semibold mb-2">
-            {manager.department.name} Department
-          </h3>
-
           {manager.department.users.length === 0 ? (
             <p className="text-sm text-gray-500">
               No employees in your department.
@@ -89,9 +89,21 @@ export default function ManagerDepartmentsClient({
                   </span>
                   <span className="text-gray-500 text-sm">({u.email})</span>
                   <small>{u.role}</small>
+                  <button
+                    onClick={() => setSelectedUserId(u.id)}
+                    className="text-blue-600 text-sm underline"
+                  >
+                    <Spotlight size={16} />
+                  </button>
                 </li>
               ))}
             </ul>
+          )}
+          {selectedUserId && (
+            <UserInsightsModal
+              userId={selectedUserId}
+              onClose={() => setSelectedUserId(null)}
+            />
           )}
         </div>
       )}

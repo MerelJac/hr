@@ -26,7 +26,7 @@ export default async function NominationsAdminPage() {
 
 
   return (
-    <main className="p-6 space-y-4 bg-white rounded-xl h-full">
+    <main className="p-6 space-y-4 bg-white rounded-xl h-screen">
       <h1 className="text-2xl font-semibold">Challenges</h1>
     </main>
   );

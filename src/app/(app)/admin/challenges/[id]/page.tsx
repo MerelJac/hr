@@ -31,7 +31,7 @@ export default async function ChallengeDetailPage({
   if (!challenge) return <div className="p-6">Challenge not found</div>;
 
   return (
-    <main className="p-6 space-y-4 bg-white rounded-xl">
+    <main className="p-6 space-y-4 bg-white rounded-xl h-screen">
       <Link href={`/admin/challenges`}>
         <button className="text-gray-700 text-xs flex flex-row w-full items-center gap-2 mb-4">
           <ArrowLeft size={12} />
