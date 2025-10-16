@@ -75,12 +75,14 @@ model UserInvite {
 }
 
 model Recognition {
-  id        String   @id @default(cuid())
-  senderId  String
-  sender    User     @relation("SenderRecognitions", fields: [senderId], references: [id], onDelete: Cascade)
-  gifUrl    String?
-  message   String
-  createdAt DateTime @default(now())
+  id          String               @id @default(cuid())
+  senderId    String
+  sender      User                 @relation("SenderRecognitions", fields: [senderId], references: [id], onDelete: Cascade)
+  gifUrl      String?
+  message     String
+  createdAt   DateTime             @default(now())
+  challengeId String?
+  challenge   NominationChallenge? @relation(fields: [challengeId], references: [id])
 
   recipients RecognitionRecipient[]
   comments   RecognitionComment[]   @relation("RecognitionComments")
@@ -125,9 +127,10 @@ model NominationChallenge {
   hideStatusFromSubmitter Boolean  @default(false)
   allowMultipleWinners    Boolean  @default(false)
 
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   nominations Nomination[]
+  Recognition Recognition[]
 }
 
 model Nomination {

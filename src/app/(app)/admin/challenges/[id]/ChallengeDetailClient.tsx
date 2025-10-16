@@ -40,9 +40,10 @@ type ChallengeDetailProps = {
   };
 };
 
-export default function ChallengeDetailClient({
-  challenge,
-}: ChallengeDetailProps) {
+export default function ChallengeDetailClient(
+  { challenge, recognitions }: ChallengeDetailProps,
+  recognitions
+) {
   const [isPending, startTransition] = useTransition();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openAnnounceModal, setOpenAnnounceModal] = useState(false);
@@ -235,6 +236,28 @@ export default function ChallengeDetailClient({
 
         <section className="mt-6">
           <h2 className="text-xl font-semibold mb-2">Related Recognitions</h2>
+          <section className="mt-10">
+            <h2 className="text-xl font-semibold">🏆 Winner Announcements</h2>
+            {recognitions.length === 0 ? (
+              <p className="text-gray-500">
+                No recognitions have been posted yet.
+              </p>
+            ) : (
+              <ul className="space-y-4 mt-3">
+                {recognitions.map((r) => (
+                  <li key={r.id} className="border rounded-lg p-4">
+                    <p className="font-semibold">{r.message}</p>
+                    <p className="text-sm text-gray-600">
+                      {r.recipients
+                        .map((rec) => rec.recipient.firstName)
+                        .join(", ")}{" "}
+                      — {r.points} pts
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         </section>
 
         {/* User modal */}

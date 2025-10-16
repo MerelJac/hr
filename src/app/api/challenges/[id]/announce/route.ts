@@ -52,6 +52,7 @@ export async function POST(
         senderId,
         message,
         gifUrl,
+        challengeId,
         recipients: {
           create: {
             recipientId: winnerId,
@@ -60,7 +61,7 @@ export async function POST(
         },
       },
     });
-    
+
     // Give the winner their points!
     await prisma.user.update({
       where: { id: winnerId },
