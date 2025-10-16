@@ -29,7 +29,6 @@ export default async function FeedPage() {
   });
 
   const availableChallenges: Challenge[] = challenges
-    .filter((c) => c.nominations.length === 0)
     .map((c) => ({
       ...c,
       requirements: c.requirements
