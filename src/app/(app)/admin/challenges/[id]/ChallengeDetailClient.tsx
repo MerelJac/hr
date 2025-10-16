@@ -2,9 +2,10 @@
 
 import { useState, useTransition } from "react";
 import Image from "next/image";
-import { Spotlight } from "lucide-react";
+import { ArrowRight, Spotlight } from "lucide-react";
 import UserInsightsModal from "@/components/UserInsightsModal";
 import AnnounceWinnersForm from "@/components/AnnounceWinnersForm";
+import Link from "next/link";
 
 type ChallengeDetailProps = {
   challenge: {
@@ -38,12 +39,26 @@ type ChallengeDetailProps = {
       } | null;
     }[];
   };
+  relatedRecognitions: {
+    id: string;
+    message: string;
+    createdAt: Date;
+    recipients: {
+      recipient: {
+        id: string;
+        firstName?: string | null;
+        lastName?: string | null;
+        email?: string | null;
+      };
+      points: number;
+    }[];
+  }[];
 };
 
-export default function ChallengeDetailClient(
-  { challenge, recognitions }: ChallengeDetailProps,
-  recognitions
-) {
+export default function ChallengeDetailClient({
+  challenge,
+  relatedRecognitions,
+}: ChallengeDetailProps) {
   const [isPending, startTransition] = useTransition();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openAnnounceModal, setOpenAnnounceModal] = useState(false);
@@ -234,30 +249,40 @@ export default function ChallengeDetailClient(
           </ul>
         )}
 
-        <section className="mt-6">
-          <h2 className="text-xl font-semibold mb-2">Related Recognitions</h2>
-          <section className="mt-10">
-            <h2 className="text-xl font-semibold">🏆 Winner Announcements</h2>
-            {recognitions.length === 0 ? (
-              <p className="text-gray-500">
-                No recognitions have been posted yet.
-              </p>
-            ) : (
-              <ul className="space-y-4 mt-3">
-                {recognitions.map((r) => (
-                  <li key={r.id} className="border rounded-lg p-4">
-                    <p className="font-semibold">{r.message}</p>
-                    <p className="text-sm text-gray-600">
-                      {r.recipients
-                        .map((rec) => rec.recipient.firstName)
-                        .join(", ")}{" "}
-                      — {r.points} pts
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+        {/* === Related Recognitions === */}
+        <section className="mt-10">
+          <h2 className="text-xl font-semibold mb-2">
+            🏆 Winner Announcements
+          </h2>
+          {relatedRecognitions.length === 0 ? (
+            <p className="text-gray-500">No winner announcements yet.</p>
+          ) : (
+            <ul className="divide-y border rounded-xl">
+              {relatedRecognitions.map((r) => (
+                <li key={r.id} className="p-4 space-y-2">
+                  <p>{r.message}</p>
+                  <p className="text-sm text-gray-600">
+                    Announced on {new Date(r.createdAt).toLocaleDateString()}
+                  </p>
+                  <Link
+                    href={`/feed/appreciation/${r.id}`}
+                    className="flex items-center gap-2 hover:text-blue-600"
+                  >
+                    <ArrowRight size={18} />
+                    <span>View Annoucement</span>
+                  </Link>
+                  <ul className="ml-4 list-disc text-sm">
+                    {r.recipients.map((rec) => (
+                      <li key={rec.recipient.id}>
+                        {rec.recipient.firstName} {rec.recipient.lastName} —{" "}
+                        <b>{rec.points}</b> points
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         {/* User modal */}

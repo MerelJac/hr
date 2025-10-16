@@ -20,8 +20,12 @@ export default async function ChallengeDetailPage({
     include: {
       nominations: {
         include: {
-          submitter: { select: { id: true, firstName: true, lastName: true, email: true } },
-          nominee: { select: { id: true, firstName: true, lastName: true, email: true } },
+          submitter: {
+            select: { id: true, firstName: true, lastName: true, email: true },
+          },
+          nominee: {
+            select: { id: true, firstName: true, lastName: true, email: true },
+          },
         },
         orderBy: { createdAt: "desc" },
       },
@@ -29,18 +33,15 @@ export default async function ChallengeDetailPage({
   });
 
   const relatedRecognitions = await prisma.recognition.findMany({
-  where: { challengeId: params.id },
-  include: {
-    recipients: {
-      include: { recipient: true },
+    where: { challengeId: params.id },
+    include: {
+      recipients: {
+        include: { recipient: true },
+      },
     },
-  },
-});
-
+  });
 
   if (!challenge) return <div className="p-6">Challenge not found</div>;
-
-
 
   return (
     <main className="p-6 space-y-4 bg-white rounded-xl h-screen">
@@ -57,7 +58,8 @@ export default async function ChallengeDetailPage({
             ...nomination,
             reason: nomination.reason === null ? undefined : nomination.reason,
           })),
-        } relatedRecognitions={relatedRecognitions}}
+        }}
+        relatedRecognitions={relatedRecognitions}
       />
     </main>
   );
