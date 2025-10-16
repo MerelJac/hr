@@ -301,17 +301,21 @@ export default function ProfilePage() {
                   </p>
                   <p>
                     <b>Status:</b>{" "}
-                    <span
-                      className={`font-medium ${
-                        n.status === "APPROVED"
-                          ? "text-green-600"
-                          : n.status === "REJECTED"
-                          ? "text-red-600"
-                          : "text-gray-600"
-                      }`}
-                    >
-                      {n.status}
-                    </span>
+                    {n.challenge.hideStatusFromSubmitter ? (
+                      "SUBMITTED"
+                    ) : (
+                      <span
+                        className={`font-medium ${
+                          n.status === "APPROVED"
+                            ? "text-green-600"
+                            : n.status === "REJECTED"
+                            ? "text-red-600"
+                            : "text-gray-600"
+                        }`}
+                      >
+                        {n.status}
+                      </span>
+                    )}
                   </p>
                   <p className="text-xs text-gray-500">
                     Submitted {new Date(n.createdAt).toLocaleDateString()}

@@ -1,5 +1,3 @@
-import { Nomination } from "./nomination";
-
 export type Challenge = {
   id: string;
   title: string;
@@ -12,6 +10,8 @@ export type Challenge = {
   gifUrl?: string | null;
   requirements?: ChallengeRequirements;
   nominations?: ChallengeNominationLite[];
+  hideStatusFromSubmitter?: boolean;
+  allowMultipleWinners?: boolean;
 };
 
 export type ChallengeRequirements = {

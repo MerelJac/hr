@@ -26,7 +26,7 @@ export async function GET() {
       nominationsAsNominee: false, // don’t need this here
       submittedNominations: {
         include: {
-          challenge: { select: { id: true, title: true, points: true } },
+          challenge: { select: { id: true, title: true, points: true, hideStatusFromSubmitter: true } },
         },
         orderBy: { createdAt: "desc" },
       },

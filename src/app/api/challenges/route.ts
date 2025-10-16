@@ -22,6 +22,8 @@ export async function POST(req: NextRequest) {
       points: body.points ?? 0,
       gifUrl: body.gifUrl ?? null,
       requirements: body.requirements ?? {},
+      allowMultipleWinners: body.allowMultipleWinners ?? false,
+      hideStatusFromSubmitter: body.hideStatusFromSubmitter ?? false,
     },
   });
 

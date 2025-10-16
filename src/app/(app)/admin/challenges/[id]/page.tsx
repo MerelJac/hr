@@ -20,8 +20,8 @@ export default async function ChallengeDetailPage({
     include: {
       nominations: {
         include: {
-          submitter: { select: { firstName: true, lastName: true, email: true } },
-          nominee: { select: { firstName: true, lastName: true, email: true } },
+          submitter: { select: { id: true, firstName: true, lastName: true, email: true } },
+          nominee: { select: { id: true, firstName: true, lastName: true, email: true } },
         },
         orderBy: { createdAt: "desc" },
       },
@@ -38,7 +38,15 @@ export default async function ChallengeDetailPage({
           Back to Challenges
         </button>
       </Link>
-      <ChallengeDetailClient challenge={challenge} />
+      <ChallengeDetailClient
+        challenge={{
+          ...challenge,
+          nominations: challenge.nominations.map((nomination) => ({
+            ...nomination,
+            reason: nomination.reason === null ? undefined : nomination.reason,
+          })),
+        }}
+      />
     </main>
   );
 }

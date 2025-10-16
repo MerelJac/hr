@@ -28,6 +28,8 @@ export async function PATCH(
       gifUrl: body.gifUrl ?? null,
       points: body.points ?? 0,
       requirements: body.requirements ?? {},
+      allowMultipleWinners: body.allowMultipleWinners ?? false,
+      hideStatusFromSubmitter: body.hideStatusFromSubmitter ?? false,
     },
   });
 

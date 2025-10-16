@@ -34,4 +34,6 @@ export type NominationChallenge = {
   createdAt: string | Date;
   updatedAt: string | Date;
   requirements?: ChallengeRequirements;
+  hideStatusFromSubmitter?: boolean;
+  allowMultipleWinners?: boolean;
 };

@@ -23,16 +23,18 @@ export default async function ChallengesAdminPage() {
       isActive: true,
       startDate: true,
       endDate: true,
-      gifUrl: true, 
+      gifUrl: true,
       points: true,
       requirements: true,
-      nominations:  {
-      select: { id: true, status: true }, // 👈 lite version
-    },
+      nominations: {
+        select: { id: true, status: true },
+      },
+      hideStatusFromSubmitter: true,
+      allowMultipleWinners: true,
     },
   });
 
-    // Transform into Challenge[] with safe requirements
+  // Transform into Challenge[] with safe requirements
   const challenges: Challenge[] = rawChallenges.map((c) => ({
     ...c,
     requirements: (c.requirements as ChallengeRequirements | null) ?? {}, // normalize

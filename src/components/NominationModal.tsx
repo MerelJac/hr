@@ -57,6 +57,10 @@ export default function NominationModal({
     if (activeChallenge.requirements?.requiresReason) {
       body.reason = reason;
     }
+    if (activeChallenge.requirements?.requiresScreenshot) {
+      body.screenshot = screenshot || undefined;
+    }
+    
     const res = await fetch("/api/nominations", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

@@ -18,7 +18,7 @@ export async function PATCH(
   const { status }: { status: Nomination["status"] } = await req.json();
 
   // validate input
-  if (!["APPROVED", "REJECTED"].includes(status)) {
+  if (!["APPROVED", "REJECTED", "WON"].includes(status)) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }
 

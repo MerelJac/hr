@@ -161,6 +161,10 @@ export default function ChallengeList({
                     requiresScreenshot:
                       formData.get("requiresScreenshot") === "on",
                   },
+                  allowMultipleWinners:
+                    formData.get("allowMultipleWinners") === "on",
+                  hideStatusFromSubmitter:
+                    formData.get("hideStatusFromSubmitter") === "on",
                 });
               }}
               className="space-y-3"
@@ -275,6 +279,26 @@ export default function ChallengeList({
                     }
                   />
                   Requires Screenshot
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="hideStatusFromSubmitter"
+                    defaultChecked={
+                      selected ? selected.hideStatusFromSubmitter : true
+                    }
+                  />
+                  Hide Status From Submitter?
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="allowMultipleWinners"
+                    defaultChecked={
+                      selected ? selected.allowMultipleWinners : true
+                    }
+                  />
+                  Allow Multiple Winners?
                 </label>
               </div>
 

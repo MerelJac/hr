@@ -111,17 +111,19 @@ enum NominationStatus {
 }
 
 model NominationChallenge {
-  id            String   @id @default(cuid())
-  title         String   @unique
-  description   String?
-  qualification String? // free text about how to qualify
-  isActive      Boolean  @default(true)
-  gifUrl        String?
-  startDate     DateTime
-  endDate       DateTime
-  points        Int      @default(0)
+  id                      String   @id @default(cuid())
+  title                   String   @unique
+  description             String?
+  qualification           String? // free text about how to qualify
+  isActive                Boolean  @default(true)
+  gifUrl                  String?
+  startDate               DateTime
+  endDate                 DateTime
+  points                  Int      @default(0)
   // Optional JSON field for flexible requirements (e.g. upload screenshot, URL, notes)
-  requirements  Json?
+  requirements            Json?
+  hideStatusFromSubmitter Boolean  @default(false)
+  allowMultipleWinners    Boolean  @default(false)
 
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
