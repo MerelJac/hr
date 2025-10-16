@@ -194,3 +194,28 @@ export async function sendForgotPasswordEmail(to: string, resetUrl: string) {
     text: "Reset your password! Click the link to reset: " + resetUrl,
   });
 }
+
+/**
+ * Challenges Started email
+ */
+export async function sendNewChallengeAlert(to: string, challenge: string) {
+  return sendEmail({
+    to,
+    subject: "Ignite needs your attention! 🎉",
+    html: `
+      <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+        <h2>${challenge ?? "A new challenge"} has been posted! Time to submit your response! 🎉</h2>
+        <p>Start sending some kudos! 🎉 Log in to keep the appreciation going!</p>
+        <p>
+          <a href="https://callone.igniteappreciation.com/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+              Check it out!
+            </a>
+        </p>
+        <p>Log in & click 'Challenges' to keep the appreciation going!</p>
+        <br/>
+        <p style="font-size: 0.9rem; color: #888;">— Call One, Inc Team</p>
+      </div>
+    `,
+    text: `${challenge ?? "A new challenge"} has been posted! Time to submit your response!  Start sending some kudos! 🎉 Log in & click 'Challenges' to keep the appreciation going!`,
+  });
+}

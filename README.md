@@ -6,7 +6,8 @@ First, run the development server:
 ```
 nvm use v18.20.8
 ```
-to start: npm run dev
+to start:
+npm run dev
 See db: npx prisma studio (note: server must be off to run)
 ```
 npx prisma format  

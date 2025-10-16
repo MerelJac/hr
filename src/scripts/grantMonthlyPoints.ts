@@ -7,7 +7,7 @@ export async function grantMonthlyPoints() {
   // Fetch all employees first
   const employees = await prisma.user.findMany({
     where: { role: "EMPLOYEE" },
-    select: { id: true, email: true },
+    select: { id: true, email: true, isActive: true },
   });
 
   // Reset monthly budget for all employees
