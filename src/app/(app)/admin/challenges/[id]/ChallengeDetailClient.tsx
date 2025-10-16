@@ -45,8 +45,8 @@ export default function ChallengeDetailClient({
 }: ChallengeDetailProps) {
   const [isPending, startTransition] = useTransition();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-
-  console.log('console log challenge', )
+  const [openAnnounceModal, setOpenAnnounceModal] = useState(false);
+  console.log("console log challenge");
   async function updateStatus(
     id: string,
     status: "APPROVED" | "REJECTED" | "WON"
@@ -68,41 +68,75 @@ export default function ChallengeDetailClient({
   return (
     <div>
       {/* === Challenge Overview === */}
-      <h1 className="text-2xl font-semibold">{challenge.title}</h1>
-      <p className="mt-1 text-gray-700">{challenge.description}</p>
-      {challenge.allowMultipleWinners && (
-        <p className="text-green mt-1">Allow Multiple Winners</p>
-      )}
-      {challenge.hideStatusFromSubmitter && (
-        <p className="text-green mt-1">Hide Status From Submitters</p>
-      )}
-      {challenge.gifUrl && (
-        <Image
-          src={challenge.gifUrl}
-          alt="Challenge GIF"
-          width={150}
-          height={150}
-          unoptimized
-          className="max-h-40 rounded mt-2"
+      <div className="flex flex-row justify-between">
+        <div className="flex flex-col">
+          <h1 className="text-2xl font-semibold">{challenge.title}</h1>
+          <p className="mt-1 text-gray-700">{challenge.description}</p>
+          {challenge.allowMultipleWinners && (
+            <p className="text-green mt-1">Allow Multiple Winners</p>
+          )}
+          {challenge.hideStatusFromSubmitter && (
+            <p className="text-green mt-1">Hide Status From Submitters</p>
+          )}
+          {challenge.gifUrl && (
+            <Image
+              src={challenge.gifUrl}
+              alt="Challenge GIF"
+              width={150}
+              height={150}
+              unoptimized
+              className="max-h-40 rounded mt-2"
+            />
+          )}
+
+          <p className="text-sm text-gray-600 mt-2">
+            {challenge.qualification}
+          </p>
+          <p className="text-xs text-gray-500">
+            {new Date(challenge.startDate).toLocaleDateString()} –{" "}
+            {new Date(challenge.endDate).toLocaleDateString()}
+          </p>
+
+          <span
+            className={`inline-block mt-2 px-2 py-1 rounded text-xs w-fit font-medium ${
+              challenge.isActive
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
+            }`}
+          >
+            {challenge.isActive ? "Active" : "Inactive"}
+          </span>
+        </div>
+        {challenge.allowMultipleWinners && (
+          <button onClick={() => setOpenAnnounceModal(!openAnnounceModal)}>
+            <span className="bg-blue-100 m-4 p-4 rounded ">
+              📣 Announce Winners
+            </span>
+          </button>
+        )}
+      </div>
+      {/* === Winner Announcement (for multiple winners) === */}
+      {openAnnounceModal && (
+        <AnnounceWinnersForm
+          users={Array.from(
+            new Map(
+              challenge.nominations
+                .filter((n) => n.nominee) // ✅ only those with nominees
+                .map((n) => [
+                  n.nominee!.id, // 👈 unique key to dedupe by
+                  {
+                    id: n.nominee!.id || "",
+                    email: n.nominee!.email || "",
+                    firstName: n.nominee!.firstName || "",
+                    lastName: n.nominee!.lastName || "",
+                  },
+                ])
+            ).values()
+          )}
+          challengeId={challenge.id}
+          points={challenge.points}
         />
       )}
-
-      <p className="text-sm text-gray-600 mt-2">{challenge.qualification}</p>
-      <p className="text-xs text-gray-500">
-        {new Date(challenge.startDate).toLocaleDateString()} –{" "}
-        {new Date(challenge.endDate).toLocaleDateString()}
-      </p>
-
-      <span
-        className={`inline-block mt-2 px-2 py-1 rounded text-xs font-medium ${
-          challenge.isActive
-            ? "bg-green-100 text-green-800"
-            : "bg-red-100 text-red-800"
-        }`}
-      >
-        {challenge.isActive ? "Active" : "Inactive"}
-      </span>
-
       {/* === Submissions Section === */}
       <section className="mt-6">
         <h2 className="text-xl font-semibold mb-2">Submissions</h2>
@@ -199,28 +233,9 @@ export default function ChallengeDetailClient({
           </ul>
         )}
 
-        {/* === Winner Announcement (for multiple winners) === */}
-        {challenge.allowMultipleWinners && (
-          <AnnounceWinnersForm
-            users={Array.from(
-              new Map(
-                challenge.nominations
-                  .filter((n) => n.nominee) // ✅ only those with nominees
-                  .map((n) => [
-                    n.nominee!.id, // 👈 unique key to dedupe by
-                    {
-                      id: n.nominee!.id || "",
-                      email: n.nominee!.email || "",
-                      firstName: n.nominee!.firstName || "",
-                      lastName: n.nominee!.lastName || "",
-                    },
-                  ])
-              ).values()
-            )}
-            challengeId={challenge.id}
-            points={challenge.points}
-          />
-        )}
+        <section className="mt-6">
+          <h2 className="text-xl font-semibold mb-2">Related Recognitions</h2>
+        </section>
 
         {/* User modal */}
         {selectedUserId && (
