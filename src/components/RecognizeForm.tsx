@@ -162,11 +162,11 @@ export default function RecognizeForm({
 
       <button
         disabled={!message.trim() || total < 1 || total > available}
-        className=" px-4 py-2 rounded-lg text-white
-    bg-blue hover:bg-blue
-    disabled:bg-gray-400 disabled:cursor-not-allowed}"
+        className={`px-4 py-2 rounded-lg text-white
+    ${message.trim() ? "bg-blue hover:bg-blue" : "bg-gray-400"}
+    disabled:bg-gray-400 disabled:cursor-not-allowed`}
       >
-        Send Stars
+        {message.trim() ? `Send ${total} Stars` : "Send Stars"}
       </button>
     </form>
   );

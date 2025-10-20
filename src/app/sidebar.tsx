@@ -37,7 +37,7 @@ export default async function Sidebar() {
       <div className="flex flex-col space-y-3">
         {/* Centered logo */}
         <div className="flex justify-center">
-          <Image src={logo} alt="Logo" className="w-32 mb-2" />
+          <Image src={logo} alt="Logo" className="w-56 mb-2" />
         </div>{" "}
         <Link
           href="/feed"
