@@ -8,7 +8,7 @@ export type LeaderboardUser = {
 export type LeaderboardRow = {
   user: LeaderboardUser | null;
   points?: number; // used in "Most Points" leaderboards
-  count?: number;  // used in "Shoutouts" leaderboards
+  count?: number; // used in "Shoutouts" leaderboards
 };
 
 export type LeaderboardData = {
@@ -16,4 +16,11 @@ export type LeaderboardData = {
   given: LeaderboardRow[];
   shoutoutsGiven: LeaderboardRow[];
   shoutoutsReceived: LeaderboardRow[];
+  departments?: DepartmentLeaderboardRow[];
+};
+// 🏢 Department leaderboard item
+export type DepartmentLeaderboardRow = {
+  id: string;
+  name: string;
+  totalPoints: number;
 };

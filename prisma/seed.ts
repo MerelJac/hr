@@ -2,12 +2,34 @@ import { PrismaClient, Role } from "@prisma/client";
 import { hash } from "bcryptjs";
 const prisma = new PrismaClient();
 
-async function user() {
-  const email = "mjacobs@calloneonline.com";
-  if (!process.env.ADMIN_PASSWORD) {
-    throw new Error("ADMIN_PASSWORD environment variable is not set.");
+async function seedDepartments() {
+  console.log("🌱 Seeding departments...");
+
+  const departmentNames = ["Human Resources", "eCommerce", "Sales"];
+  const departments: Record<string, string> = {};
+
+  for (const name of departmentNames) {
+    const dept = await prisma.department.upsert({
+      where: { name },
+      update: {},
+      create: { name },
+    });
+    departments[name] = dept.id;
   }
-  const passwordHash = await hash(process.env.ADMIN_PASSWORD, 12);
+
+  console.log("✅ Departments seeded:", departmentNames.join(", "));
+  return departments;
+}
+
+async function user(departments: Record<string, string>) {
+  console.log("🌱 Seeding users...");
+
+  const email = "mjacobs@calloneonline.com";
+  if (!process.env.SYSTEM_ADMIN_PASSWORD) {
+    throw new Error("SYSTEM_ADMIN_PASSWORD environment variable is not set.");
+  }
+  const passwordHash = await hash(process.env.SYSTEM_ADMIN_PASSWORD, 12);
+
   await prisma.user.upsert({
     where: { email },
     update: { role: Role.SUPER_ADMIN },
@@ -17,13 +39,42 @@ async function user() {
       role: Role.SUPER_ADMIN,
       firstName: "Super",
       lastName: "Admin",
-      department: "Human Resources",
+      departmentId: departments["Human Resources"], // ✅ use FK
     },
   });
+
+  // System Admin
+  const systemEmail = "mjacobs+system@calloneonline.com";
+  const systemId = process.env.SYSTEM_ADMIN_ID;
+  if (!systemId) {
+    throw new Error("SYSTEM_ADMIN_ID environment variable is not set.");
+  }
+  if (!process.env.SYSTEM_ADMIN_PASSWORD) {
+    throw new Error("SYSTEM_ADMIN_PASSWORD environment variable is not set.");
+  }
+
+  const systemPasswordHash = await hash(process.env.SYSTEM_ADMIN_PASSWORD, 12);
+
+  await prisma.user.upsert({
+    where: { email: systemEmail },
+    update: { role: Role.SUPER_ADMIN },
+    create: {
+      email: systemEmail,
+      passwordHash: systemPasswordHash,
+      role: Role.SUPER_ADMIN,
+      firstName: "Call One",
+      lastName: "Inc",
+      departmentId: departments["Human Resources"], // ✅ use FK
+      profileImage:
+        "https://ignite-assets-bucket.s3.us-east-2.amazonaws.com/dev/profiles/cmgig6ajv0000s4179qaj1j66/62f0701f-3f6c-40d8-8986-e2a63cc9be4e.png",
+    },
+  });
+
+  console.log("✅ Users seeded.");
 }
 
 async function reward() {
-  // categories
+  console.log("🌱 Seeding rewards...");
   await prisma.rewardCategory.upsert({
     where: { name: "Gift Card" },
     update: {},
@@ -39,7 +90,6 @@ async function reward() {
     where: { name: "Gift Card" },
   });
 
-  // rewards
   if (giftCardCategory) {
     await prisma.rewardCatalog.upsert({
       where: { label: "Amazon Gift Card" },
@@ -48,7 +98,7 @@ async function reward() {
         categoryId: giftCardCategory.id,
         label: "Amazon Gift Card",
         valueCents: 0,
-        pointsCost: 0
+        pointsCost: 0,
       },
     });
 
@@ -59,10 +109,12 @@ async function reward() {
         categoryId: giftCardCategory.id,
         label: "Visa Gift Card",
         valueCents: 0,
-        pointsCost: 0
+        pointsCost: 0,
       },
     });
   }
+
+  console.log("✅ Rewards seeded.");
 }
 
 async function nominationChallenge() {
@@ -73,8 +125,10 @@ async function nominationChallenge() {
     update: {},
     create: {
       title: "Employee of the Month",
-      description: "Recognize outstanding employees who go above and beyond this month.",
-      qualification: "Nominate a coworker who demonstrates leadership, teamwork, and initiative.",
+      description:
+        "Recognize outstanding employees who go above and beyond this month.",
+      qualification:
+        "Nominate a coworker who demonstrates leadership, teamwork, and initiative.",
       startDate: new Date("2025-09-01"),
       endDate: new Date("2025-09-30"),
       isActive: true,
@@ -94,13 +148,17 @@ async function setupBonus() {
     update: {},
     create: {
       title: "Setup Bonus",
-      description: "Earn 5 points by uploading your profile picture and sending your first shoutout.",
+      description:
+        "Earn 5 points by uploading your profile picture and sending your first shoutout.",
       qualification: "Upload a profile picture and recognize a colleague.",
       startDate: new Date("2025-01-01T00:00:00Z"),
       endDate: new Date("2099-12-31T23:59:59Z"),
       isActive: true,
       points: 5,
-      requirements: { requiresProfileImage: true, requiresFirstShoutout: true },
+      requirements: {
+        requiresProfileImage: true,
+        requiresFirstShoutout: true,
+      },
     },
   });
 
@@ -115,7 +173,8 @@ async function employeeReferral() {
     update: {},
     create: {
       title: "Employee Referral",
-      description: "After 90 days of employment for your referral, you will receive 1000 points!",
+      description:
+        "After 90 days of employment for your referral, you will receive 1000 points!",
       qualification: "Briefly explain why you're claiming this challenge.",
       startDate: new Date("2025-01-01T00:00:00Z"),
       endDate: new Date("2099-12-31T23:59:59Z"),
@@ -129,7 +188,8 @@ async function employeeReferral() {
 }
 
 async function main() {
-  await user();
+  const departments = await seedDepartments(); // ✅ new step
+  await user(departments);
   await reward();
   await nominationChallenge();
   await setupBonus();

@@ -57,6 +57,10 @@ export default function NominationModal({
     if (activeChallenge.requirements?.requiresReason) {
       body.reason = reason;
     }
+    if (activeChallenge.requirements?.requiresScreenshot) {
+      body.screenshot = screenshot || undefined;
+    }
+    
     const res = await fetch("/api/nominations", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -133,7 +137,7 @@ export default function NominationModal({
                   {activeChallenge.description}
                 </p>
 
-                {activeChallenge.gifUrl ? (
+                {activeChallenge.gifUrl && (
                   <Image
                     src={activeChallenge.gifUrl}
                     alt="Selected GIF"
@@ -142,8 +146,6 @@ export default function NominationModal({
                     unoptimized
                     className="max-h-40 rounded mt-2"
                   />
-                ) : (
-                  <p className="text-xs text-gray-400 mt-2">No GIF selected</p>
                 )}
 
                 {activeChallenge.requirements?.requiresNominee && (

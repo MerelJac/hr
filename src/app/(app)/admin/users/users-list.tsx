@@ -1,11 +1,24 @@
 "use client";
 
+import { Department } from "@/types/department";
 import { User } from "@/types/user";
-import { useState } from "react";
+import { PencilIcon } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export default function UsersList({ users }: { users: User[] }) {
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [departments, setDepartments] = useState<Department[]>([]);
+
+  // ✅ Fetch departments when edit modal opens
+  useEffect(() => {
+    if (open) {
+      fetch("/api/departments")
+        .then((res) => res.json())
+        .then((data) => setDepartments(data))
+        .catch((err) => console.error("Failed to load departments:", err));
+    }
+  }, [open]);
 
   function openEditModal(user: User) {
     setSelectedUser(user);
@@ -21,10 +34,20 @@ export default function UsersList({ users }: { users: User[] }) {
     e.preventDefault();
     if (!selectedUser) return;
 
+    const payload = {
+      firstName: selectedUser.firstName,
+      lastName: selectedUser.lastName,
+      preferredName: selectedUser.preferredName,
+      birthday: selectedUser.birthday,
+      workAnniversary: selectedUser.workAnniversary,
+      role: selectedUser.role,
+      departmentId: (selectedUser as User).departmentId || null, // 👈 make sure we're sending departmentId
+    };
+
     const res = await fetch(`/api/users/${selectedUser.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(selectedUser),
+      body: JSON.stringify(payload),
     });
 
     if (res.ok) {
@@ -42,7 +65,7 @@ export default function UsersList({ users }: { users: User[] }) {
         {users.map((u) => (
           <li key={u.id} className="flex items-center gap-2">
             <span
-              className={`w-64 ${
+              className={`w-xl ${
                 u.isActive ? "" : "line-through text-gray-500"
               }`}
             >
@@ -73,7 +96,7 @@ export default function UsersList({ users }: { users: User[] }) {
               className="ml-2 text-blue-600"
               disabled={!u.isActive}
             >
-              Edit
+              <PencilIcon size={16} />
             </button>
 
             {u.isActive ? (
@@ -122,7 +145,7 @@ export default function UsersList({ users }: { users: User[] }) {
         ))}
       </ul>
 
-      {/* Edit Modal */}
+      {/* ✏️ Edit Modal */}
       {open && selectedUser && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 relative">
@@ -139,9 +162,6 @@ export default function UsersList({ users }: { users: User[] }) {
                 className="border rounded-xl px-3 py-2"
                 type="email"
                 value={selectedUser.email}
-                onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, email: e.target.value })
-                }
                 disabled
               />
 
@@ -224,30 +244,43 @@ export default function UsersList({ users }: { users: User[] }) {
                 />
               </label>
 
-              <input
-                className="border rounded-xl px-3 py-2"
-                placeholder="Department"
-                value={selectedUser.department || ""}
-                onChange={(e) =>
-                  setSelectedUser({
-                    ...selectedUser,
-                    department: e.target.value,
-                  })
-                }
-              />
+              {/* ✅ Department dropdown */}
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-gray-600">Department</span>
+                <select
+                  className="border rounded-xl px-3 py-2"
+                  value={(selectedUser as User).departmentId || ""}
+                  onChange={(e) =>
+                    setSelectedUser({
+                      ...selectedUser,
+                      departmentId: e.target.value || null,
+                    } as User)
+                  }
+                >
+                  <option value="">Unassigned</option>
+                  {departments.map((dept) => (
+                    <option key={dept.id} value={dept.id}>
+                      {dept.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-              <select
-                className="border rounded-xl px-3 py-2"
-                value={selectedUser.role}
-                onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, role: e.target.value })
-                }
-              >
-                <option>EMPLOYEE</option>
-                <option>MANAGER</option>
-                <option>ADMIN</option>
-                <option>SUPER_ADMIN</option>
-              </select>
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-gray-600">Permission Status</span>
+                <select
+                  className="border rounded-xl px-3 py-2"
+                  value={selectedUser.role}
+                  onChange={(e) =>
+                    setSelectedUser({ ...selectedUser, role: e.target.value })
+                  }
+                >
+                  <option>EMPLOYEE</option>
+                  <option>MANAGER</option>
+                  <option>ADMIN</option>
+                  <option>SUPER_ADMIN</option>
+                </select>
+              </label>
 
               <button
                 type="submit"

@@ -2,12 +2,13 @@
 
 import { Reward } from "@/types/reward";
 import { useState } from "react";
+import Image from "next/image";
+import { Edit, Trash } from "lucide-react";
 
 type RewardCategory = {
   id: string;
   name: string;
 };
-
 
 export default function RewardsAdmin({
   rewards,
@@ -18,11 +19,12 @@ export default function RewardsAdmin({
 }) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Reward | null>(null);
-
   const [catOpen, setCatOpen] = useState(false);
   const [selectedCat, setSelectedCat] = useState<RewardCategory | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(
+    selected?.imageUrl ?? null
+  );
 
-  // 🔹 CATEGORY CRUD
   async function saveCategory(data: Partial<RewardCategory>) {
     const method = selectedCat?.id ? "PATCH" : "POST";
     const url = selectedCat?.id
@@ -47,7 +49,6 @@ export default function RewardsAdmin({
     else alert("Failed to delete category");
   }
 
-  // 🔹 REWARD CRUD
   async function saveReward(data: Partial<Reward>) {
     const method = selected?.id ? "PATCH" : "POST";
     const url = selected?.id ? `/api/rewards/${selected.id}` : "/api/rewards";
@@ -68,102 +69,154 @@ export default function RewardsAdmin({
     else alert("Failed to delete reward");
   }
 
-  return (
-    <main className="p-6 space-y-8 bg-white rounded-xl">
-      {/* Categories Section */}
-      <section>
-        <h2 className="text-xl font-semibold mb-3">Reward Categories</h2>
-        <button
-          onClick={() => {
-            setSelectedCat(null);
-            setCatOpen(true);
-          }}
-          className="bg-blue-600 text-white px-3 py-2 rounded-xl mb-3"
-        >
-          + Add Category
-        </button>
-        <ul className="divide-y border rounded-xl">
-          {categories.map((cat) => (
-            <li key={cat.id} className="p-3 flex justify-between items-center">
-              <span>{cat.name}</span>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setSelectedCat(cat);
-                    setCatOpen(true);
-                  }}
-                  className="text-blue-600 hover:underline"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => deleteCategory(cat.id)}
-                  className="text-red-600 hover:underline"
-                >
-                  Delete
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
+  async function uploadRewardImage(file: File) {
+    try {
+      if (!file) return;
+      const res = await fetch(
+        `/api/util/images?contentType=${encodeURIComponent(file.type)}`
+      );
+      const { uploadUrl, publicUrl } = await res.json();
+      const uploadRes = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+      if (!uploadRes.ok) throw new Error("S3 upload failed");
+      setImageUrl(publicUrl);
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
-      {/* Rewards Section */}
+  // Group rewards by category
+  const groupedRewards = categories.map((cat) => ({
+    ...cat,
+    rewards: rewards.filter((r) => r.categoryId === cat.id),
+  }));
+
+  return (
+    <main className="p-6 bg-white rounded-xl space-y-8">
+      {/* Category Controls */}
       <section>
-        <h2 className="text-xl font-semibold mb-3">Rewards</h2>
-        <button
-          onClick={() => {
-            setSelected(null);
-            setOpen(true);
-          }}
-          className="bg-blue-600 text-white px-3 py-2 rounded-xl mb-3"
-        >
-          + Add Reward
-        </button>
-        <ul className="divide-y border rounded-xl">
-          {rewards.map((r) => (
-            <li key={r.id} className="p-4 flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold">{r.label}</h3>
-                <p className="text-sm text-gray-600">
-                  Category: {r.category?.name}
-                </p>
-                <p className="text-sm">
-                  {r.category?.name === "Gift Card"
-                    ? "Flexible amount"
-                    : `Value: ${(r.valueCents ?? 0 / 100).toFixed(2)} ${r.pointsCost} pts`}
-                  
-                </p>
-                <span
-                  className={`px-2 py-1 rounded text-xs font-medium ${
-                    r.isActive
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {r.isActive ? "Active" : "Inactive"}
-                </span>
-              </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setSelected(r);
-                    setOpen(true);
-                  }}
-                  className="text-blue-600 hover:underline"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => deleteReward(r.id)}
-                  className="text-red-600 hover:underline"
-                >
-                  Delete
-                </button>
-              </div>
-            </li>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">Reward Categories</h2>
+          <div className="flex justify-end gap-6">
+            <button
+              onClick={() => {
+                setSelectedCat(null);
+                setCatOpen(true);
+              }}
+              className="bg-blue-600 text-white px-3 py-2 rounded-xl"
+            >
+              + Add Category
+            </button>
+
+            {/* Reward Add button */}
+            <button
+              onClick={() => {
+                setSelected(null);
+                setOpen(true);
+              }}
+              className="bg-green-600 text-white px-4 py-2 rounded-xl shadow"
+            >
+              + Add Reward
+            </button>
+          </div>
+        </div>
+
+        {/* Category list with sublists of rewards */}
+        <div className="divide-y border rounded-xl">
+          {groupedRewards.map((cat) => (
+            <details key={cat.id} className="group">
+              <summary className="cursor-pointer flex justify-between items-center p-4 hover:bg-gray-50">
+                <span className="font-semibold text-gray-800">{cat.name}</span>
+                <div className="flex gap-3">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedCat(cat);
+                      setCatOpen(true);
+                    }}
+                    className="text-blue-600 hover:underline"
+                  >
+                    <Edit size={16} />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      deleteCategory(cat.id);
+                    }}
+                    className="text-red-600 hover:underline"
+                  >
+                    <Trash size={16} />
+                  </button>
+                </div>
+              </summary>
+
+              {/* Rewards under this category */}
+              <ul className="p-4 space-y-3 bg-gray-50 border-t border-gray-100">
+                {cat.rewards.length === 0 && (
+                  <li className="text-sm text-gray-500 italic px-3 py-2">
+                    No rewards in this category yet.
+                  </li>
+                )}
+                {cat.rewards.map((r) => (
+                  <li
+                    key={r.id}
+                    className="flex justify-between items-center bg-white p-3 rounded-md shadow-sm"
+                  >
+                    <div className="flex items-center gap-3">
+                      {r.imageUrl && (
+                        <Image
+                          src={r.imageUrl}
+                          alt={r.label}
+                          width={80}
+                          height={80}
+                          className="rounded-md"
+                        />
+                      )}
+                      <div>
+                        <h3 className="font-medium text-gray-800">{r.label}</h3>
+                        <p className="text-sm text-gray-600">
+                          {r.category?.name === "Gift Card"
+                            ? "Flexible amount"
+                            : `${r.pointsCost} pts`}
+                        </p>
+                        <span
+                          className={`inline-block mt-1 px-2 py-0.5 text-xs rounded-full font-medium ${
+                            r.isActive
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {r.isActive ? "Active" : "Inactive"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => {
+                          setSelected(r);
+                          setOpen(true);
+                        }}
+                        className="text-blue-600 hover:underline"
+                      >
+                        <Edit size={16} />
+                      </button>
+                      <button
+                        onClick={() => deleteReward(r.id)}
+                        className="text-red-600 hover:underline"
+                      >
+                        <Trash size={16} />
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </details>
           ))}
-        </ul>
+        </div>
       </section>
 
       {/* Category Modal */}
@@ -176,13 +229,12 @@ export default function RewardsAdmin({
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                const form = e.currentTarget as HTMLFormElement;
-                const formData = new FormData(form);
+                const formData = new FormData(e.currentTarget);
                 saveCategory({ name: formData.get("name") as string });
               }}
               className="space-y-3"
             >
-              <label>Name</label>
+              <label className="block text-sm font-medium">Name</label>
               <input
                 name="name"
                 defaultValue={selectedCat?.name}
@@ -190,7 +242,7 @@ export default function RewardsAdmin({
                 className="w-full border rounded px-3 py-2"
                 required
               />
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 mt-4">
                 <button
                   type="button"
                   onClick={() => setCatOpen(false)}
@@ -220,19 +272,27 @@ export default function RewardsAdmin({
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                const form = e.currentTarget as HTMLFormElement;
-                const formData = new FormData(form);
+                const formData = new FormData(e.currentTarget);
+                console.log("form data", {
+                  label: formData.get("label"),
+                  categoryId: formData.get("categoryId"),
+                  valueCents: formData.get("valueCents"),
+                  pointsCost: formData.get("pointsCost"),
+                  isActive: formData.get("isActive"),
+                  imageUrl: imageUrl,
+                });
                 saveReward({
                   label: formData.get("label") as string,
                   categoryId: formData.get("categoryId") as string,
-                  valueCents: Number(formData.get("valueCents")) ?? 0, // defauly 0
+                  valueCents: Number(formData.get("valueCents")) ?? 0,
                   pointsCost: Number(formData.get("pointsCost")),
                   isActive: formData.get("isActive") === "on",
+                  imageUrl,
                 });
               }}
               className="space-y-3"
             >
-              <label>Label</label>
+              <label className="block text-sm font-medium">Label</label>
               <input
                 name="label"
                 defaultValue={selected?.label}
@@ -240,7 +300,7 @@ export default function RewardsAdmin({
                 className="w-full border rounded px-3 py-2"
                 required
               />
-              <label>Category</label>
+              <label className="block text-sm font-medium">Category</label>
               <select
                 name="categoryId"
                 defaultValue={selected?.categoryId ?? categories[0]?.id}
@@ -252,7 +312,7 @@ export default function RewardsAdmin({
                   </option>
                 ))}
               </select>
-              <label>Points Cost</label>
+              <label className="block text-sm font-medium">Points Cost</label>
               <input
                 type="number"
                 name="pointsCost"
@@ -260,29 +320,26 @@ export default function RewardsAdmin({
                 className="w-full border rounded px-3 py-2"
                 required
               />
-              <label>Image</label>
+              <label className="block text-sm font-medium">Image</label>
+              {imageUrl && (
+                <div className="mb-2">
+                  <Image
+                    src={imageUrl}
+                    alt="Reward Image"
+                    width={80}
+                    height={80}
+                    className="rounded-md"
+                  />
+                </div>
+              )}
               <input
                 type="file"
                 accept="image/*"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-
-                  // Example: upload to /api/upload or Cloudinary/S3
-                  const formData = new FormData();
-                  formData.append("file", file);
-
-                  const res = await fetch("/api/upload", {
-                    method: "POST",
-                    body: formData,
-                  });
-
-                  const { url } = await res.json();
-                 setSelected((prev) => prev ? { ...prev, imageUrl: url } : prev);
-
+                onChange={(e) => {
+                  if (e.target.files?.[0]) uploadRewardImage(e.target.files[0]);
                 }}
               />
-              <label className="flex items-center gap-2">
+              <label className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
                   name="isActive"
@@ -290,7 +347,7 @@ export default function RewardsAdmin({
                 />
                 Active
               </label>
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 mt-4">
                 <button
                   type="button"
                   onClick={() => setOpen(false)}

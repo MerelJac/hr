@@ -1,17 +1,17 @@
 // src/scripts/grantBirthdayPoints.ts
 // Run with: npx tsx src/scripts/grantBirthdayPoints.ts
 
+import { sendBirthdayEmail } from "@/lib/emailTemplates";
 import { prisma } from "@/lib/prisma";
 
-async function grantBirthdayPoints() {
+export async function grantBirthdayPoints() {
   const today = new Date();
   const month = today.getMonth() + 1; // JS months are 0–11
   const day = today.getDate();
 
-  // Find employees whose birthday matches today (month + day)
+  // Find faculty whose birthday matches today (month + day)
   const birthdayUsers = await prisma.user.findMany({
     where: {
-      role: "EMPLOYEE",
       birthday: {
         not: null,
       },
@@ -44,6 +44,9 @@ async function grantBirthdayPoints() {
     });
   }
 
+  // Send one email to all birthday users (parallel)
+  await Promise.all(matchingUsers.map((u) => sendBirthdayEmail(u.email)));
+
   // Update all birthday users
   const updates = await Promise.all(
     matchingUsers.map((u) =>
@@ -57,4 +60,4 @@ async function grantBirthdayPoints() {
   console.log(`🎉 Granted 500 birthday points to ${updates.length} employees!`);
 }
 
-grantBirthdayPoints().finally(() => prisma.$disconnect());
+// grantBirthdayPoints().finally(() => prisma.$disconnect());

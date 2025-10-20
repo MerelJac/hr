@@ -135,7 +135,7 @@ export default function ChallengeList({
 
       {open && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-lg">
+          <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-lg overflow-y-scroll max-h-[90vh] relative">
             <h2 className="text-xl font-semibold mb-4">
               {selected ? "Edit Challenge" : "New Challenge"}
             </h2>
@@ -161,6 +161,10 @@ export default function ChallengeList({
                     requiresScreenshot:
                       formData.get("requiresScreenshot") === "on",
                   },
+                  allowMultipleWinners:
+                    formData.get("allowMultipleWinners") === "on",
+                  hideStatusFromSubmitter:
+                    formData.get("hideStatusFromSubmitter") === "on",
                 });
               }}
               className="space-y-3"
@@ -275,6 +279,26 @@ export default function ChallengeList({
                     }
                   />
                   Requires Screenshot
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="hideStatusFromSubmitter"
+                    defaultChecked={
+                      selected ? selected.hideStatusFromSubmitter : true
+                    }
+                  />
+                  Hide Status From Submitter?
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="allowMultipleWinners"
+                    defaultChecked={
+                      selected ? selected.allowMultipleWinners : true
+                    }
+                  />
+                  Allow Multiple Winners?
                 </label>
               </div>
 

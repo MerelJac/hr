@@ -1,10 +1,15 @@
-export type RedemptionStatus = "PENDING" | "APPROVED" | "FULFILLED" | "FAILED" | "CANCELLED";
+export type RedemptionStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "FULFILLED"
+  | "FAILED"
+  | "CANCELLED";
 export type RedemptionType = "AMAZON" | "VISA" | "OTHER";
 
 export interface Redemption {
   id: string;
   valueCents: number;
-  catalogId: string |null;
+  catalogId: string | null;
   pointsSpent: number;
   status: RedemptionStatus;
   code?: string | null;
@@ -14,4 +19,16 @@ export interface Redemption {
     id: string;
     email: string;
   };
+  catalog?: {
+    id: string;
+    label: string;
+    valueCents: number | null;
+    pointsCost: number;
+    imageUrl?: string | null;
+    isActive: boolean;
+    category?: {
+      id: string;
+      name: string;
+    } | null;
+  } | null;
 }

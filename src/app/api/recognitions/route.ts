@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { message, gifUrl, recipients} = parsed.data;
+  const { message, gifUrl, recipients } = parsed.data;
 
   // No self-awards
   if (recipients.some((r) => r.userId === senderId)) {
@@ -88,6 +88,12 @@ export async function POST(req: NextRequest) {
         data: { pointsBalance: { increment: r.points } },
       });
     }
+
+    // Update senders' piggy bank monthyl balances
+    await tx.user.update({
+      where: { id: senderId },
+      data: { monthlyBudget: { decrement: total } },
+    });
 
     return rec;
   });

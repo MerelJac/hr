@@ -40,7 +40,7 @@ describe("PATCH /api/users/[id]", () => {
       expect.objectContaining({ where: { id: "123" } })
     );
     expect(prisma.session.deleteMany).toHaveBeenCalledWith({
-      where: { userId: "123" },
+      where: { id: "123" },
     });
   });
 });
@@ -57,7 +57,7 @@ describe("DELETE /api/users/[id]", () => {
 
     expect(json.ok).toBe(true);
     expect(prisma.session.deleteMany).toHaveBeenCalledWith({
-      where: { userId: "123" },
+      where: { id: "123" },
     });
     expect(prisma.user.delete).toHaveBeenCalledWith({ where: { id: "123" } });
   });

@@ -1,14 +1,7 @@
 "use client";
 import { useState } from "react";
-
-type Reward = {
-  id: string;
-  categoryId: string;
-  label: string;
-  valueCents: number;
-  pointsCost: number;
-  isActive: boolean;
-};
+import { Reward } from "@/types/reward";
+import Image from "next/image";
 
 type RewardCategory = {
   id: string;
@@ -55,15 +48,12 @@ export default function RedeemClient({
 
     const idemKey = `redeem_${selectedReward?.id}_${Date.now()}`;
 
-    const payload =
-      currentCategory?.name === "Gift Card"
-        ? {
-            catalogId: selectedReward?.id,
-            amount,
-            deliverEmail: email,
-            idemKey,
-          }
-        : { catalogId: selectedReward?.id, deliverEmail: email, idemKey };
+    const payload = {
+      catalogId: selectedReward?.id,
+      pointsCost,
+      deliverEmail: email,
+      idemKey,
+    };
 
     const res = await fetch("/api/rewards/redeem", {
       method: "POST",
@@ -107,26 +97,34 @@ export default function RedeemClient({
       {/* Rewards for active category */}
       {currentCategory && (
         <>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {currentCategory.rewards
               .filter((r) => r.isActive)
               .map((r) => (
                 <button
                   key={r.id}
                   onClick={() => setSelectedReward(r)}
-                  className={`rounded-lg p-4 border flex flex-col items-center justify-center ${
+                  className={`rounded-lg p-4 border-2 flex flex-col items-center justify-center max-w-sm ${
                     selectedReward?.id === r.id
                       ? "ring-2 ring-blue-500 bg-blue-100"
                       : "bg-white"
                   }`}
                 >
-                  <span className="font-semibold">{r.label}</span>
-                  <span className="text-sm text-gray-600">
+                  <span className="font-semibold pb-2">{r.label}</span>
+                  {r.imageUrl && (
+                    <Image
+                      src={r.imageUrl}
+                      alt={r.label}
+                      width={150}
+                      height={150}
+                    />
+                  )}
+                  <span className="text-sm text-gray-600 py-2">
                     {currentCategory.name === "Gift Card"
                       ? "Flexible amount"
-                      : `$${(r.valueCents / 100).toFixed(2)}`}{" "}
-                    · {r.pointsCost} pts
+                      : `${r.pointsCost} pts`}
                   </span>
+                  <p className="bg-red-500 text-white px-4 py-2 rounded min-w-[80%]">Select Reward</p>
                 </button>
               ))}
           </div>

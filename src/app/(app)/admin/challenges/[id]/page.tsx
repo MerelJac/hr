@@ -20,10 +20,23 @@ export default async function ChallengeDetailPage({
     include: {
       nominations: {
         include: {
-          submitter: { select: { firstName: true, lastName: true, email: true } },
-          nominee: { select: { firstName: true, lastName: true, email: true } },
+          submitter: {
+            select: { id: true, firstName: true, lastName: true, email: true },
+          },
+          nominee: {
+            select: { id: true, firstName: true, lastName: true, email: true },
+          },
         },
         orderBy: { createdAt: "desc" },
+      },
+    },
+  });
+
+  const relatedRecognitions = await prisma.recognition.findMany({
+    where: { challengeId: params.id },
+    include: {
+      recipients: {
+        include: { recipient: true },
       },
     },
   });
@@ -31,14 +44,23 @@ export default async function ChallengeDetailPage({
   if (!challenge) return <div className="p-6">Challenge not found</div>;
 
   return (
-    <main className="p-6 space-y-4 bg-white rounded-xl">
+    <main className="p-6 space-y-4 bg-white rounded-xl h-screen">
       <Link href={`/admin/challenges`}>
         <button className="text-gray-700 text-xs flex flex-row w-full items-center gap-2 mb-4">
           <ArrowLeft size={12} />
           Back to Challenges
         </button>
       </Link>
-      <ChallengeDetailClient challenge={challenge} />
+      <ChallengeDetailClient
+        challenge={{
+          ...challenge,
+          nominations: challenge.nominations.map((nomination) => ({
+            ...nomination,
+            reason: nomination.reason === null ? undefined : nomination.reason,
+          })),
+        }}
+        relatedRecognitions={relatedRecognitions}
+      />
     </main>
   );
 }

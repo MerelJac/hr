@@ -15,20 +15,35 @@ export async function POST(req: NextRequest) {
       await req.json();
     const senderId = (session.user as User).id;
 
-    console.log("senderId", senderId, "recip id", recipientId);
+    if (!senderId) throw { status: 400, message: "senderId is required" };
+
     return await prisma.$transaction(async (tx) => {
+      // Get the sender (to check monthlyBudget)
+      const sender = await tx.user.findUnique({
+        where: { id: senderId },
+        select: { monthlyBudget: true },
+      });
+
+      if (!sender) throw { status: 404, message: "Sender not found" };
+
       let boost = 0;
+
+      // ✅ Decrement from monthly budget if points are given
       if (pointsBoosted && pointsBoosted > 0) {
-        // decrement sender balance
-        const updated = await tx.user.update({
-          where: { id: senderId },
-          data: { pointsBalance: { decrement: pointsBoosted } },
-        });
-        if (updated.pointsBalance < 0) {
-        return NextResponse.json({ error: "Not enough points" }, { status: 400 });
+        if (pointsBoosted > sender.monthlyBudget) {
+          return NextResponse.json(
+            { error: "Not enough points in monthly budget" },
+            { status: 400 }
+          );
         }
 
-        // increment recipient balance
+        // Subtract from sender's monthly budget
+        await tx.user.update({
+          where: { id: senderId },
+          data: { monthlyBudget: { decrement: pointsBoosted } },
+        });
+
+        // Add to recipient's *earned points balance*
         if (recipientId) {
           await tx.user.update({
             where: { id: recipientId },
@@ -39,8 +54,7 @@ export async function POST(req: NextRequest) {
         boost = pointsBoosted;
       }
 
-      if (!senderId) throw { status: 400, message: "senderId is required" };
-
+      // Create comment
       const comment = await tx.recognitionComment.create({
         data: {
           recognitionId,
@@ -63,6 +77,7 @@ export async function POST(req: NextRequest) {
     return handleApiError(e);
   }
 }
+
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

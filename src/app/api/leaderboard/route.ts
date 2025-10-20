@@ -12,10 +12,59 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
+  const type = searchParams.get("type") ?? "people";
   const start = searchParams.get("start")
     ? new Date(searchParams.get("start")!)
     : new Date(new Date().setMonth(new Date().getMonth() - 1));
-  const end = searchParams.get("end") ? new Date(searchParams.get("end")!) : new Date();
+  const end = searchParams.get("end")
+    ? new Date(searchParams.get("end")!)
+    : new Date();
+
+  // 🏢 Department leaderboard
+  if (type === "departments") {
+    const deptPoints = await prisma.recognitionRecipient.groupBy({
+      by: ["recipientId"],
+      _sum: { points: true },
+      where: { createdAt: { gte: start, lte: end } },
+    });
+
+    // Look up recipients with departments
+    const recipients = await prisma.user.findMany({
+      where: {
+        id: { in: deptPoints.map((r) => r.recipientId) },
+        departmentId: { not: null },
+      },
+      select: {
+        id: true,
+        departmentId: true,
+        department: { select: { id: true, name: true } },
+      },
+    });
+
+    // Aggregate points by department
+    const totals: Record<
+      string,
+      { id: string; name: string; totalPoints: number }
+    > = {};
+    for (const r of deptPoints) {
+      const u = recipients.find((x) => x.id === r.recipientId);
+      if (u?.department) {
+        const key = u.department.id;
+        totals[key] ??= {
+          id: u.department.id,
+          name: u.department.name,
+          totalPoints: 0,
+        };
+        totals[key].totalPoints += r._sum.points || 0;
+      }
+    }
+
+    const departments = Object.values(totals)
+      .sort((a, b) => b.totalPoints - a.totalPoints)
+      .slice(0, 10);
+
+    return NextResponse.json({ departments });
+  }
 
   // 1. Most points received
   const receivedRaw = await prisma.recognitionRecipient.groupBy({
@@ -27,12 +76,17 @@ export async function GET(req: NextRequest) {
   });
 
   const receivedUsers = await prisma.user.findMany({
-    where: { id: { in: receivedRaw.map(r => r.recipientId) } },
-    select: { id: true, firstName: true, preferredName: true, profileImage: true },
+    where: { id: { in: receivedRaw.map((r) => r.recipientId) } },
+    select: {
+      id: true,
+      firstName: true,
+      preferredName: true,
+      profileImage: true,
+    },
   });
 
-  const received = receivedRaw.map(r => ({
-    user: receivedUsers.find(u => u.id === r.recipientId) || null,
+  const received = receivedRaw.map((r) => ({
+    user: receivedUsers.find((u) => u.id === r.recipientId) || null,
     points: r._sum.points || 0,
   }));
 
@@ -46,12 +100,17 @@ export async function GET(req: NextRequest) {
   });
 
   const givenUsers = await prisma.user.findMany({
-    where: { id: { in: givenRaw.map(r => r.recipientId) } },
-    select: { id: true, firstName: true, preferredName: true, profileImage: true },
+    where: { id: { in: givenRaw.map((r) => r.recipientId) } },
+    select: {
+      id: true,
+      firstName: true,
+      preferredName: true,
+      profileImage: true,
+    },
   });
 
-  const given = givenRaw.map(r => ({
-    user: givenUsers.find(u => u.id === r.recipientId) || null,
+  const given = givenRaw.map((r) => ({
+    user: givenUsers.find((u) => u.id === r.recipientId) || null,
     points: r._sum.points || 0,
   }));
 
@@ -65,12 +124,17 @@ export async function GET(req: NextRequest) {
   });
 
   const shoutoutsGivenUsers = await prisma.user.findMany({
-    where: { id: { in: shoutoutsGivenRaw.map(r => r.senderId) } },
-    select: { id: true, firstName: true, preferredName: true, profileImage: true },
+    where: { id: { in: shoutoutsGivenRaw.map((r) => r.senderId) } },
+    select: {
+      id: true,
+      firstName: true,
+      preferredName: true,
+      profileImage: true,
+    },
   });
 
-  const shoutoutsGiven = shoutoutsGivenRaw.map(r => ({
-    user: shoutoutsGivenUsers.find(u => u.id === r.senderId) || null,
+  const shoutoutsGiven = shoutoutsGivenRaw.map((r) => ({
+    user: shoutoutsGivenUsers.find((u) => u.id === r.senderId) || null,
     count: r._count.senderId,
   }));
 
@@ -84,14 +148,24 @@ export async function GET(req: NextRequest) {
   });
 
   const shoutoutsReceivedUsers = await prisma.user.findMany({
-    where: { id: { in: shoutoutsReceivedRaw.map(r => r.recipientId) } },
-    select: { id: true, firstName: true, preferredName: true, profileImage: true },
+    where: { id: { in: shoutoutsReceivedRaw.map((r) => r.recipientId) } },
+    select: {
+      id: true,
+      firstName: true,
+      preferredName: true,
+      profileImage: true,
+    },
   });
 
-  const shoutoutsReceived = shoutoutsReceivedRaw.map(r => ({
-    user: shoutoutsReceivedUsers.find(u => u.id === r.recipientId) || null,
+  const shoutoutsReceived = shoutoutsReceivedRaw.map((r) => ({
+    user: shoutoutsReceivedUsers.find((u) => u.id === r.recipientId) || null,
     count: r._count.recipientId,
   }));
 
-  return NextResponse.json({ received, given, shoutoutsGiven, shoutoutsReceived });
+  return NextResponse.json({
+    received,
+    given,
+    shoutoutsGiven,
+    shoutoutsReceived,
+  });
 }
