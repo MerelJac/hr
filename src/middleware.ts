@@ -14,7 +14,6 @@ export async function middleware(req: NextRequest) {
     "/api/register",
     "/_next", // Next internals
     "/favicon.ico",
-    "/api/debug-env", // ENV testing
     "/images",
     "/public",
     "/forgot-password",
@@ -45,5 +44,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|api/cron).*)",
+  ],
 };
