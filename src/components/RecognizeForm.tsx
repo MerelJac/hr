@@ -3,7 +3,7 @@
 import { useState } from "react";
 import GifPicker from "./GifPicker";
 import Image from "next/image";
-import { User } from "lucide-react";
+import { Trash, User } from "lucide-react";
 
 type SimpleUser = {
   id: string;
@@ -80,84 +80,112 @@ export default function RecognizeForm({
       </div>
 
       <div>
-        <textarea
-          className="w-full border-2 border-blue rounded-lg px-3 py-2 bg-blue-100"
-          rows={3}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Give someone a shoutout! What did they do great?"
-        />
-      </div>
-      <div className="flex justify-end gap-4 items-start">
-        <GifPicker onSelect={(url) => setGifUrl(url)} />
-        <button
-          type="button"
-          onClick={addRow}
-          className="text-blue text-lg flex flex-row items-center"
-        >
-          + <User size={18} />
-        </button>
-      </div>
-      <div className="">
-        {gifUrl && (
-          <div className="mt-2 relative max-w-fit">
-            <Image
-              src={gifUrl}
-              alt="Selected GIF"
-              width={150} // required
-              height={150} // required
-              unoptimized // 👈 prevents Next from trying to optimize animated gifs
-              className="max-h-40 rounded"
-            />{" "}
-            <button
-              type="button"
-              onClick={() => setGifUrl(null)}
-              className="absolute top-1 right-1 bg-white/80 text-red-600 text-xs px-2 py-1 rounded"
-            >
-              Remove
-            </button>
-          </div>
-        )}
-      </div>
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="text-sm font-medium">Who & how many points?</label>
-        </div>
-        {rows.map((row, i) => (
-          <div key={i} className="flex gap-2 items-center">
-            <select
-              className="border-1 rounded px-2 py-1 min-h-[36px]"
-              value={row.userId}
-              onChange={(e) => updateRow(i, { userId: e.target.value })}
-            >
-              {users.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.firstName || u.lastName
-                    ? `${u.firstName ?? ""} ${u.lastName ?? ""}`.trim()
-                    : u.email}
-                </option>
-              ))}
-            </select>
-            <input
-              type="number"
-              min={5}
-              step={5}
-              className="w-24 border-1 rounded px-2 py-1  min-h-[36px]"
-              value={row.points}
-              onChange={(e) => updateRow(i, { points: Number(e.target.value) })}
-            />
-            {/*  if recipients.length > 1, show*/}
-            {rows.length > 1 && (
-              <button
-                type="button"
-                onClick={() => removeRow(i)}
-                className="text-red-600 text-sm"
+        <div className="space-y-3 pb-4">
+          <div className="flex flex-col gap-2">
+            {rows.map((row, i) => (
+              <div
+                key={i}
+                className="flex flex-wrap items-center gap-3 bg-blue-50 px-3 py-2 rounded-lg shadow-sm transition hover:shadow-md"
               >
-                Remove
-              </button>
+                <div className="flex flex-grow items-center gap-3">
+                  <span className="text-blue-600 font-medium">@</span>
+
+                  <select
+                    className="bg-white border border-blue-200 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-blue-300 transition"
+                    value={row.userId}
+                    onChange={(e) => updateRow(i, { userId: e.target.value })}
+                  >
+                    {users.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.firstName || u.lastName
+                          ? `${u.firstName ?? ""} ${u.lastName ?? ""}`.trim()
+                          : u.email}
+                      </option>
+                    ))}
+                  </select>
+
+                  <span className="text-gray-500 text-sm">for</span>
+
+                  <input
+                    type="number"
+                    min={5}
+                    step={5}
+                    className="w-20 border border-blue-200 bg-white rounded-md px-2 py-1 text-sm text-center focus:ring-2 focus:ring-blue-300 transition"
+                    value={row.points}
+                    onChange={(e) =>
+                      updateRow(i, { points: Number(e.target.value) })
+                    }
+                  />
+
+                  <span className="text-yellow-500 font-semibold">⭐</span>
+                </div>
+
+                {/* Button group aligned right */}
+                <div className="flex items-center gap-2 ml-auto">
+                  {rows.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeRow(i)}
+                      className="text-red-500 hover:text-red-700 transition"
+                      title="Remove"
+                    >
+                      <Trash size={18} />
+                    </button>
+                  )}
+
+                  {/* Only show Add on the last row */}
+                  {i === rows.length - 1 && (
+                    <button
+                      type="button"
+                      onClick={addRow}
+                      className="text-blue-600 hover:text-blue-800 transition flex items-center gap-1"
+                      title="Add another"
+                    >
+                      <span className="text-lg leading-none">+</span>
+                      <User size={16} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div
+          id="textarea"
+          className="w-full border-2 border-blue rounded-lg px-3 py-2 bg-blue-100"
+        >
+          <textarea
+            className="w-full rounded-lg px-3 py-2 focus:outline-none focus:ring-0 focus:border-gray-300"
+            rows={3}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Give someone a shoutout! What did they do great?"
+          />
+          <div className="flex justify-end gap-4 items-start">
+            <GifPicker onSelect={(url) => setGifUrl(url)} />
+          </div>
+          <div className="">
+            {gifUrl && (
+              <div className="mt-2 relative max-w-fit">
+                <Image
+                  src={gifUrl}
+                  alt="Selected GIF"
+                  width={150} // required
+                  height={150} // required
+                  unoptimized // 👈 prevents Next from trying to optimize animated gifs
+                  className="max-h-40 rounded"
+                />{" "}
+                <button
+                  type="button"
+                  onClick={() => setGifUrl(null)}
+                  className="absolute top-1 right-1 bg-white/80 text-red-600 text-xs px-2 py-1 rounded"
+                >
+                  Remove
+                </button>
+              </div>
             )}
           </div>
-        ))}
+        </div>
       </div>
 
       <button
