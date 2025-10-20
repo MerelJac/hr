@@ -34,7 +34,11 @@ export async function GET(
       );
     }
 
-    await sendWelcomeEmail(invite.email);
+    try {
+      await sendWelcomeEmail(invite.email);
+    } catch (err) {
+      console.error("Email send failed:", err);
+    }
 
     return NextResponse.json({
       ok: true,
