@@ -39,6 +39,7 @@ export async function checkChallengeDates() {
       startDate: { gte: startOfDay, lte: endOfDay },
     },
   });
+  
   let activatedCount = 0;
   for (const challenge of newChallenges) {
     if (!challenge.isActive) {
