@@ -13,6 +13,8 @@ applications:
             - echo "SES_SECRET_ACCESS_KEY=$SES_SECRET_ACCESS_KEY" >> .env
             - echo "SES_REGION=$SES_REGION" >> .env
             - echo "SES_FROM_ADDRESS=$SES_FROM_ADDRESS" >> .env
+            - echo "CRON_SECRET=$CRON_SECRET" >> .env
+            - echo "SYSTEM_ADMIN_ID=$SYSTEM_ADMIN_ID" >> .env
             - npx prisma generate
             # Apply migrations in Neon
             - npx prisma migrate deploy
