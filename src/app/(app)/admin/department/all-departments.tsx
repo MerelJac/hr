@@ -16,17 +16,18 @@ export function AllDepartments({
 
   return (
     <div className="space-y-6 ">
-      <button
-        onClick={() => setDepartmentOpen(true)}
-        className="bg-black text-white px-3 py-2 rounded-xl"
-      >
-        + Department
-      </button>
+      <div className="flex justify-end">
+        <button
+          onClick={() => setDepartmentOpen(true)}
+          className="bg-black text-white px-3 py-2 rounded-xl hover:bg-gray-800 transition"
+        >
+          + Department
+        </button>
+      </div>
       <DepartmentsManager
         open={departmentOpen}
         onClose={() => setDepartmentOpen(false)}
       />
-
       {departments.map((dept) => (
         <div key={dept.id} className="border rounded-lg p-4 shadow-sm">
           <h3 className="text-lg font-semibold mb-2">{dept.name}</h3>
@@ -56,7 +57,7 @@ export function AllDepartments({
                     onClick={() => setSelectedUserId(u.id)}
                     className="text-blue-600 text-sm underline"
                   >
-                     <Spotlight size={16} />
+                    <Spotlight size={16} />
                   </button>
                 </li>
               ))}
