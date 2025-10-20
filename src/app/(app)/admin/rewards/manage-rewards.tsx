@@ -24,25 +24,13 @@ export default function ManageRewards({
   rewards: RewardWithCategory[];
   categories: RewardCategory[];
 }) {
-  const [activeTab, setActiveTab] = useState<"redemption" | "manage">(
-    "redemption"
-  );
+  const [activeTab, setActiveTab] = useState<"redemption" | "manage">("manage");
 
   return (
     <section className="space-y-6 p-6">
       <div className="w-full">
         {/* Tabs */}
         <div className="flex border-b mb-4">
-          <button
-            onClick={() => setActiveTab("redemption")}
-            className={`px-4 py-2 font-medium ${
-              activeTab === "redemption"
-                ? "border-b-2 border-blue-500 text-blue-600"
-                : "text-gray-600"
-            }`}
-          >
-            Redemptions
-          </button>
           <button
             onClick={() => setActiveTab("manage")}
             className={`px-4 py-2 font-medium ${
@@ -52,6 +40,16 @@ export default function ManageRewards({
             }`}
           >
             Manage
+          </button>
+          <button
+            onClick={() => setActiveTab("redemption")}
+            className={`px-4 py-2 font-medium ${
+              activeTab === "redemption"
+                ? "border-b-2 border-blue-500 text-blue-600"
+                : "text-gray-600"
+            }`}
+          >
+            Redemptions
           </button>
         </div>
 
