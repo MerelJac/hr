@@ -6,7 +6,8 @@ import { checkChallengeDates } from "@/scripts/checkChallengeDates";
 export async function GET(req: Request) {
   const auth = req.headers.get("authorization");
   const expected = `Bearer ${process.env.CRON_SECRET}`;
-
+  console.log("AUTH HEADER:", JSON.stringify(auth));
+  console.log("EXPECTED:", JSON.stringify(expected));
   if (auth !== expected) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
