@@ -91,7 +91,7 @@ export default async function FeedPage() {
             <RecognitionList recs={recs} users={users} />
           </ul>
         </div>
-        <div id="actionItems" className="flex flex-col gap-4">
+        <div id="actionItems2" className="flex flex-col gap-4 overflow-hidden ">
           <AvailablePointsCard />
           <AvailableRedeemPointsCard />
           <NominationModal users={users} challenges={availableChallenges} />

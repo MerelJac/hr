@@ -29,10 +29,16 @@ export async function grantAnniversaryPoints() {
     const years =
       today.getFullYear() - new Date(u.workAnniversary!).getFullYear();
 
+    const senderId = process.env.SYSTEM_ADMIN_ID;
+
+    if (!senderId) {
+      console.log('No System Admin Id to post with.')
+      return;
+    }
     // Create recognition for each employee
     await prisma.recognition.create({
       data: {
-        senderId: process.env.SYSTEM_ADMIN_ID || "", // must be a valid User.id
+        senderId: senderId, // must be a valid User.id
         message: `Happy Work Anniversary! 🎉 It's been a wonderful ${years} year${
           years > 1 ? "s" : ""
         } with you here at Call One / Hello Direct!`,

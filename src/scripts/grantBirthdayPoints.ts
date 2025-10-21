@@ -28,11 +28,18 @@ export async function grantBirthdayPoints() {
     console.log("🎂 No birthdays today.");
     return;
   }
+  const senderId = process.env.SYSTEM_ADMIN_ID;
+
+  if (!senderId) {
+    console.log("No System Admin Id to post with.");
+    return;
+  }
+
   for (const u of matchingUsers) {
     // Create recognition for each employee
     await prisma.recognition.create({
       data: {
-        senderId: process.env.SYSTEM_ADMIN_ID || "", // must be a valid User.id
+        senderId: senderId,
         message: `Happy Birthday! 🎉 `,
         recipients: {
           create: {

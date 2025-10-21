@@ -46,7 +46,10 @@ export default function CoreValues() {
   }
 
   return (
-    <div className="coreValues space-y-2 p-4 bg-white rounded-lg">
+    <div
+      id="coreValues"
+      className="space-y-2 p-4 bg-white rounded-lg max-w-min"
+    >
       <div className="headerSection mb-4">
         <p className="text-xl font-semibold">Call One Mission</p>
       </div>
@@ -54,11 +57,12 @@ export default function CoreValues() {
       {values.map((v) => (
         <div
           key={v.id}
-          className="coreFilterSection border-2 border-blue rounded-lg p-2 cursor-pointer min-w-xs max-w-xs"
+          id="coreFilterSection"
+          className="border-2 border-blue rounded-lg p-2 cursor-pointer overflow-hidden transition-all duration-300"
           onClick={() => toggle(v.id)}
         >
           <div className="flex items-center">
-            <p className="text-md font-medium break-words">{v.label}</p>
+            <p className="text-md break-words  w-full">{v.label}</p>
             <div className="flex-1" />
             <ChevronDown
               className={`w-5 h-5 transition-transform ${
@@ -67,7 +71,7 @@ export default function CoreValues() {
             />
           </div>
           {open === v.id && (
-            <div className="mt-2 text-sm text-gray-700">
+            <div className="mt-2 text-sm text-gray-700 max-w-full">
               {/* You can drop in expanded details here */}
               {v.def || "Description for " + v.label}
             </div>

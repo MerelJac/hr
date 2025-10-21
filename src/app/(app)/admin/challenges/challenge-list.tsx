@@ -37,7 +37,7 @@ export default function ChallengeList({
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify(data)
     });
 
     if (res.ok) location.reload();
