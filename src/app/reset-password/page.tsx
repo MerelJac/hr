@@ -2,7 +2,6 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-
 function ResetPasswordInner() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -47,6 +46,7 @@ function ResetPasswordInner() {
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-gray-50">
+
       <form
         onSubmit={onSubmit}
         className="bg-white shadow p-6 rounded-xl w-80 space-y-3"

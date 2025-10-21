@@ -45,7 +45,7 @@ async function sendEmail({
  */
 export async function sendWelcomeEmail(to: string) {
   const appUrl =
-    process.env.APP_URL || "https://callone.igniteappreciation.com";
+    process.env.APP_URL || "${process.env.APP_URL}";
 
   return sendEmail({
     to,
@@ -82,7 +82,7 @@ export async function sendRecognitionEmail(to: string) {
         <h2>You’ve been recognized! 🎉</h2>
         <p>Someone just celebrated your hard work through Ignite Appreciation.</p>
         <p>
-          <a href="https://callone.igniteappreciation.com/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+          <a href="${process.env.APP_URL}/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
               Check it out!
             </a>
         </p>
@@ -107,7 +107,7 @@ export async function sendBirthdayEmail(to: string) {
         <h2>Happy Birthday! 🎉</h2>
         <p>You've been awarded some Ignite Appreciation to help celebrate your birthday.</p>
         <p>
-          <a href="https://callone.igniteappreciation.com/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+          <a href="${process.env.APP_URL}/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
               Check it out!
             </a>
         </p>
@@ -132,7 +132,7 @@ export async function sendWorkAnniversaryEmail(to: string) {
         <h2>Happy Work Anniversary! 🎉</h2>
         <p>Thank you for all your time spend with Call One, Inc. Here are some points as a token of our appreciation!</p>
         <p>
-          <a href="https://callone.igniteappreciation.com/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+          <a href="${process.env.APP_URL}/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
               Check it out!
             </a>
         </p>
@@ -157,7 +157,7 @@ export async function sendMonthlyPointsNotification(to: string) {
         <h2>Your account has been granted more monthly points!🎉</h2>
         <p>Start sending some kudos! 🎉 Log in to keep the appreciation going!</p>
         <p>
-          <a href="https://callone.igniteappreciation.com/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+          <a href="${process.env.APP_URL}/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
               Check it out!
             </a>
         </p>
@@ -207,7 +207,7 @@ export async function sendNewChallengeAlert(to: string, challenge: string) {
         <h2>${challenge ?? "A new challenge"} has been posted! Time to submit your response! 🎉</h2>
         <p>Start sending some kudos! 🎉 Log in to keep the appreciation going!</p>
         <p>
-          <a href="https://callone.igniteappreciation.com/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+          <a href="${process.env.APP_URL}/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
               Check it out!
             </a>
         </p>

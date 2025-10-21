@@ -218,9 +218,9 @@ export default function ProfilePage() {
               <label className="block text-sm font-medium">Birthday</label>
               {birthday ? (
                 <input
-                  disabled
                   type="date"
                   value={birthday ?? ""}
+                  onChange={(e) => setBirthday(e.target.value)}
                   className="border rounded-lg px-2 py-1 w-full bg-gray-100 text-gray-500 cursor-not-allowed"
                 />
               ) : (
@@ -244,9 +244,11 @@ export default function ProfilePage() {
           </div>
 
           {/* Change Password Section */}
-          <div className="mt-8 border-t pt-6">
-            <h2 className="text-lg font-semibold mb-4">Change Password</h2>
-            <div className="space-y-4">
+          <details className="group space-y-4">
+            <summary className="font-medium">
+              Change Password
+            </summary>
+            <div className="mt-4 space-y-4">
               <input
                 type="password"
                 placeholder="Current Password"
@@ -278,7 +280,8 @@ export default function ProfilePage() {
                 <p className="text-sm text-gray-600">{passwordMessage}</p>
               )}
             </div>
-          </div>
+          </details>
+
           <div className="flex flex-row gap-3 justify-center items-center md:hidden">
             <LogoutButton />
             <SupportButton />
