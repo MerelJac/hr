@@ -56,10 +56,10 @@ export default function ChallengeList({
 
   return (
     <section className="space-y-4 p-6">
-      <div className="flex justify-end">
+      <div className="flex justify-end ">
         <button
           onClick={() => openModal()}
-          className="bg-blue-600 text-white px-3 py-2 rounded-xl"
+          className="bg-blue-600 text-white px-3 py-2 rounded-xl hover:shadow-md"
         >
           + Create Challenge
         </button>

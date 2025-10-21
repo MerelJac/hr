@@ -19,7 +19,7 @@ export function AllDepartments({
       <div className="flex justify-end">
         <button
           onClick={() => setDepartmentOpen(true)}
-          className="bg-black text-white px-3 py-2 rounded-xl hover:bg-gray-800 transition"
+          className="bg-black text-white px-3 py-2 rounded-xl transition hover:shadow-md"
         >
           + Department
         </button>
