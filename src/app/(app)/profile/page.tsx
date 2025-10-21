@@ -165,11 +165,13 @@ export default function ProfilePage() {
       {/* Tab Content */}
       {activeTab === "settings" && (
         <div className="space-y-6">
+
           {/* Profile Info */}
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-semibold">
               Hi, {user.preferredName || `${user.firstName} ${user.lastName}`}
             </h1>
+          
             <div className="relative">
               <Image
                 src={profileImage ?? "/default-profile-image.svg"}
@@ -193,6 +195,8 @@ export default function ProfilePage() {
               </label>
             </div>
           </div>
+
+            {message && <p className="border-yellow-200 border w-full bg-yellow-100  rounded-2xl p-2 text-sm text-gray-600">{message}</p>}
 
           {/* Basic Info */}
           <div className="space-y-2">
@@ -261,7 +265,6 @@ export default function ProfilePage() {
             >
               Save Changes
             </button>
-            {message && <p className="text-sm text-gray-600">{message}</p>}
           </div>
 
           {/* Change Password Section */}
