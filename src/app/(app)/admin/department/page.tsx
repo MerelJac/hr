@@ -7,7 +7,6 @@ import { DepartmentWithUsers } from "@/types/department";
 
 export default async function DepartmentPage() {
   const session = await getServerSession(authOptions);
-  console.log("Session in Department Page:", session);
   const user = session?.user as User | null;
   const role = user?.role;
 
