@@ -15,6 +15,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<"settings" | "challenges">(
     "settings"
   );
+  const [emailNotifications, setEmailNotifications] = useState(false);
 
   // Change password form state
   const [oldPassword, setOldPassword] = useState("");
@@ -38,8 +39,28 @@ export default function ProfilePage() {
         if (data.profileImage) {
           setProfileImage(data.profileImage);
         }
+
+        if (data.emailNotifications) {
+          setEmailNotifications(data.emailNotifications);
+        }
       });
   }, []);
+
+  async function updateEmailNotifications(enabled: boolean) {
+    try {
+      const res = await fetch("/api/profile/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ emailNotifications: enabled }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update notifications");
+      setMessage(`Email notification set to ${emailNotifications}!`);
+    } catch (err) {
+      console.error(err);
+      setMessage("Error saving notification setting.");
+    }
+  }
 
   async function uploadProfileImage(file: File) {
     try {
@@ -245,9 +266,7 @@ export default function ProfilePage() {
 
           {/* Change Password Section */}
           <details className="group space-y-4">
-            <summary className="font-medium">
-              Change Password
-            </summary>
+            <summary className="font-medium">Change Password</summary>
             <div className="mt-4 space-y-4">
               <input
                 type="password"
@@ -279,6 +298,30 @@ export default function ProfilePage() {
               {passwordMessage && (
                 <p className="text-sm text-gray-600">{passwordMessage}</p>
               )}
+            </div>
+          </details>
+
+          {/* Notifications Section */}
+          <details className="group space-y-4">
+            <summary className="font-medium cursor-pointer">
+              Notifications
+            </summary>
+
+            <div className="mt-4 space-y-4">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={emailNotifications}
+                  onChange={(e) => {
+                    const enabled = e.target.checked;
+                    setEmailNotifications(enabled);
+                    updateEmailNotifications(enabled);
+                  }}
+                  className="w-4 h-4"
+                />
+                <span>Email Notifications</span>
+                <small>If enabled, you will recieve emails for shoutouts and comments. Even if toggled off, you will still recieve system notifications.</small>
+              </label>
             </div>
           </details>
 

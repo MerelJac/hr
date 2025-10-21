@@ -52,7 +52,7 @@ export async function grantBirthdayPoints() {
   }
 
   // Send one email to all birthday users (parallel)
-  await Promise.all(matchingUsers.map((u) => sendBirthdayEmail(u.email)));
+  await Promise.all(matchingUsers.filter((u) => u.emailNotifications).map((u) => sendBirthdayEmail(u.email)));
 
   // Update all birthday users
   const updates = await Promise.all(

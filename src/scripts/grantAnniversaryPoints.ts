@@ -32,7 +32,7 @@ export async function grantAnniversaryPoints() {
     const senderId = process.env.SYSTEM_ADMIN_ID;
 
     if (!senderId) {
-      console.log('No System Admin Id to post with.')
+      console.log("No System Admin Id to post with.");
       return;
     }
     // Create recognition for each employee
@@ -58,7 +58,9 @@ export async function grantAnniversaryPoints() {
     });
     // Send one email to all anniversary users (parallel)
     await Promise.all(
-      matchingUsers.map((u) => sendWorkAnniversaryEmail(u.email))
+      matchingUsers
+        .filter((u) => u.emailNotifications)
+        .map((u) => sendWorkAnniversaryEmail(u.email))
     );
 
     console.log(
