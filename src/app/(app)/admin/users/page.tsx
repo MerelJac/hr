@@ -17,7 +17,10 @@ export default async function UsersAdminPage() {
       orderBy: { createdAt: "desc" },
       where: { consumedAt: null },
     }),
-    prisma.user.findMany({ orderBy: { createdAt: "desc" } }),
+    prisma.user.findMany({
+      where: { NOT: { id: process.env.SYSTEM_ADMIN_ID } },
+      orderBy: { createdAt: "desc" },
+    }),
   ]);
 
   return (
