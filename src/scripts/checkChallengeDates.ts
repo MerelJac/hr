@@ -11,7 +11,7 @@ export async function checkChallengeDates() {
 
   // Fetch all employees
   const employees = await prisma.user.findMany({
-    select: { id: true, email: true, isActive: true },
+    select: { id: true, email: true, isActive: true, emailNotifications: true },
   });
 
   // 1️⃣ Deactivate challenges whose end date was yesterday
@@ -39,7 +39,7 @@ export async function checkChallengeDates() {
       startDate: { gte: startOfDay, lte: endOfDay },
     },
   });
-  
+
   let activatedCount = 0;
   for (const challenge of newChallenges) {
     if (!challenge.isActive) {
@@ -56,7 +56,9 @@ export async function checkChallengeDates() {
     await Promise.all(
       newChallenges.map(async (challenge) => {
         return Promise.all(
-          employees.map((u) => sendNewChallengeAlert(u.email, challenge.title))
+          employees
+            .filter((u) => u.emailNotifications)
+            .map((u) => sendNewChallengeAlert(u.email, challenge.title))
         );
       })
     );

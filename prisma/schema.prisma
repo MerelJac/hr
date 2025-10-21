@@ -33,7 +33,7 @@ model User {
   preferredName   String?
   departmentId    String?
   department      Department? @relation(fields: [departmentId], references: [id])
-
+  emailNotifications Boolean  @default(true)
   createdAt                DateTime               @default(now())
   updatedAt                DateTime               @updatedAt
   sessions                 Session[]

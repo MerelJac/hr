@@ -15,6 +15,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<"settings" | "challenges">(
     "settings"
   );
+  const [emailNotifications, setEmailNotifications] = useState(false);
 
   // Change password form state
   const [oldPassword, setOldPassword] = useState("");
@@ -38,8 +39,28 @@ export default function ProfilePage() {
         if (data.profileImage) {
           setProfileImage(data.profileImage);
         }
+
+        if (data.emailNotifications) {
+          setEmailNotifications(data.emailNotifications);
+        }
       });
   }, []);
+
+  async function updateEmailNotifications(enabled: boolean) {
+    try {
+      const res = await fetch("/api/profile/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ emailNotifications: enabled }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update notifications");
+      setMessage(`Email notification set to ${emailNotifications}!`);
+    } catch (err) {
+      console.error(err);
+      setMessage("Error saving notification setting.");
+    }
+  }
 
   async function uploadProfileImage(file: File) {
     try {
@@ -218,9 +239,9 @@ export default function ProfilePage() {
               <label className="block text-sm font-medium">Birthday</label>
               {birthday ? (
                 <input
-                  disabled
                   type="date"
                   value={birthday ?? ""}
+                  onChange={(e) => setBirthday(e.target.value)}
                   className="border rounded-lg px-2 py-1 w-full bg-gray-100 text-gray-500 cursor-not-allowed"
                 />
               ) : (
@@ -244,9 +265,9 @@ export default function ProfilePage() {
           </div>
 
           {/* Change Password Section */}
-          <div className="mt-8 border-t pt-6">
-            <h2 className="text-lg font-semibold mb-4">Change Password</h2>
-            <div className="space-y-4">
+          <details className="group space-y-4">
+            <summary className="font-medium">Change Password</summary>
+            <div className="mt-4 space-y-4">
               <input
                 type="password"
                 placeholder="Current Password"
@@ -278,7 +299,32 @@ export default function ProfilePage() {
                 <p className="text-sm text-gray-600">{passwordMessage}</p>
               )}
             </div>
-          </div>
+          </details>
+
+          {/* Notifications Section */}
+          <details className="group space-y-4">
+            <summary className="font-medium cursor-pointer">
+              Notifications
+            </summary>
+
+            <div className="mt-4 space-y-4">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={emailNotifications}
+                  onChange={(e) => {
+                    const enabled = e.target.checked;
+                    setEmailNotifications(enabled);
+                    updateEmailNotifications(enabled);
+                  }}
+                  className="w-4 h-4"
+                />
+                <span>Email Notifications</span>
+                <small>If enabled, you will recieve emails for shoutouts and comments. Even if toggled off, you will still recieve system notifications.</small>
+              </label>
+            </div>
+          </details>
+
           <div className="flex flex-row gap-3 justify-center items-center md:hidden">
             <LogoutButton />
             <SupportButton />

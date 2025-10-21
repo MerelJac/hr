@@ -59,6 +59,7 @@ async function user(departments: Record<string, string>) {
     where: { email: systemEmail },
     update: { role: Role.SUPER_ADMIN },
     create: {
+      id: systemId,
       email: systemEmail,
       passwordHash: systemPasswordHash,
       role: Role.SUPER_ADMIN,

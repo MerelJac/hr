@@ -22,6 +22,7 @@ export async function GET() {
       workAnniversary: true,
       department: true,
       role: true,
+      emailNotifications: true,
       profileImage: true,
       nominationsAsNominee: false, // don’t need this here
       submittedNominations: {

@@ -14,6 +14,7 @@ export type User = {
   role: string;
   departmentId?: string | null; 
   department?: Department | null;
+  emailNotifications?: boolean,
   isActive: boolean;
   submittedNominations?: Nomination[];
 };

@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
     });
 
     // 🔹 Notify via email
-    if (deliverEmail) {
+    if (deliverEmail && user.emailNotifications) {
       await sendRecognitionEmail(deliverEmail);
     }
 
