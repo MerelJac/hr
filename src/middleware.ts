@@ -14,12 +14,12 @@ export async function middleware(req: NextRequest) {
     "/api/register",
     "/_next", // Next internals
     "/favicon.ico",
-    "/api/debug-env", // ENV testing
     "/images",
     "/public",
     "/forgot-password",
     "/reset-password",
-    "/api/cron", // cron jobs
+    "/api/cron/daily", // cron jobs
+    "/api/cron/monthly", // cron jobs
   ];
   if (publicPaths.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
     return NextResponse.next();

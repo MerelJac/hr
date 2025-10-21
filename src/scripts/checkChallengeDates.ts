@@ -29,10 +29,17 @@ export async function checkChallengeDates() {
   }
 
   // 2️⃣ Activate challenges starting today
-  const newChallenges = await prisma.nominationChallenge.findMany({
-    where: { startDate: { lte: today } },
-  });
+  const startOfDay = new Date(today);
+  startOfDay.setHours(0, 0, 0, 0);
+  const endOfDay = new Date(today);
+  endOfDay.setHours(23, 59, 59, 999);
 
+  const newChallenges = await prisma.nominationChallenge.findMany({
+    where: {
+      startDate: { gte: startOfDay, lte: endOfDay },
+    },
+  });
+  
   let activatedCount = 0;
   for (const challenge of newChallenges) {
     if (!challenge.isActive) {

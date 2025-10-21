@@ -25,7 +25,7 @@ export default async function RecognizePage() {
 
   const [users] = await Promise.all([
     prisma.user.findMany({
-      where: { id: { not: me.id }, role: "EMPLOYEE" },
+      where: { NOT: [{ id: me.id }, { id: process.env.SYSTEM_ADMIN_ID }] },
       select: {
         id: true,
         email: true,

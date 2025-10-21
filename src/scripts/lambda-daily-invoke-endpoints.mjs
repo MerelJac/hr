@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+// Node 18/20 has fetch built in — no import needed
 
 export const handler = async () => {
   // Add whichever endpoints you want to hit

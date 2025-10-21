@@ -18,6 +18,7 @@ export interface Redemption {
   user: {
     id: string;
     email: string;
+    profileImage?: string | null;
   };
   catalog?: {
     id: string;

@@ -129,7 +129,26 @@ export default function RewardsAdmin({
           {groupedRewards.map((cat) => (
             <details key={cat.id} className="group">
               <summary className="cursor-pointer flex justify-between items-center p-4 hover:bg-gray-50">
-                <span className="font-semibold text-gray-800">{cat.name}</span>
+                <div className="flex items-center gap-2">
+                  {/* ▼ rotates when expanded */}
+                  <svg
+                    className="w-4 h-4 transition-transform duration-200 group-open:rotate-90 text-gray-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                  <span className="font-semibold text-gray-800">
+                    {cat.name}
+                  </span>
+                </div>
                 <div className="flex gap-3">
                   <button
                     onClick={(e) => {

@@ -70,9 +70,17 @@ export async function POST(req: NextRequest) {
   });
 
   // ⚡ If you later want to actually *send* the email, trigger it here.
-  if (sendEmail) {
+if (sendEmail) {
+  try {
     await sendWelcomeEmail(invite.email);
+  } catch (err) {
+    console.error("Email send failed:", err);
+    return NextResponse.json(
+      { error: "Failed to send welcome email" },
+      { status: 500 }
+    );
   }
+}
 
   return NextResponse.json(invite);
 }
