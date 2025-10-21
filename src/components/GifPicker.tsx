@@ -112,7 +112,7 @@ export default function GifPicker({
           alt="Powered by Gify"
           width={64}
           height={64}
-          className="flex justify-end w-fit h-12"
+          className="flex justify-end w-fit h-6"
         />
       </a>
     </div>
