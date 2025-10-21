@@ -100,6 +100,8 @@ async function reward() {
         label: "Amazon Gift Card",
         valueCents: 0,
         pointsCost: 0,
+        imageUrl:
+          "https://ignite-assets-bucket.s3.us-east-2.amazonaws.com/dev/images/cmgb2gu0z0000pu5nb6a6rzw1/2c944d9a-4b7f-4d6e-bb83-785c64bf7fd7.png",
       },
     });
 
@@ -111,6 +113,8 @@ async function reward() {
         label: "Visa Gift Card",
         valueCents: 0,
         pointsCost: 0,
+        imageUrl:
+          "https://ignite-assets-bucket.s3.us-east-2.amazonaws.com/dev/images/cmgb2gu0z0000pu5nb6a6rzw1/d813179d-6d0a-4a70-97dd-e2a9c4c524f3.png",
       },
     });
   }
