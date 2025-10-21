@@ -20,13 +20,20 @@ export default async function AppreciationPage({
   if (!recognition) return notFound();
 
   // ✅ Fetch all users (for comments)
+
   const users = await prisma.user.findMany({
-    where: { role: "EMPLOYEE", isActive: true },
+    where: {
+      id: { not: process.env.SYSTEM_ADMIN_ID },
+      isActive: true,
+    },
   });
 
   return (
     <main className="max-w-3xl mx-auto p-6">
-      <Link href="/feed" className="flex items-center gap-2 mb-4 text-gray-700 text-xs">
+      <Link
+        href="/feed"
+        className="flex items-center gap-2 mb-4 text-gray-700 text-xs"
+      >
         <ArrowLeft size={12} />
         Back to Feed
       </Link>

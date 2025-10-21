@@ -28,13 +28,12 @@ export default async function FeedPage() {
     },
   });
 
-  const availableChallenges: Challenge[] = challenges
-    .map((c) => ({
-      ...c,
-      requirements: c.requirements
-        ? (c.requirements as ChallengeRequirements) // ✅ cast/parse
-        : undefined,
-    }));
+  const availableChallenges: Challenge[] = challenges.map((c) => ({
+    ...c,
+    requirements: c.requirements
+      ? (c.requirements as ChallengeRequirements) // ✅ cast/parse
+      : undefined,
+  }));
 
   const recs = await prisma.recognition.findMany({
     orderBy: { createdAt: "desc" },
@@ -50,9 +49,12 @@ export default async function FeedPage() {
   });
 
   const users = await prisma.user.findMany({
-    where: { id: { not: me.id }, role: "EMPLOYEE", isActive: true },
+    where: {
+      NOT: [{ id: me.id }, { id: process.env.SYSTEM_ADMIN_ID }],
+      isActive: true,
+    },
   });
-
+  
   const mobile = (
     <main className="min-h-screen">
       {/* Wrapper that switches between column on mobile and row on desktop */}
