@@ -2,6 +2,7 @@
 
 import { Redemption } from "@/types/redepmtion";
 import { Check, Trash } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function RedemptionRow({ r }: { r: Redemption }) {
@@ -47,7 +48,16 @@ export default function RedemptionRow({ r }: { r: Redemption }) {
         {r.pointsSpent} pts • <span className="font-semibold">{r.status}</span>
       </div>
 
-      <div>User: {r.user.email}</div>
+      <div className="flex flex-row gap-2 items-center">
+        <Image
+          src={r.user.profileImage ?? "/default-profile-image.svg"}
+          alt="Profile"
+          width={28}
+          height={28}
+          className="rounded-full w-8 h-8 border-2 border-blue-500"
+        />
+        {r.user.email}
+      </div>
 
       {r.code && (
         <div>

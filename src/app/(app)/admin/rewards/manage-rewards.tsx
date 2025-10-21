@@ -27,7 +27,7 @@ export default function ManageRewards({
   const [activeTab, setActiveTab] = useState<"redemption" | "manage">("manage");
 
   return (
-    <section className="space-y-6 p-6">
+    <section className="space-y-6 p-6 h-screen">
       <div className="w-full">
         {/* Tabs */}
         <div className="flex border-b mb-4">
@@ -55,7 +55,7 @@ export default function ManageRewards({
 
         {/* Tab content */}
         {activeTab === "redemption" && (
-          <ul className="space-y-2">
+          <ul className="space-y-2 max-h-2xl overflow-y-auto">
             {rows.map((r) => (
               <RedemptionRow key={r.id} r={r} />
             ))}

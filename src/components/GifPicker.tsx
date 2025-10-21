@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+
 import { useEffect, useState } from "react";
 
 type GiphyImage = {
@@ -15,7 +16,6 @@ type GiphyGif = {
   };
 };
 
-
 export default function GifPicker({
   onSelect,
 }: {
@@ -26,19 +26,18 @@ export default function GifPicker({
   const [results, setResults] = useState<GiphyGif[]>([]);
 
   useEffect(() => {
-  if (open) {
-    fetchTrending(); // 👈 auto load "funny" GIFs
+    if (open) {
+      fetchTrending(); // 👈 auto load "funny" GIFs
+    }
+  }, [open]);
+
+  async function fetchTrending() {
+    const res = await fetch(
+      `https://api.giphy.com/v1/gifs/trending?api_key=${process.env.NEXT_PUBLIC_GIPHY_API_KEY}&limit=8`
+    );
+    const json = await res.json();
+    setResults(json.data || []);
   }
-}, [open]);
-
-async function fetchTrending() {
-  const res = await fetch(
-    `https://api.giphy.com/v1/gifs/trending?api_key=${process.env.NEXT_PUBLIC_GIPHY_API_KEY}&limit=8`
-  );
-  const json = await res.json();
-  setResults(json.data || []);
-}
-
 
   async function doSearch() {
     if (!search.trim()) return;
@@ -64,8 +63,8 @@ async function fetchTrending() {
   }
 
   return (
-    <div className="space-y-2 border rounded p-3 bg-gray-50">
-      <div className="flex gap-2 items-center">
+    <div className="space-y-2 border rounded p-3 bg-gray-50 flex flex-col justify-end items-end">
+      <div className="flex gap-2 items-center w-full">
         <input
           type="text"
           placeholder="Search GIFs..."
@@ -107,6 +106,15 @@ async function fetchTrending() {
           />
         ))}
       </div>
+      <a href="https://giphy.com" target="_blank" rel="noopener noreferrer">
+        <Image
+          src={"/powered-gify.png"}
+          alt="Powered by Gify"
+          width={64}
+          height={64}
+          className="flex justify-end w-fit h-12"
+        />
+      </a>
     </div>
   );
 }

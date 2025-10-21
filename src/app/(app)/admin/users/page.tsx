@@ -23,7 +23,7 @@ export default async function UsersAdminPage() {
   return (
     <main className="space-y-8 bg-white rounded-xl h-full">
       <header className="p-6 shadow-md flex flex-row justify-between">
-        <h1 className="text-2xl font-semibold">Users, Invites, & Departments</h1>
+        <h1 className="text-2xl font-semibold">Manage Users & Departments</h1>
         <InviteForm />
       </header>
       <section className="p-6">
