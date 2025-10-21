@@ -35,7 +35,7 @@ function ResetPasswordInner() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen bg-linear-to-t from-blue-500 to-indigo-500 flex items-center justify-center bg-gray-50">
         <div className="bg-white shadow p-6 rounded-xl text-center space-y-3">
           <h2 className="text-lg font-semibold">Password updated</h2>
           <p>Redirecting you to the sign-in page...</p>
@@ -45,7 +45,7 @@ function ResetPasswordInner() {
   }
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gray-50">
+    <section className="min-h-screen bg-linear-to-t from-blue-500 to-indigo-500 flex items-center justify-center bg-gray-50">
 
       <form
         onSubmit={onSubmit}

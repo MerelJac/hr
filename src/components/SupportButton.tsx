@@ -56,7 +56,7 @@ export default function SupportButton() {
       {/* Modal Overlay */}
       {open && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl relative w-[90%] max-w-lg">
+          <div className="bg-white p-6 rounded-lg shadow-xl relative w-[90%] max-w-lg max-h-screen overflow-y-auto">
             <button
               onClick={() => setOpen(false)}
               className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
@@ -70,5 +70,5 @@ export default function SupportButton() {
         </div>
       )}
     </>
-  );
+  ); 
 }

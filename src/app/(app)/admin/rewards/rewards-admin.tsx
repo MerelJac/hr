@@ -106,7 +106,7 @@ export default function RewardsAdmin({
                 setSelectedCat(null);
                 setCatOpen(true);
               }}
-              className="bg-blue-600 text-white px-3 py-2 rounded-xl"
+              className="bg-blue-600 text-white px-3 py-2 rounded-xl hover:shadow-md"
             >
               + Add Category
             </button>
@@ -117,7 +117,7 @@ export default function RewardsAdmin({
                 setSelected(null);
                 setOpen(true);
               }}
-              className="bg-green-600 text-white px-4 py-2 rounded-xl shadow"
+              className="bg-green-600 text-white px-4 py-2 rounded-xl shadow hover:shadow-md"
             >
               + Add Reward
             </button>

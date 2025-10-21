@@ -18,7 +18,7 @@ export default function ForgotPasswordPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen bg-linear-to-t from-blue-500 to-indigo-500 flex items-center justify-center bg-gray-50">
         <div className="bg-white shadow p-6 rounded-xl max-w-sm text-center space-y-3">
           <h2 className="text-lg font-semibold">Check your email</h2>
           <p>
@@ -31,7 +31,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gray-50">
+    <section className="min-h-screen bg-linear-to-t from-blue-500 to-indigo-500 flex items-center justify-center bg-gray-50">
       <form
         onSubmit={onSubmit}
         className="bg-white shadow p-6 rounded-xl w-80 space-y-3"

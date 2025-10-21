@@ -59,13 +59,13 @@ export default function InviteForm() {
         {" "}
         <button
           onClick={() => setOpen(true)}
-          className="bg-black text-white px-3 py-2 rounded-xl"
+          className="bg-black text-white px-3 py-2 rounded-xl hover:shadow-md"
         >
           + User
         </button>
         <button
           onClick={() => setDepartmentOpen(true)}
-          className="bg-black text-white px-3 py-2 rounded-xl"
+          className="bg-black text-white px-3 py-2 rounded-xl hover:shadow-md"
         >
           + Department
         </button>
