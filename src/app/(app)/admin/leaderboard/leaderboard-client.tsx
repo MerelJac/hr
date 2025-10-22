@@ -154,15 +154,13 @@ function Podium({ users }: { users: LeaderboardRow[] }) {
     users[2], // third place
   ].filter(Boolean);
 
-  const heights = ["h-32", "h-40", "h-24"]; // visual height difference
+  const heights = ["h-40", "h-46", "h-32"]; // visual height difference
   return (
     <div className="flex justify-center items-end gap-6">
       {podium.map((r, i) => (
         <div key={i} className="flex flex-col items-center">
           <div
-            className={`flex flex-col items-center justify-end bg-blue-${
-              i === 1 ? "500" : "400"
-            } text-white rounded-t-xl ${heights[i]} w-20 md:w-24 shadow-lg`}
+            className={`flex flex-col items-center justify-end bg-white rounded-t-xl ${heights[i]} w-20 md:w-24 shadow-lg`}
           >
             <Image
               src={r.user?.profileImage ?? "/default-profile-image.svg"}
@@ -171,10 +169,10 @@ function Podium({ users }: { users: LeaderboardRow[] }) {
               height={48}
               className="rounded-full border-2 border-white -mt-10"
             />
-            <span className="text-xs mt-2 font-medium">
+            <span className="text-sm mt-2 font-bold">
               {r.user?.preferredName || r.user?.firstName || "User"}
             </span>
-            <span className="text-xs opacity-90 mb-2">
+            <span className="text-sm opacity-90 mb-2">
               {r.points ?? r.count ?? 0}⭐
             </span>
           </div>

@@ -70,7 +70,12 @@ export async function GET(req: NextRequest) {
   const receivedRaw = await prisma.recognitionRecipient.groupBy({
     by: ["recipientId"],
     _sum: { points: true },
-    where: { createdAt: { gte: start, lte: end } },
+    where: {
+      createdAt: { gte: start, lte: end },
+      recognition: {
+        senderId: { not: process.env.SYSTEM_ADMIN_ID }, // ✅ exclude system admin's shoutouts
+      },
+    },
     orderBy: { _sum: { points: "desc" } },
     take: 10,
   });
@@ -94,7 +99,12 @@ export async function GET(req: NextRequest) {
   const givenRaw = await prisma.recognitionRecipient.groupBy({
     by: ["recipientId"], // ⚠️ may want recognition.senderId instead
     _sum: { points: true },
-    where: { recognition: { createdAt: { gte: start, lte: end } } },
+    where: {
+      recognition: {
+        createdAt: { gte: start, lte: end },
+        senderId: { not: process.env.SYSTEM_ADMIN_ID },
+      },
+    },
     orderBy: { _sum: { points: "desc" } },
     take: 10,
   });
@@ -118,7 +128,10 @@ export async function GET(req: NextRequest) {
   const shoutoutsGivenRaw = await prisma.recognition.groupBy({
     by: ["senderId"],
     _count: { senderId: true },
-    where: { createdAt: { gte: start, lte: end } },
+    where: {
+      createdAt: { gte: start, lte: end },
+      senderId: { not: process.env.SYSTEM_ADMIN_ID },
+    },
     orderBy: { _count: { senderId: "desc" } },
     take: 10,
   });
@@ -142,7 +155,12 @@ export async function GET(req: NextRequest) {
   const shoutoutsReceivedRaw = await prisma.recognitionRecipient.groupBy({
     by: ["recipientId"],
     _count: { recipientId: true },
-    where: { createdAt: { gte: start, lte: end } },
+    where: {
+      createdAt: { gte: start, lte: end },
+      recognition: {
+        senderId: { not: process.env.SYSTEM_ADMIN_ID }, // ✅ exclude system admin's shoutouts
+      },
+    },
     orderBy: { _count: { recipientId: "desc" } },
     take: 10,
   });
