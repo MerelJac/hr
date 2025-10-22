@@ -17,6 +17,7 @@ export default function UserInsightsModal({ userId, onClose }: Props) {
       firstName?: string;
       lastName?: string;
       email?: string;
+      role?: string;
     };
     points?: number;
     recentChallenges?: {
@@ -77,6 +78,7 @@ export default function UserInsightsModal({ userId, onClose }: Props) {
                   {data?.user?.firstName} {data?.user?.lastName}
                 </h2>
                 <p className="text-gray-600 text-sm">{data?.user?.email}</p>
+                <p className="text-gray-600 text-sm">{data?.user?.role}</p>
               </div>
             </div>
 
@@ -94,14 +96,17 @@ export default function UserInsightsModal({ userId, onClose }: Props) {
                 <h3 className="text-lg font-semibold mb-2">
                   Recent Challenge Wins
                 </h3>
-                {Array.isArray(data?.recentChallenges) && data.recentChallenges.length > 0 ? (
+                {Array.isArray(data?.recentChallenges) &&
+                data.recentChallenges.length > 0 ? (
                   <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
-                    {data.recentChallenges.map((c: { id: string; title: string; endDate: string }) => (
-                      <li key={c.id}>
-                        <span className="font-medium">{c.title}</span> —{" "}
-                        {new Date(c.endDate).toLocaleDateString()}
-                      </li>
-                    ))}
+                    {data.recentChallenges.map(
+                      (c: { id: string; title: string; endDate: string }) => (
+                        <li key={c.id}>
+                          <span className="font-medium">{c.title}</span> —{" "}
+                          {new Date(c.endDate).toLocaleDateString()}
+                        </li>
+                      )
+                    )}
                   </ul>
                 ) : (
                   <p className="text-sm text-gray-500">
@@ -117,14 +122,20 @@ export default function UserInsightsModal({ userId, onClose }: Props) {
                 </h3>
                 {data?.recentReceived ? (
                   <div className="bg-gray-50 p-3 rounded-lg border text-sm">
-                    <p className="text-gray-800">{data.recentReceived.message}</p>
+                    <p className="text-gray-800">
+                      {data.recentReceived.message}
+                    </p>
                     <p className="text-gray-500 text-xs mt-1">
                       from {data.recentReceived.senderName} on{" "}
-                      {new Date(data.recentReceived.createdAt).toLocaleDateString()}
+                      {new Date(
+                        data.recentReceived.createdAt
+                      ).toLocaleDateString()}
                     </p>
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-500">No recognitions received yet.</p>
+                  <p className="text-sm text-gray-500">
+                    No recognitions received yet.
+                  </p>
                 )}
               </div>
 
@@ -138,11 +149,15 @@ export default function UserInsightsModal({ userId, onClose }: Props) {
                     <p className="text-gray-800">{data.recentGiven.message}</p>
                     <p className="text-gray-500 text-xs mt-1">
                       to {data.recentGiven.recipientName} on{" "}
-                      {new Date(data.recentGiven.createdAt).toLocaleDateString()}
+                      {new Date(
+                        data.recentGiven.createdAt
+                      ).toLocaleDateString()}
                     </p>
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-500">No recognitions given yet.</p>
+                  <p className="text-sm text-gray-500">
+                    No recognitions given yet.
+                  </p>
                 )}
               </div>
             </div>
