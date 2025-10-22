@@ -10,14 +10,43 @@ export default async function RecognizeFormWrapper() {
   const me = session?.user as User;
   if (!me?.id) return <div className="p-6">Please sign in.</div>;
 
-  const [users, available] = await Promise.all([
+  const [users, available, departments] = await Promise.all([
     prisma.user.findMany({
       where: { NOT: [{ id: me.id }, { id: process.env.SYSTEM_ADMIN_ID }] },
       select: { id: true, email: true, firstName: true, lastName: true },
       orderBy: { email: "asc" },
     }),
+
     getAvailablePoints(me.id),
+
+    prisma.department.findMany({
+      select: {
+        id: true,
+        name: true,
+        users: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            role: true,
+            profileImage: true,
+          },
+          where: {
+            id: { not: process.env.SYSTEM_ADMIN_ID },
+          },
+        },
+      },
+
+      orderBy: { name: "asc" },
+    }),
   ]);
 
-  return <RecognizeForm users={users} available={available} />;
+  return (
+    <RecognizeForm
+      users={users}
+      departments={departments}
+      available={available}
+    />
+  );
 }
