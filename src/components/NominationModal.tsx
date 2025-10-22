@@ -1,5 +1,6 @@
 "use client";
 
+import { formatDateLocal } from "@/lib/formatDate";
 import { Challenge } from "@/types/challenge";
 import { LightUser } from "@/types/user";
 import { Rocket } from "lucide-react";
@@ -111,8 +112,8 @@ export default function NominationModal({
                     <h3 className="font-semibold">{c.title}</h3>
                     <p className="text-sm text-gray-600">{c.description}</p>
                     <p className="text-xs text-gray-500">
-                      Eligible: {new Date(c.startDate).toLocaleDateString()} –{" "}
-                      {new Date(c.endDate).toLocaleDateString()}
+                      Eligible: {formatDateLocal(c.startDate)} –{" "}
+                      {formatDateLocal(c.endDate)}
                     </p>
                     <p className="text-xs text-gray-700">Points: {c.points}</p>
                     {c.qualification && (
