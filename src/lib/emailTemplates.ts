@@ -130,7 +130,7 @@ export async function sendWorkAnniversaryEmail(to: string) {
     html: `
       <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
         <h2>Happy Work Anniversary! 🎉</h2>
-        <p>Thank you for all your time spend with Call One, Inc. Here are some points as a token of our appreciation!</p>
+        <p>Thank you for all your time spent with Call One, Inc. Here are some points as a token of our appreciation!</p>
         <p>
           <a href="${process.env.APP_URL}/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
               Check it out!
@@ -141,7 +141,7 @@ export async function sendWorkAnniversaryEmail(to: string) {
         <p style="font-size: 0.9rem; color: #888;">— Call One, Inc Team</p>
       </div>
     `,
-    text: "Happy Work Anniversary! Thank you for all your time spend with Call One, Inc. Here are some points as a token of our appreciation! Log in to view the details!",
+    text: "Happy Work Anniversary! Thank you for all your time spent with Call One, Inc. Here are some points as a token of our appreciation! Log in to view the details!",
   });
 }
 

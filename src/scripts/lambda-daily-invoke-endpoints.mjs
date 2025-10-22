@@ -20,4 +20,7 @@ export const handler = async () => {
       console.error(`❌ Error calling ${url}:`, err);
     }
   }
+
+    // 👇 Explicitly tell EventBridge “all good, no retry”
+  return { statusCode: 200, body: "All daily cron jobs triggered successfully" };
 };
