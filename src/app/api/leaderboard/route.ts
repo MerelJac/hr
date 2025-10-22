@@ -25,7 +25,12 @@ export async function GET(req: NextRequest) {
     const deptPoints = await prisma.recognitionRecipient.groupBy({
       by: ["recipientId"],
       _sum: { points: true },
-      where: { createdAt: { gte: start, lte: end } },
+      where: {
+        createdAt: { gte: start, lte: end },
+        recognition: {
+          senderId: { not: process.env.SYSTEM_ADMIN_ID }, // ✅ exclude system admin's shoutouts
+        },
+      },
     });
 
     // Look up recipients with departments
