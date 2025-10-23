@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { sendRecognitionEmail } from "@/lib/emailTemplates";
+import { sendRedemptionEmail } from "@/lib/emailTemplates";
 import { User } from "@/types/user";
 import { handleApiError } from "@/lib/handleApiError";
 
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
 
     // 🔹 Notify via email
     if (deliverEmail && user.emailNotifications) {
-      await sendRecognitionEmail(deliverEmail);
+      await sendRedemptionEmail(deliverEmail);
     }
 
     return NextResponse.json({ ok: true, redemption });

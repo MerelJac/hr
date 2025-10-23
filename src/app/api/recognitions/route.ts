@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { getAvailablePoints } from "@/lib/recognition";
 import { User } from "@/types/user";
+import { sendRecognitionEmail } from "@/lib/emailTemplates";
 
 const schema = z.object({
   message: z.string().min(1).max(500),
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
   const ids = recipients.map((r) => r.userId);
   const found = await prisma.user.findMany({
     where: { id: { in: ids } },
-    select: { id: true },
+    select: { id: true, emailNotifications: true, email:  true },
   });
   if (found.length !== ids.length) {
     return NextResponse.json(
@@ -94,6 +95,10 @@ export async function POST(req: NextRequest) {
       where: { id: senderId },
       data: { monthlyBudget: { decrement: total } },
     });
+
+  // Send one email to all birthday users (parallel)
+  await Promise.all(found.filter((u) => u.emailNotifications).map((u) => sendRecognitionEmail(u.email)));
+
 
     return rec;
   });

@@ -53,7 +53,7 @@ export async function sendWelcomeEmail(to: string) {
     html: `
       <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
         <h2>Welcome to Ignite Appreciation 🔥</h2>
-        <p>Thanks for signing up — you’re officially part of the appreciation movement!</p>
+        <p>You have been invited to register!</p>
         <p>We’re excited to have you on board.</p>
         <p>
           <a href="${appUrl}/register" 
@@ -71,7 +71,7 @@ Get started here: ${appUrl}/register`,
 }
 
 /**
- * Recognition / redemption email
+ * Recognition email
  */
 export async function sendRecognitionEmail(to: string) {
   return sendEmail({
@@ -92,6 +92,32 @@ export async function sendRecognitionEmail(to: string) {
       </div>
     `,
     text: "You’ve been recognized! Someone celebrated your hard work through Ignite Appreciation. Log in to view the details!",
+  });
+}
+
+
+/**
+ * Redemption email
+ */
+export async function sendRedemptionEmail(to: string) {
+  return sendEmail({
+    to,
+    subject: "Ignite Appreciation - New Reward 🎉",
+    html: `
+      <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+        <h2>Rewards incoming!! 🎉</h2>
+        <p>You're reward has been approved in Ignite Appreciation.</p>
+        <p>
+          <a href="${process.env.APP_URL}/rewards" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+              Check it out!
+            </a>
+        </p>
+        <p>Log in to view the details and keep the appreciation going!</p>
+        <br/>
+        <p style="font-size: 0.9rem; color: #888;">— Call One, Inc Team</p>
+      </div>
+    `,
+    text: "You’re request has been rewarded! Log in to view the details!",
   });
 }
 

@@ -232,9 +232,10 @@ export default function ProfilePage() {
             )}
           </div>
 
-          {/* Editable Fields */}
-          <div className="space-y-4">
-            <div>
+          {/* Perfered Name Section */}
+          <details className="group space-y-4">
+            <summary className="font-medium">Editable Fields</summary>
+                  <div>
               <label className="block text-sm font-medium">
                 Preferred Name
               </label>
@@ -251,9 +252,9 @@ export default function ProfilePage() {
               onClick={saveProfile}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
             >
-              Save Changes
+              Update Name
             </button>
-          </div>
+          </details>
 
           {/* Change Password Section */}
           <details className="group space-y-4">
