@@ -222,7 +222,7 @@ export default function ChallengeList({
                   name="startDate"
                   defaultValue={
                     selected?.startDate
-                      ? formatDateLocal(selected.startDate)
+                      ? new Date(selected.startDate).toISOString().split("T")[0]
                       : ""
                   }
                   className="border rounded px-3 py-2 flex-1"
@@ -232,7 +232,7 @@ export default function ChallengeList({
                   type="date"
                   name="endDate"
                   defaultValue={
-                    selected?.endDate ? formatDateLocal(selected.endDate) : ""
+                    selected?.endDate ? new Date(selected.endDate).toISOString().split("T")[0] : ""
                   }
                   className="border rounded px-3 py-2 flex-1"
                   required

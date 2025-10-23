@@ -5,6 +5,7 @@ import Image from "next/image";
 import { User } from "@/types/user";
 import LogoutButton from "@/app/login/logoutButton";
 import SupportButton from "@/components/SupportButton";
+import { formatDateLocal } from "@/lib/formatDate";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -170,6 +171,7 @@ export default function ProfilePage() {
             <h1 className="text-2xl font-semibold">
               Hi, {user.preferredName || `${user.firstName} ${user.lastName}`}
             </h1>
+
             <div className="relative">
               <Image
                 src={profileImage ?? "/default-profile-image.svg"}
@@ -194,6 +196,12 @@ export default function ProfilePage() {
             </div>
           </div>
 
+          {message && (
+            <p className="border-yellow-200 border w-full bg-yellow-100  rounded-2xl p-2 text-sm text-gray-600">
+              {message}
+            </p>
+          )}
+
           {/* Basic Info */}
           <div className="space-y-2">
             <p>
@@ -205,8 +213,12 @@ export default function ProfilePage() {
             <p>
               <b>Work Anniversary:</b>{" "}
               {user.workAnniversary
-                ? new Date(user.workAnniversary).toLocaleDateString()
+                ? formatDateLocal(user.workAnniversary)
                 : "Not set"}
+            </p>
+            <p>
+              <b>Birthday:</b>{" "}
+              {user.birthday ? formatDateLocal(user.birthday) : "Not set"}
             </p>
             {user.role && (
               <p>
@@ -235,33 +247,12 @@ export default function ProfilePage() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium">Birthday</label>
-              {birthday ? (
-                <input
-                  type="date"
-                  value={birthday ?? ""}
-                  onChange={(e) => setBirthday(e.target.value)}
-                  className="border rounded-lg px-2 py-1 w-full bg-gray-100 text-gray-500 cursor-not-allowed"
-                />
-              ) : (
-                <input
-                  type="date"
-                  className="border rounded-lg px-2 py-1 w-full"
-                  value={birthday ?? ""}
-                  onChange={(e) => setBirthday(e.target.value)}
-                  placeholder="Not set"
-                />
-              )}
-            </div>
-
             <button
               onClick={saveProfile}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
             >
               Save Changes
             </button>
-            {message && <p className="text-sm text-gray-600">{message}</p>}
           </div>
 
           {/* Change Password Section */}
@@ -320,7 +311,11 @@ export default function ProfilePage() {
                   className="w-4 h-4"
                 />
                 <span>Email Notifications</span>
-                <small>If enabled, you will recieve emails for shoutouts and comments. Even if toggled off, you will still recieve system notifications.</small>
+                <small>
+                  If enabled, you will recieve emails for shoutouts and
+                  comments. Even if toggled off, you will still recieve system
+                  notifications.
+                </small>
               </label>
             </div>
           </details>
@@ -364,7 +359,7 @@ export default function ProfilePage() {
                     )}
                   </p>
                   <p className="text-xs text-gray-500">
-                    Submitted {new Date(n.createdAt).toLocaleDateString()}
+                    Submitted {formatDateLocal(n.createdAt)}
                   </p>
                 </li>
               ))}

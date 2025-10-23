@@ -87,7 +87,6 @@ export default function ManagerDepartmentsClient({
                   <span>
                     {u.firstName} {u.lastName}
                   </span>
-                  <span className="text-gray-500 text-sm">({u.email})</span>
                   <small>{u.role}</small>
                   <button
                     onClick={() => setSelectedUserId(u.id)}

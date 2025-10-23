@@ -15,7 +15,12 @@ applications:
             - echo "SES_FROM_ADDRESS=$SES_FROM_ADDRESS" >> .env
             - echo "CRON_SECRET=$CRON_SECRET" >> .env
             - echo "APP_URL=$APP_URL" >> .env
+            - echo "S3_REGION=$S3_REGION" >> .env
+            - echo "S3_ACCESS_KEY_ID=$S3_ACCESS_KEY_ID" >> .env
+            - echo "S3_SECRET_ACCESS_KEY=$S3_SECRET_ACCESS_KEY" >> .env
+            - echo "S3_BUCKET=$S3_BUCKET" >> .env
             - echo "SYSTEM_ADMIN_ID=$SYSTEM_ADMIN_ID" >> .env
+            - echo "NEXT_PUBLIC_GIPHY_API_KEY=$NEXT_PUBLIC_GIPHY_API_KEY" >> .env
             - npx prisma generate
             # Apply migrations in Neon
             - npx prisma migrate deploy

@@ -56,17 +56,18 @@ export async function grantAnniversaryPoints() {
       where: { id: u.id },
       data: { pointsBalance: { increment: 500 } },
     });
-    // Send one email to all anniversary users (parallel)
-    await Promise.all(
-      matchingUsers
-        .filter((u) => u.emailNotifications)
-        .map((u) => sendWorkAnniversaryEmail(u.email))
-    );
 
     console.log(
       `🎉 Granted 500 anniversary points to ${u.email} (${years} yrs)`
     );
   }
+
+  // Send one email to all anniversary users (parallel)
+  await Promise.all(
+    matchingUsers
+      .filter((u) => u.emailNotifications)
+      .map((u) => sendWorkAnniversaryEmail(u.email))
+  );
 
   console.log(`✅ Finished processing ${matchingUsers.length} anniversaries`);
 }

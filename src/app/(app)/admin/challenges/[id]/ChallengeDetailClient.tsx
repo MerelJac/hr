@@ -6,6 +6,7 @@ import { ArrowRight, Spotlight } from "lucide-react";
 import UserInsightsModal from "@/components/UserInsightsModal";
 import AnnounceWinnersForm from "@/components/AnnounceWinnersForm";
 import Link from "next/link";
+import { formatDateLocal } from "@/lib/formatDate";
 
 type ChallengeDetailProps = {
   challenge: {
@@ -109,8 +110,8 @@ export default function ChallengeDetailClient({
             {challenge.qualification}
           </p>
           <p className="text-xs text-gray-500">
-            {new Date(challenge.startDate).toLocaleDateString()} –{" "}
-            {new Date(challenge.endDate).toLocaleDateString()}
+            {formatDateLocal(challenge.startDate)} –{" "}
+            {formatDateLocal(challenge.endDate)}
           </p>
 
           <span
@@ -188,7 +189,7 @@ export default function ChallengeDetailClient({
                 )}
 
                 <p className="text-xs text-gray-500">
-                  Submitted on {new Date(n.createdAt).toLocaleDateString()}
+                  Submitted on {formatDateLocal(n.createdAt)}
                 </p>
 
                 {/* === Admin Actions === */}
@@ -262,7 +263,7 @@ export default function ChallengeDetailClient({
                 <li key={r.id} className="p-4 space-y-2">
                   <p>{r.message}</p>
                   <p className="text-sm text-gray-600">
-                    Announced on {new Date(r.createdAt).toLocaleDateString()}
+                    Announced on {formatDateLocal(r.createdAt)}
                   </p>
                   <Link
                     href={`/feed/appreciation/${r.id}`}
