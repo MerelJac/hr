@@ -73,7 +73,7 @@ Get started here: ${appUrl}/register`,
 /**
  * Recognition email
  */
-export async function sendRecognitionEmail(to: string) {
+export async function sendRecognitionEmail(to: string, recognitionId: string) {
   return sendEmail({
     to,
     subject: "Ignite Appreciation Recognition 🎉",
@@ -82,7 +82,7 @@ export async function sendRecognitionEmail(to: string) {
         <h2>You’ve been recognized! 🎉</h2>
         <p>Someone just celebrated your hard work through Ignite Appreciation.</p>
         <p>
-          <a href="${process.env.APP_URL}/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+          <a href="${process.env.APP_URL}/feed/appreciation/${recognitionId}" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
               Check it out!
             </a>
         </p>

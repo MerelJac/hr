@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
     });
 
   // Send one email to all birthday users (parallel)
-  await Promise.all(found.filter((u) => u.emailNotifications).map((u) => sendRecognitionEmail(u.email)));
+  await Promise.all(found.filter((u) => u.emailNotifications).map((u) => sendRecognitionEmail(u.email, rec.id)));
 
 
     return rec;
