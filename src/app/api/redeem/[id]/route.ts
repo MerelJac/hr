@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { handleApiError } from "@/lib/handleApiError";
+import { sendRedemptionEmail } from "@/lib/emailTemplates";
 
 export async function PATCH(
   req: NextRequest,
@@ -56,6 +57,19 @@ export async function PATCH(
 
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+    }
+
+    // ✅ Correct email condition — note the `===` comparison, not assignment (=)
+    if (
+      (action === "approve" || action === "fulfill") &&
+      updated.user?.email
+    ) {
+      try {
+        await sendRedemptionEmail(updated.user.email);
+        console.log("✅ Redemption email sent to:", updated.user.email);
+      } catch (err) {
+        console.error("❌ Failed to send redemption email:", err);
+      }
     }
 
     return NextResponse.json(updated);
