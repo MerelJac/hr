@@ -54,7 +54,7 @@ export async function sendWelcomeEmail(to: string) {
       <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
         <h2>Welcome to Ignite Appreciation 🔥</h2>
         <p>You have been invited to register!</p>
-        <p>We’re excited to have you on board.</p>
+        <p>We’re excited to have you on board. Reminder: Register with the same email address from this email!</p>
         <p>
           <a href="${appUrl}/register" 
              style="display:inline-block; background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
