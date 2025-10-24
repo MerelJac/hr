@@ -97,6 +97,33 @@ export async function sendRecognitionEmail(to: string, recognitionId: string) {
 
 
 /**
+ * Recognition email
+ */
+export async function sendRedemptionNotificationEmail(to: string) {
+  return sendEmail({
+    to,
+    subject: "Ignite Appreciation - someone has requested an reward. 🎉",
+    html: `
+      <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+        <h2>Someone wants to cash out! 🎉</h2>
+        <p>Someone is trying to redeem their Ignite Appreciation Points.</p>
+        <p>
+          <a href="${process.env.APP_URL}/admin/rewards" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+              Check it out in the 'Redemptions' tab.
+            </a>
+        </p>
+        <p>Log in to view the details.</p>
+        <br/>
+        <p style="font-size: 0.9rem; color: #888;">— Call One, Inc Team</p>
+      </div>
+    `,
+    text: "Someone wants to cash out! Someone is trying to redeem their Ignite Appreciation Points. Log in to view the details!",
+  });
+}
+
+
+
+/**
  * Redemption email
  */
 export async function sendRedemptionEmail(to: string) {

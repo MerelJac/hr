@@ -21,6 +21,7 @@ applications:
             - echo "S3_BUCKET=$S3_BUCKET" >> .env
             - echo "SYSTEM_ADMIN_ID=$SYSTEM_ADMIN_ID" >> .env
             - echo "NEXT_PUBLIC_GIPHY_API_KEY=$NEXT_PUBLIC_GIPHY_API_KEY" >> .env
+            - echo "HR_EMAIL=$HR_EMAIL" >> .env
             - npx prisma generate
             # Apply migrations in Neon
             - npx prisma migrate deploy
