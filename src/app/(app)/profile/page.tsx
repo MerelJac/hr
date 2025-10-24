@@ -165,167 +165,190 @@ export default function ProfilePage() {
 
       {/* Tab Content */}
       {activeTab === "settings" && (
-        <div className="space-y-6">
-          {/* Profile Info */}
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-semibold">
-              Hi, {user.preferredName || `${user.firstName} ${user.lastName}`}
-            </h1>
+<div className="space-y-8">
+  {/* Header */}
+  <div className="flex items-center justify-between border-b pb-4">
+    <div>
+      <h1 className="text-3xl font-bold text-gray-800">
+        Hi, {user.preferredName || `${user.firstName} ${user.lastName}`}
+      </h1>
+      <p className="text-gray-500 text-sm mt-1">
+        Manage your profile, preferences, and account security
+      </p>
+    </div>
 
-            <div className="relative">
-              <Image
-                src={profileImage ?? "/default-profile-image.svg"}
-                alt="Profile"
-                width={80}
-                height={80}
-                className="rounded-full w-20 h-20 border-2 border-blue-500"
-              />
-              <label className="absolute bottom-0 right-0 bg-blue-600 text-white text-xs px-2 py-1 rounded cursor-pointer hover:bg-blue-700">
-                Update
-                <input
-                  type="file"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={(e) => {
-                    if (e.target.files?.[0]) {
-                      uploadProfileImage(e.target.files[0]);
-                    }
-                  }}
-                />
-              </label>
-            </div>
-          </div>
+    {/* Profile image */}
+    <div className="relative group">
+      <Image
+        src={profileImage ?? "/default-profile-image.svg"}
+        alt="Profile"
+        width={100}
+        height={100}
+        className="rounded-full border-4 border-blue-500 shadow-md group-hover:opacity-80 transition"
+      />
+      <label className="absolute bottom-1 right-1 bg-blue-600 text-white text-xs px-2 py-1 rounded-full cursor-pointer shadow hover:bg-blue-700 transition">
+        ✎
+        <input
+          type="file"
+          className="hidden"
+          accept="image/*"
+          onChange={(e) => {
+            if (e.target.files?.[0]) {
+              uploadProfileImage(e.target.files[0]);
+            }
+          }}
+        />
+      </label>
+    </div>
+  </div>
 
-          {message && (
-            <p className="border-yellow-200 border w-full bg-yellow-100  rounded-2xl p-2 text-sm text-gray-600">
-              {message}
-            </p>
-          )}
+  {/* Message */}
+  {message && (
+    <div className="rounded-lg border border-yellow-300 bg-yellow-100 text-yellow-800 p-3 text-sm">
+      {message}
+    </div>
+  )}
 
-          {/* Basic Info */}
-          <div className="space-y-2">
-            <p>
-              <b>Name:</b> {user.firstName} {user.lastName}
-            </p>
-            <p>
-              <b>Email:</b> {user.email}
-            </p>
-            <p>
-              <b>Work Anniversary:</b>{" "}
-              {user.workAnniversary
-                ? formatDateLocal(user.workAnniversary)
-                : "Not set"}
-            </p>
-            <p>
-              <b>Birthday:</b>{" "}
-              {user.birthday ? formatDateLocal(user.birthday) : "Not set"}
-            </p>
-            {user.role && (
-              <p>
-                <b>Role:</b> {user.role}
-              </p>
-            )}
-            {user.department?.name && (
-              <p>
-                <b>Department:</b> {user.department.name}
-              </p>
-            )}
-          </div>
+  {/* Basic Info */}
+  <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 space-y-2">
+    <h2 className="text-lg font-semibold text-gray-800 mb-3">Basic Info</h2>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-6 text-gray-700">
+      <p>
+        <b>Name:</b> {user.firstName} {user.lastName}
+      </p>
+      <p>
+        <b>Email:</b> {user.email}
+      </p>
+      <p>
+        <b>Work Anniversary:</b>{" "}
+        {user.workAnniversary ? formatDateLocal(user.workAnniversary) : "Not set"}
+      </p>
+      <p>
+        <b>Birthday:</b>{" "}
+        {user.birthday ? formatDateLocal(user.birthday) : "Not set"}
+      </p>
+      {user.role && (
+        <p>
+          <b>Role:</b> {user.role}
+        </p>
+      )}
+      {user.department?.name && (
+        <p>
+          <b>Department:</b> {user.department.name}
+        </p>
+      )}
+    </div>
+  </div>
 
-          {/* Perfered Name Section */}
-          <details className="group space-y-4">
-            <summary className="font-medium">Editable Fields</summary>
-                  <div>
-              <label className="block text-sm font-medium">
-                Preferred Name
-              </label>
-              <input
-                type="text"
-                value={preferredName}
-                onChange={(e) => setPreferredName(e.target.value)}
-                className="border rounded-lg px-2 py-1 w-full"
-                placeholder={user.firstName ?? "Preferred Name"}
-              />
-            </div>
+  {/* Editable Fields */}
+  <details className="group border border-gray-200 bg-white rounded-2xl p-5 shadow-sm">
+    <summary className="font-medium cursor-pointer text-lg flex items-center justify-between">
+      Editable Fields
+      <span className="text-gray-400 group-open:rotate-180 transition-transform">
+        ▼
+      </span>
+    </summary>
+    <div className="mt-4 space-y-4">
+      <label className="block text-sm font-medium text-gray-700">
+        Preferred Name
+      </label>
+      <input
+        type="text"
+        value={preferredName}
+        onChange={(e) => setPreferredName(e.target.value)}
+        className="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder={user.firstName ?? "Preferred Name"}
+      />
+      <button
+        onClick={saveProfile}
+        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+      >
+        Update Name
+      </button>
+    </div>
+  </details>
 
-            <button
-              onClick={saveProfile}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-            >
-              Update Name
-            </button>
-          </details>
+  {/* Change Password */}
+  <details className="group border border-gray-200 bg-white rounded-2xl p-5 shadow-sm">
+    <summary className="font-medium cursor-pointer text-lg flex items-center justify-between">
+      Change Password
+      <span className="text-gray-400 group-open:rotate-180 transition-transform">
+        ▼
+      </span>
+    </summary>
+    <div className="mt-4 space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <input
+          type="password"
+          placeholder="Current Password"
+          value={oldPassword}
+          onChange={(e) => setOldPassword(e.target.value)}
+          className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          type="password"
+          placeholder="New Password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          type="password"
+          placeholder="Confirm New Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 md:col-span-2"
+        />
+      </div>
+      <button
+        onClick={changePassword}
+        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+      >
+        Update Password
+      </button>
+      {passwordMessage && (
+        <p className="text-sm text-gray-600">{passwordMessage}</p>
+      )}
+    </div>
+  </details>
 
-          {/* Change Password Section */}
-          <details className="group space-y-4">
-            <summary className="font-medium">Change Password</summary>
-            <div className="mt-4 space-y-4">
-              <input
-                type="password"
-                placeholder="Current Password"
-                value={oldPassword}
-                onChange={(e) => setOldPassword(e.target.value)}
-                className="border rounded-lg px-2 py-1 w-full"
-              />
-              <input
-                type="password"
-                placeholder="New Password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="border rounded-lg px-2 py-1 w-full"
-              />
-              <input
-                type="password"
-                placeholder="Confirm New Password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="border rounded-lg px-2 py-1 w-full"
-              />
-              <button
-                onClick={changePassword}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-              >
-                Update Password
-              </button>
-              {passwordMessage && (
-                <p className="text-sm text-gray-600">{passwordMessage}</p>
-              )}
-            </div>
-          </details>
+  {/* Notifications */}
+  <details className="group border border-gray-200 bg-white rounded-2xl p-5 shadow-sm">
+    <summary className="font-medium cursor-pointer text-lg flex items-center justify-between">
+      Notifications
+      <span className="text-gray-400 group-open:rotate-180 transition-transform">
+        ▼
+      </span>
+    </summary>
+    <div className="mt-4 space-y-4">
+      <label className="flex items-start gap-3 text-gray-700">
+        <input
+          type="checkbox"
+          checked={emailNotifications}
+          onChange={(e) => {
+            const enabled = e.target.checked;
+            setEmailNotifications(enabled);
+            updateEmailNotifications(enabled);
+          }}
+          className="mt-1 w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+        />
+        <span className="flex flex-col">
+          <span className="font-medium">Email Notifications</span>
+          <small className="text-gray-500">
+            Receive emails for shoutouts and comments. Even if toggled off, you’ll still receive essential system notifications.
+          </small>
+        </span>
+      </label>
+    </div>
+  </details>
 
-          {/* Notifications Section */}
-          <details className="group space-y-4">
-            <summary className="font-medium cursor-pointer">
-              Notifications
-            </summary>
+  {/* Mobile logout/support */}
+  <div className="flex flex-row gap-3 justify-center items-center md:hidden">
+    <LogoutButton />
+    <SupportButton />
+  </div>
+</div>
 
-            <div className="mt-4 space-y-4">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={emailNotifications}
-                  onChange={(e) => {
-                    const enabled = e.target.checked;
-                    setEmailNotifications(enabled);
-                    updateEmailNotifications(enabled);
-                  }}
-                  className="w-4 h-4"
-                />
-                <span>Email Notifications</span>
-                <small>
-                  If enabled, you will recieve emails for shoutouts and
-                  comments. Even if toggled off, you will still recieve system
-                  notifications.
-                </small>
-              </label>
-            </div>
-          </details>
-
-          <div className="flex flex-row gap-3 justify-center items-center md:hidden">
-            <LogoutButton />
-            <SupportButton />
-          </div>
-        </div>
       )}
 
       {activeTab === "challenges" && (
