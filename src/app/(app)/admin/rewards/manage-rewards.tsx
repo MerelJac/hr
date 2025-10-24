@@ -43,10 +43,6 @@ export default function ManageRewards({
     );
   }
 
-    const giftLinks = [
-    { label: "Amazon Gift Card", url: "https://www.amazon.com/Amazon-eGift-Card-Youre-Animated/dp/B0DK7B7G9R?pf_rd_p=9577ea64-a977-4304-9a48-3027a9049b5a&pf_rd_r=4HCBDCWAHTETM5TWWQ35&ref_=US_GC_AGC_P1_25_STND_B0DK7B7G9R&th=1&gpo=21" },
-  ];
-
   return (
     <section className="space-y-6 p-6 h-screen">
       <div className="w-full">
@@ -84,7 +80,7 @@ export default function ManageRewards({
         {activeTab === "redemption" && (
           <div>
             <span className="flex justify-end item-end pb-2">
-            <RewardToolbox links={giftLinks} />
+            <RewardToolbox />
             </span>
             <ul className="space-y-2 max-h-[75vh] overflow-y-auto">
               {redemptionList.map((r) => (
