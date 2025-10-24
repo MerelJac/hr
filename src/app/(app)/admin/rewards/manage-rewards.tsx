@@ -6,6 +6,7 @@ import RedemptionRow from "./redemption-row";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { Redemption } from "@/types/redepmtion";
+import RewardToolbox from "@/components/RewardToolbox";
 
 type RewardWithCategory = Prisma.PromiseReturnType<
   typeof prisma.rewardCatalog.findMany<{ include: { category: true } }>
@@ -25,7 +26,8 @@ export default function ManageRewards({
   categories: RewardCategory[];
 }) {
   const [activeTab, setActiveTab] = useState<"redemption" | "manage">("manage");
-  const [redemptionList, setRedemptionList] = useState<Redemption[]>(redemptions);
+  const [redemptionList, setRedemptionList] =
+    useState<Redemption[]>(redemptions);
   const [redemptionAttention, setRedemptionAttention] = useState(false);
 
   // ✅ Reactively update badge based on current redemption list
@@ -40,6 +42,10 @@ export default function ManageRewards({
       prev.map((r) => (r.id === updated.id ? updated : r))
     );
   }
+
+    const giftLinks = [
+    { label: "Amazon Gift Card", url: "https://www.amazon.com/Amazon-eGift-Card-Youre-Animated/dp/B0DK7B7G9R?pf_rd_p=9577ea64-a977-4304-9a48-3027a9049b5a&pf_rd_r=4HCBDCWAHTETM5TWWQ35&ref_=US_GC_AGC_P1_25_STND_B0DK7B7G9R&th=1&gpo=21" },
+  ];
 
   return (
     <section className="space-y-6 p-6 h-screen">
@@ -76,11 +82,20 @@ export default function ManageRewards({
 
         {/* Tab content */}
         {activeTab === "redemption" && (
-          <ul className="space-y-2 max-h-[75vh] overflow-y-auto">
-            {redemptionList.map((r) => (
-              <RedemptionRow key={r.id} r={r} onUpdate={handleRedemptionUpdate} />
-            ))}
-          </ul>
+          <div>
+            <span className="flex justify-end item-end pb-2">
+            <RewardToolbox links={giftLinks} />
+            </span>
+            <ul className="space-y-2 max-h-[75vh] overflow-y-auto">
+              {redemptionList.map((r) => (
+                <RedemptionRow
+                  key={r.id}
+                  r={r}
+                  onUpdate={handleRedemptionUpdate}
+                />
+              ))}
+            </ul>
+          </div>
         )}
 
         {activeTab === "manage" && (
