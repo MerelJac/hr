@@ -250,3 +250,11 @@ model Department {
   users      User[]
   UserInvite UserInvite[]
 }
+
+model RewardToolboxLink {
+  id        String   @id @default(cuid())
+  label     String
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
