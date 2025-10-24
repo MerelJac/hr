@@ -5,7 +5,13 @@ import { Check, Trash } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-export default function RedemptionRow({ r }: { r: Redemption }) {
+export default function RedemptionRow({
+  r,
+  onUpdate, 
+}: {
+  r: Redemption;
+  onUpdate?: (updated: Redemption) => void;
+}) {
   const [redemption, setRedemption] = useState(r);
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState("");
@@ -25,6 +31,7 @@ export default function RedemptionRow({ r }: { r: Redemption }) {
       alert((await res.json()).error || "Failed");
     } else {
       const updated = await res.json();
+      onUpdate?.(updated);
       setRedemption(updated);
     }
   }

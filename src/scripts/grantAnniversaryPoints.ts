@@ -39,9 +39,7 @@ export async function grantAnniversaryPoints() {
     await prisma.recognition.create({
       data: {
         senderId: senderId, // must be a valid User.id
-        message: `Happy Work Anniversary! 🎉 It's been a wonderful ${years} year${
-          years > 1 ? "s" : ""
-        } with you here at Call One / Hello Direct!`,
+        message: `Happy Work Anniversary! 🎉 `,
         recipients: {
           create: {
             recipientId: u.id,

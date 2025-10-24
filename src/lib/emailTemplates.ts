@@ -97,7 +97,7 @@ export async function sendRecognitionEmail(to: string, recognitionId: string) {
 
 
 /**
- * Recognition email
+ * Redemption email
  */
 export async function sendRedemptionNotificationEmail(to: string) {
   return sendEmail({

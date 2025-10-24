@@ -24,7 +24,7 @@ export default function RedeemClient({
   const [amount, setAmount] = useState(10);
   const [email, setEmail] = useState(defaultEmail);
   const [loading, setLoading] = useState(false);
-
+  const [message, setMessage] = useState("");
   // Find current category
   const currentCategory = categories.find((c) => c.id === activeTab);
 
@@ -65,15 +65,21 @@ export default function RedeemClient({
 
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
-      alert(j.error || "Failed to redeem");
+      setMessage(j.error || "Failed to redeem")
       return;
     }
-    alert("✅ Redemption submitted! Admin will process it.");
+    setMessage("✅ Redemption submitted! Admin will process it.")
     location.reload();
   }
 
   return (
     <section className="space-y-6 p-6">
+        {/* Message */}
+  {message && (
+    <div className="rounded-lg border border-yellow-300 bg-yellow-100 text-yellow-800 p-3 text-sm">
+      {message}
+    </div>
+  )}
       {/* Tabs */}
       <div className="flex border-b mb-4">
         {categories.map((cat) => (

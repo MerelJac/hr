@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { catalogId, pointsCost, deliverEmail, idemKey } = body;
     console.log("Delivery Email", deliverEmail);
-
+    console.log("email settings", user.emailNotifications)
     if (!catalogId || !pointsCost) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
     });
 
     // 🔹 Notify via email
-    if (deliverEmail && user.emailNotifications) {
+    if (deliverEmail) {
       await sendRedemptionEmail(deliverEmail);
     }
 
