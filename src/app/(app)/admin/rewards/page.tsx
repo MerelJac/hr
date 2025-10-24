@@ -10,7 +10,7 @@ export default async function AdminRewards() {
   const role = (session?.user as User)?.role;
   if (role !== "SUPER_ADMIN") return <div className="p-6">Forbidden</div>;
 
-  const rows = await prisma.redemption.findMany({
+  const redemptions = await prisma.redemption.findMany({
     orderBy: { createdAt: "desc" },
     include: { user: true, catalog: { include: { category: true } } },
     take: 100,
@@ -31,7 +31,7 @@ export default async function AdminRewards() {
       <header className="p-6 shadow-md">
         <h1 className="text-2xl font-semibold">Rewards Admin</h1>
       </header>
-      <ManageRewards rows={rows} rewards={rewards} categories={categories} />
+      <ManageRewards redemptions={redemptions} rewards={rewards} categories={categories} />
     </main>
   );
 }

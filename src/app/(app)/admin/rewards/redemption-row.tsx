@@ -5,7 +5,14 @@ import { Check, Trash } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-export default function RedemptionRow({ r }: { r: Redemption }) {
+export default function RedemptionRow({
+  r,
+  onUpdate, 
+}: {
+  r: Redemption;
+  onUpdate?: (updated: Redemption) => void;
+}) {
+  const [redemption, setRedemption] = useState(r);
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState("");
   const [claimUrl, setClaimUrl] = useState("");
@@ -13,8 +20,8 @@ export default function RedemptionRow({ r }: { r: Redemption }) {
 
   async function act(action: string) {
     setLoading(true);
-    console.log("reward id", r.id);
-    const res = await fetch(`/api/redeem/${r.id}`, {
+    console.log("reward id", redemption.id);
+    const res = await fetch(`/api/redeem/${redemption.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action, code, claimUrl }),
@@ -23,45 +30,50 @@ export default function RedemptionRow({ r }: { r: Redemption }) {
     if (!res.ok) {
       alert((await res.json()).error || "Failed");
     } else {
-      location.reload();
+      const updated = await res.json();
+      onUpdate?.(updated);
+      setRedemption(updated);
     }
   }
 
   useEffect(() => {
-    if (r.catalogId === "AMAZON") {
+    if (redemption.catalogId === "AMAZON") {
       setAccessUrl(
         `https://www.amazon.com/dp/B07MP6B4Y5?ref=altParentAsins_treatment_text_from_Amazon_to_Appreciation&th=1&gpo=${
-          r.pointsSpent / 10
+          redemption.pointsSpent / 10
         }`
       );
-    } else if (r.catalogId === "VISA") {
+    } else if (redemption.catalogId === "VISA") {
       // set an external Visa provider link if you have one
       setAccessUrl("");
     }
-  }, [r.pointsSpent]);
+  }, [redemption.pointsSpent, redemption.catalogId]);
 
   return (
     <li className="border-2 bg-white rounded-lg p-3 text-sm space-y-2">
       <div>
-        <b>{r.catalog?.label}</b>{" "}
-        {r.valueCents > 0 && <>• ${(r.valueCents / 100).toFixed(2)} </>}•{" "}
-        {r.pointsSpent} pts • <span className="font-semibold">{r.status}</span>
+        <b>{redemption.catalog?.label}</b>{" "}
+        {redemption.valueCents > 0 && (
+          <>• ${(redemption.valueCents / 100).toFixed(2)} </>
+        )}
+        • {redemption.pointsSpent} pts •{" "}
+        <span className="font-semibold">{redemption.status}</span>
       </div>
 
       <div className="flex flex-row gap-2 items-center">
         <Image
-          src={r.user.profileImage ?? "/default-profile-image.svg"}
+          src={redemption.user?.profileImage ?? "/default-profile-image.svg"}
           alt="Profile"
           width={28}
           height={28}
           className="rounded-full w-8 h-8 border-2 border-blue-500"
         />
-        {r.user.email}
+        {redemption.user?.email}
       </div>
 
-      {r.code && (
+      {redemption.code && (
         <div>
-          Code: <code>{r.code}</code>
+          Code: <code>{redemption.code}</code>
         </div>
       )}
 
@@ -73,25 +85,27 @@ export default function RedemptionRow({ r }: { r: Redemption }) {
             rel="noopener noreferrer"
             className="text-blue-600 underline"
           >
-            Access {r.catalogId}
+            Access {redemption.catalogId}
           </a>
         </div>
       )}
 
-      {r.claimUrl && (
+      {redemption.claimUrl && (
         <div>
           Claim:{" "}
-          <a className="underline" href={r.claimUrl} target="_blank">
+          <a className="underline" href={redemption.claimUrl} target="_blank">
             link
           </a>
         </div>
       )}
 
       <div className="text-gray-500">
-        {new Date(r.createdAt).toLocaleString("en-US", { timeZone: "UTC" })}
+        {new Date(redemption.createdAt).toLocaleString("en-US", {
+          timeZone: "UTC",
+        })}
       </div>
 
-      {r.status === "PENDING" && (
+      {redemption.status === "PENDING" && (
         <div className="flex gap-2 mt-2">
           <button
             disabled={loading}
@@ -110,18 +124,18 @@ export default function RedemptionRow({ r }: { r: Redemption }) {
         </div>
       )}
 
-      {r.status === "APPROVED" && (
+      {redemption.status === "APPROVED" && (
         <div className="space-y-2 mt-2">
           <input
             type="text"
-            placeholder="Gift code (optional)"
+            placeholder="Redeem code (optional)"
             value={code}
             onChange={(e) => setCode(e.target.value)}
             className="border rounded px-2 py-1 w-full"
           />
           <input
             type="url"
-            placeholder="Claim URL (optional)"
+            placeholder="Claim URL (optional - https://link-to-claim.com)"
             value={claimUrl}
             onChange={(e) => setClaimUrl(e.target.value)}
             className="border rounded px-2 py-1 w-full"

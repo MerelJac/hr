@@ -3,22 +3,16 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { handleApiError } from "@/lib/handleApiError";
+import { sendRedemptionEmail } from "@/lib/emailTemplates";
 
 export async function PATCH(
   req: NextRequest,
-   { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  type User = {
-    id: string;
-    email?: string;
-    firstName?: string; 
-    lastName?: string;
-    role?: string;
-    // add other properties as needed
-  };
+
   const session = await getServerSession(authOptions);
-  const role = (session?.user as User)?.role;
+  const role = (session?.user as { role?: string })?.role;
   if (role !== "SUPER_ADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -26,36 +20,60 @@ export async function PATCH(
   const { action, code, claimUrl } = await req.json();
 
   try {
-    if (action === "approve") {
-      await prisma.redemption.update({
-        where: { id },
-        data: { status: "APPROVED" },
-      });
-    } else if (action === "fulfill") {
-      await prisma.redemption.update({
-        where: { id },
-        data: {
-          status: "FULFILLED",
-          code,
-          claimUrl,
-        },
-      });
-    } else if (action === "fail") {
-      await prisma.redemption.update({
-        where: { id },
-        data: { status: "FAILED" },
-      });
-    } else if (action === "cancel") {
-      await prisma.redemption.update({
-        where: { id },
-        data: { status: "CANCELLED" },
-      });
-    } else {
-      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+    let updated;
+
+    switch (action) {
+      case "approve":
+        updated = await prisma.redemption.update({
+          where: { id },
+          data: { status: "APPROVED" },
+          include: { user: true, catalog: true },
+        });
+        break;
+
+      case "fulfill":
+        updated = await prisma.redemption.update({
+          where: { id },
+          data: { status: "FULFILLED", code, claimUrl },
+          include: { user: true, catalog: true },
+        });
+        break;
+
+      case "fail":
+        updated = await prisma.redemption.update({
+          where: { id },
+          data: { status: "FAILED" },
+          include: { user: true, catalog: true },
+        });
+        break;
+
+      case "cancel":
+        updated = await prisma.redemption.update({
+          where: { id },
+          data: { status: "CANCELLED" },
+          include: { user: true, catalog: true },
+        });
+        break;
+
+      default:
+        return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
 
-    return NextResponse.json({ ok: true });
-  } catch (e: unknown) {
-      return handleApiError(e);
+    // ✅ Correct email condition — note the `===` comparison, not assignment (=)
+    if (
+      (action === "approve" || action === "fulfill") &&
+      updated.user?.email
+    ) {
+      try {
+        await sendRedemptionEmail(updated.user.email);
+        console.log("✅ Redemption email sent to:", updated.user.email);
+      } catch (err) {
+        console.error("❌ Failed to send redemption email:", err);
+      }
     }
+
+    return NextResponse.json(updated);
+  } catch (e: unknown) {
+    return handleApiError(e);
   }
+}

@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { sendRedemptionEmail } from "@/lib/emailTemplates";
+import {
+  sendRedemptionEmail,
+  sendRedemptionNotificationEmail,
+} from "@/lib/emailTemplates";
 import { User } from "@/types/user";
 import { handleApiError } from "@/lib/handleApiError";
 
@@ -13,10 +16,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const hrEmail = process.env.HR_EMAIL ?? null;
+
   try {
     const body = await req.json();
     const { catalogId, pointsCost, deliverEmail, idemKey } = body;
-
+    console.log("Delivery Email", deliverEmail);
     if (!catalogId || !pointsCost) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -77,9 +82,9 @@ export async function POST(req: NextRequest) {
       return r;
     });
 
-    // 🔹 Notify via email
-    if (deliverEmail && user.emailNotifications) {
-      await sendRedemptionEmail(deliverEmail);
+    // Notify admin
+    if (hrEmail) {
+      await sendRedemptionNotificationEmail(hrEmail);
     }
 
     return NextResponse.json({ ok: true, redemption });
