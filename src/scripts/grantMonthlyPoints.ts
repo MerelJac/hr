@@ -4,23 +4,34 @@ import { sendMonthlyPointsNotification } from "@/lib/emailTemplates";
 import { prisma } from "@/lib/prisma";
 
 export async function grantMonthlyPoints() {
-  // Fetch all employees first
+  // Fetch all active employees with email preferences
   const employees = await prisma.user.findMany({
-    select: { id: true, email: true, isActive: true, emailNotifications: true },
+    where: { isActive: true },
+    select: { id: true, email: true, isActive: true, emailNotifications: true, monthlyBudget: true },
   });
 
-  // Reset monthly budget for all employees
+  // Filter users whose budget is below 50
+  const belowThreshold = employees.filter((u) => (u.monthlyBudget ?? 0) < 50);
+
+  if (belowThreshold.length === 0) {
+    console.log("✅ All employees already have at least 50 monthly points");
+    return;
+  }
+
+  // Update only those users
   const result = await prisma.user.updateMany({
+    where: { monthlyBudget: { lt: 50 } },
     data: { monthlyBudget: 50 },
   });
 
-  // Send emails for email notifications in parallel
-  
+  // Send emails to those who opted in
   await Promise.all(
-    employees.filter((u) => u.emailNotifications).map((u) => sendMonthlyPointsNotification(u.email))
+    belowThreshold
+      .filter((u) => u.emailNotifications && u.email)
+      .map((u) => sendMonthlyPointsNotification(u.email))
   );
 
-  console.log(`✅ Reset ${result.count} employees' monthly points to 50`);
+  console.log(`✅ Updated ${result.count} employees' monthly points to at least 50`);
 }
 
 // grantMonthlyPoints().finally(() => prisma.$disconnect());
