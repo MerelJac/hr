@@ -197,7 +197,7 @@ export default function RewardsAdmin({
                       <div>
                         <h3 className="font-medium text-gray-800">{r.label}</h3>
                         <p className="text-sm text-gray-600">
-                          {r.category?.name === "Gift Card"
+                          {(r.category?.name === "Gift Card" && r.pointsCost == 0) 
                             ? "Flexible amount"
                             : `${r.pointsCost} pts`}
                         </p>

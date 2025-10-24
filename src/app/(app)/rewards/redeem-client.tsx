@@ -126,7 +126,7 @@ export default function RedeemClient({
                     />
                   )}
                   <span className="text-sm text-gray-600 py-2">
-                    {currentCategory.name === "Gift Card"
+                    {(currentCategory.name === "Gift Card" && r.pointsCost == 0)
                       ? "Flexible amount"
                       : `${r.pointsCost} pts`}
                   </span>
