@@ -7,30 +7,43 @@ export async function POST(req: NextRequest) {
   try {
     const { firstName, lastName, email, password } = await req.json();
 
-    const invite = await prisma.userInvite.findUnique({ where: { email } });
+    // ✅ Normalize email to lowercase for all comparisons and inserts
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Check for valid invite
+    const invite = await prisma.userInvite.findFirst({
+      where: { email: { equals: normalizedEmail, mode: "insensitive" } },
+    });
     if (!invite || invite.consumedAt) {
       return NextResponse.json({ error: "No valid invite found for this email." }, { status: 403 });
     }
 
-    const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) return NextResponse.json({ error: "Email already registered" }, { status: 400 });
+    // Check if email already exists
+    const existing = await prisma.user.findFirst({
+      where: { email: { equals: normalizedEmail, mode: "insensitive" } },
+    });
+    if (existing)
+      return NextResponse.json({ error: "Email already registered" }, { status: 400 });
 
     const passwordHash = await hash(password, 12);
 
     const user = await prisma.user.create({
       data: {
-        firstName, lastName, email, passwordHash,
-        role: invite.role, // 👈 role comes from invite
+        firstName,
+        lastName,
+        email: normalizedEmail,
+        passwordHash,
+        role: invite.role, // from invite
       },
     });
 
     await prisma.userInvite.update({
-      where: { email },
+      where: { email: invite.email },
       data: { consumedAt: new Date() },
     });
 
     return NextResponse.json({ success: true, userId: user.id });
-  }  catch (e: unknown) {
-      return handleApiError(e);
-    }
+  } catch (e: unknown) {
+    return handleApiError(e);
   }
+}

@@ -28,7 +28,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Email required" }, { status: 400 });
   }
 
-  // ✅ Optional: validate the departmentId exists
+  // ✅ Normalize and lowercase email
+  const normalizedEmail = email.trim().toLowerCase();
+
+  // ✅ Optional: validate departmentId exists
   if (departmentId) {
     const deptExists = await prisma.department.findUnique({
       where: { id: departmentId },
@@ -41,46 +44,55 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const invite = await prisma.userInvite.upsert({
-    where: { email },
-    create: {
-      email,
-      role,
-      createdById: (session.user as UserInvite).id,
-      // optional fields
-      firstName,
-      lastName,
-      preferredName,
-      birthday: birthday ? new Date(birthday) : null,
-      workAnniversary: workAnniversary ? new Date(workAnniversary) : null,
-      departmentId,
-      sendEmail: sendEmail ?? true,
-    },
-    update: {
-      role,
-      consumedAt: null,
-      firstName,
-      lastName,
-      preferredName,
-      birthday: birthday ? new Date(birthday) : null,
-      workAnniversary: workAnniversary ? new Date(workAnniversary) : null,
-      departmentId,
-      sendEmail: sendEmail ?? true,
-    },
+  // ✅ Case-insensitive upsert
+  const existingInvite = await prisma.userInvite.findFirst({
+    where: { email: { equals: normalizedEmail, mode: "insensitive" } },
   });
 
-  // ⚡ If you later want to actually *send* the email, trigger it here.
-if (sendEmail) {
-  try {
-    await sendWelcomeEmail(invite.email);
-  } catch (err) {
-    console.error("Email send failed:", err);
-    return NextResponse.json(
-      { error: "Failed to send welcome email" },
-      { status: 500 }
-    );
+  let invite;
+  if (existingInvite) {
+    invite = await prisma.userInvite.update({
+      where: { id: existingInvite.id },
+      data: {
+        role,
+        consumedAt: null,
+        firstName,
+        lastName,
+        preferredName,
+        birthday: birthday ? new Date(birthday) : null,
+        workAnniversary: workAnniversary ? new Date(workAnniversary) : null,
+        departmentId,
+        sendEmail: sendEmail ?? true,
+      },
+    });
+  } else {
+    invite = await prisma.userInvite.create({
+      data: {
+        email: normalizedEmail,
+        role,
+        createdById: (session.user as UserInvite).id,
+        firstName,
+        lastName,
+        preferredName,
+        birthday: birthday ? new Date(birthday) : null,
+        workAnniversary: workAnniversary ? new Date(workAnniversary) : null,
+        departmentId,
+        sendEmail: sendEmail ?? true,
+      },
+    });
   }
-}
+
+  if (sendEmail) {
+    try {
+      await sendWelcomeEmail(invite.email);
+    } catch (err) {
+      console.error("Email send failed:", err);
+      return NextResponse.json(
+        { error: "Failed to send welcome email" },
+        { status: 500 }
+      );
+    }
+  }
 
   return NextResponse.json(invite);
 }
@@ -97,6 +109,15 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "Email required" }, { status: 400 });
   }
 
-  await prisma.userInvite.delete({ where: { email } });
+  // ✅ Normalize and delete case-insensitively
+  const normalizedEmail = email.trim().toLowerCase();
+  const invite = await prisma.userInvite.findFirst({
+    where: { email: { equals: normalizedEmail, mode: "insensitive" } },
+  });
+
+  if (invite) {
+    await prisma.userInvite.delete({ where: { id: invite.id } });
+  }
+
   return NextResponse.json({ ok: true });
 }

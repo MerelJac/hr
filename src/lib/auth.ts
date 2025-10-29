@@ -20,7 +20,6 @@ declare module "next-auth" {
 }
 
 export const authOptions: NextAuthOptions = {
-  
   secret: process.env.NEXTAUTH_SECRET, // ensure set in .env
   session: { strategy: "jwt" }, // we’re not using the Session table
   pages: {
@@ -37,9 +36,12 @@ export const authOptions: NextAuthOptions = {
         // Basic guard
         if (!credentials?.email || !credentials?.password) return null;
 
+        // ✅ Normalize and make lookup case-insensitive
+        const normalizedEmail = credentials.email.trim().toLowerCase();
+
         // Lookup user
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+        const user = await prisma.user.findFirst({
+          where: { email: { equals: normalizedEmail, mode: "insensitive" } },
         });
         if (!user) return null;
 
@@ -47,7 +49,6 @@ export const authOptions: NextAuthOptions = {
         // Verify password
         const ok = await compare(credentials.password, user.passwordHash);
         if (!ok) return null;
-
 
         // Minimal user object for JWT
         return {
@@ -57,32 +58,31 @@ export const authOptions: NextAuthOptions = {
             [user.firstName, user.lastName].filter(Boolean).join(" ") ||
             undefined,
           role: user.role,
-          isActive: user.isActive
+          isActive: user.isActive,
         };
       },
     }),
   ],
   // Optional: customize JWT/user fields
   callbacks: {
-  async jwt({ token, user }) {
-    if (user) {
-      token.id = user.id;
-      token.email = user.email ?? undefined;
-      token.name = user.name ?? undefined;
-      token.role = (user as User).role;
-      token.isActive = (user as User).isActive;
-    }
-    return token;
-  },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email ?? undefined;
+        token.name = user.name ?? undefined;
+        token.role = (user as User).role;
+        token.isActive = (user as User).isActive;
+      }
+      return token;
+    },
 
-  async session({ session, token }) {
-    if (session.user) {
-      session.user.id = token.id;
-      session.user.role = token.role;
-      session.user.isActive = token.isActive;
-    }
-    return session;
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.isActive = token.isActive;
+      }
+      return session;
+    },
   },
-},
-
 };
