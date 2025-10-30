@@ -69,6 +69,17 @@ export default function ProfilePage() {
       const res = await fetch(
         `/api/profile/upload-url?contentType=${encodeURIComponent(file.type)}`
       );
+      if (!res.ok) {
+        // Try to read JSON error message if possible
+        let errorMessage = "Unknown error";
+
+        const errData = await res.json();
+        errorMessage = errData.error || errData.details || res.statusText;
+
+        setMessage(`Upload failed: ${errorMessage}`);
+        return;
+      }
+
       const { uploadUrl, publicUrl } = await res.json();
 
       // 2️⃣ Upload directly to S3 (PUT)
@@ -79,8 +90,7 @@ export default function ProfilePage() {
       });
 
       if (!uploadRes.ok) {
-        const errText = await uploadRes.text();
-        setMessage(`Image upload failed: ${errText}`);
+        setMessage(`Image upload failed.`);
         return;
       }
 
@@ -91,7 +101,7 @@ export default function ProfilePage() {
         body: JSON.stringify({ imageUrl: publicUrl }),
       });
 
-      if (!saveRes.ok) throw new Error("Failed to save image URL");
+      if (!saveRes.ok) setMessage("Failed to save image URL");
 
       setProfileImage(publicUrl);
       setMessage("Profile image uploaded successfully!");
