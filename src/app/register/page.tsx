@@ -7,6 +7,7 @@ import Image from "next/image";
 import logo from "@/assets/logo.png";
 
 export default function RegisterPage() {
+  const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [form, setForm] = useState({
     firstName: "",
@@ -18,6 +19,7 @@ export default function RegisterPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setIsLoading(true);
     const res = await fetch("/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -28,7 +30,8 @@ export default function RegisterPage() {
     else {
       const data = await res.json();
       setMessage("Registration failed");
-      console.error("Registration failure:", data.error);
+      setIsLoading(false);
+      console.log("Registration failure:", data.error);
     }
   }
 
@@ -67,8 +70,11 @@ export default function RegisterPage() {
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
-          <button className="bg-black text-white w-full py-2 rounded-xl">
-            Register
+          <button
+            className="bg-black text-white w-full py-2 rounded-xl"
+            disabled={isLoading}
+          >
+            {isLoading ? "Registering..." : "Register"}
           </button>
           <Link
             href="/login"

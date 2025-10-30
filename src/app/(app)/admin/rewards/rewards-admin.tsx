@@ -84,7 +84,7 @@ export default function RewardsAdmin({
       if (!uploadRes.ok) throw new Error("S3 upload failed");
       setImageUrl(publicUrl);
     } catch (err) {
-      console.error(err);
+      console.log(err);
     }
   }
 
