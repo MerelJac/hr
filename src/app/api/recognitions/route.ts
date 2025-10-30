@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
   const ids = recipients.map((r) => r.userId);
   const found = await prisma.user.findMany({
     where: { id: { in: ids } },
-    select: { id: true, emailNotifications: true, email:  true },
+    select: { id: true, emailNotifications: true, email: true },
   });
   if (found.length !== ids.length) {
     return NextResponse.json(
@@ -96,12 +96,15 @@ export async function POST(req: NextRequest) {
       data: { monthlyBudget: { decrement: total } },
     });
 
-  // Send one email to all birthday users (parallel)
-  await Promise.all(found.filter((u) => u.emailNotifications).map((u) => sendRecognitionEmail(u.email, rec.id)));
-
-
     return rec;
   });
+
+  // ✅ Now send emails *after* transaction is committed
+  await Promise.all(
+    found
+      .filter((u) => u.emailNotifications)
+      .map((u) => sendRecognitionEmail(u.email, result.id))
+  );
 
   return NextResponse.json({ ok: true, id: result.id });
 }

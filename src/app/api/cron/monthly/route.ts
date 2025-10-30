@@ -10,7 +10,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    console.log("🚀 Starting Monthly cron jobs...");
+    console.error("🚀 Starting Monthly cron jobs...");
     interface CronResults {
       monthlyPoints: Awaited<ReturnType<typeof grantMonthlyPoints>>;
     }
@@ -19,7 +19,7 @@ export async function GET(req: Request) {
     // 1️⃣ Work anniversaries
     results.monthlyPoints = await grantMonthlyPoints();
 
-    console.log("✅ Monthly cron completed successfully", results);
+    console.error("✅ Monthly cron completed successfully", results);
     return NextResponse.json({ success: true, results });
   } catch (err) {
     console.error("❌ Monthly cron failed:", err);

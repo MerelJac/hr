@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import {
-  sendRedemptionEmail,
-  sendRedemptionNotificationEmail,
-} from "@/lib/emailTemplates";
+import { sendRedemptionNotificationEmail } from "@/lib/emailTemplates";
 import { User } from "@/types/user";
 import { handleApiError } from "@/lib/handleApiError";
 
@@ -21,7 +18,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { catalogId, pointsCost, deliverEmail, idemKey } = body;
-    console.log("Delivery Email", deliverEmail);
+    console.error("Delivery Email", deliverEmail);
     if (!catalogId || !pointsCost) {
       return NextResponse.json(
         { error: "Missing required fields" },

@@ -5,7 +5,12 @@ import { getServerSession } from "next-auth";
 // mock prisma
 jest.mock("@/lib/prisma", () => ({
   prisma: {
-    userInvite: { upsert: jest.fn(), delete: jest.fn() },
+    userInvite: {
+      findFirst: jest.fn(),
+      upsert: jest.fn(),
+      delete: jest.fn(),
+      create: jest.fn(),
+    },
   },
 }));
 
@@ -62,6 +67,8 @@ describe("POST /api/invites", () => {
     (prisma.userInvite.upsert as jest.Mock).mockResolvedValueOnce({
       id: "inv1",
       email: "test@example.com",
+      role: "ADMIN", // ✅ simple string only
+      createdAt: "2025-10-30", // ✅ no Date() instances
     });
 
     const req = new Request("http://localhost", {
@@ -133,13 +140,17 @@ describe("DELETE /api/invites", () => {
     mockedGetServerSession.mockResolvedValueOnce({
       user: { role: "SUPER_ADMIN" },
     });
+
+    // ✅ mock findFirst so delete() actually gets triggered
+    (prisma.userInvite.findFirst as jest.Mock).mockResolvedValueOnce({
+      id: "inv1",
+      email: "test@example.com",
+    });
     (prisma.userInvite.delete as jest.Mock).mockResolvedValueOnce({});
 
     const req = new Request(
       "http://localhost/api/invites?email=test@example.com",
-      {
-        method: "DELETE",
-      }
+      { method: "DELETE" }
     );
 
     const res = await DELETE(req);
@@ -147,8 +158,10 @@ describe("DELETE /api/invites", () => {
 
     expect(res.status).toBe(200);
     expect(json).toEqual({ ok: true });
+
+    // ✅ match how the actual route deletes by id
     expect(prisma.userInvite.delete).toHaveBeenCalledWith({
-      where: { email: "test@example.com" },
+      where: { id: "inv1" },
     });
   });
 });

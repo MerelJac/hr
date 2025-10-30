@@ -63,7 +63,7 @@ export default function ChallengeDetailClient({
   const [isPending, startTransition] = useTransition();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openAnnounceModal, setOpenAnnounceModal] = useState(false);
-  console.log("console log challenge");
+  console.error("console log challenge");
   async function updateStatus(
     id: string,
     status: "APPROVED" | "REJECTED" | "WON"

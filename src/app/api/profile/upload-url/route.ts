@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
   const userId = (session?.user as User)?.id;
 
   if (!userId) {
+    console.error('No User Id')
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {
@@ -26,6 +27,7 @@ export async function GET(req: NextRequest) {
     const contentType = searchParams.get("contentType") || "image/png";
 
     if (!contentType) {
+      console.error('No content type')
       return NextResponse.json(
         { error: "Missing contentType" },
         { status: 400 }
@@ -35,6 +37,7 @@ export async function GET(req: NextRequest) {
     // ✅ Explicit MIME whitelist
     const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
     if (!validTypes.includes(contentType)) {
+      console.error('Unsupported file type');
       return NextResponse.json(
         { error: `Unsupported file type: ${contentType}` },
         { status: 400 }
@@ -59,6 +62,6 @@ export async function GET(req: NextRequest) {
       publicUrl: `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com/${key}`,
     });
   } catch (e) {
-    console.log("Error saving image: ", e);
+    console.error("Error saving image: ", e);
   }
 }

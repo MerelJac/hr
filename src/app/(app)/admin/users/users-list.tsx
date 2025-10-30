@@ -16,7 +16,7 @@ export default function UsersList({ users }: { users: User[] }) {
       fetch("/api/departments")
         .then((res) => res.json())
         .then((data) => setDepartments(data))
-        .catch((err) => console.log("Failed to load departments:", err));
+        .catch((err) => console.error("Failed to load departments:", err));
     }
   }, [open]);
 

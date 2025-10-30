@@ -73,3 +73,9 @@ That safely applies all pending migrations to the prod Neon DB.
 ## 🔹 Workflow for Scheduled tasks
 1. Add daily or monthly tasks to route in api/[time]/route.ts
 2. Automatically scheudled in AWS Lambda and AWS EventBridge 
+
+## 🔹 Amplify Console
+npm install -g @aws-amplify/cli
+amplify --version (confirm its installed)
+amplify configure
+

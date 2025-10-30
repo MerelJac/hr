@@ -16,7 +16,7 @@ export default function AvailablePointsClient({
   const boostPointsModal = () => {
     // put your modal logic here
     setModal(!modal);
-    console.log("Boost points modal opened");
+    console.error("Boost points modal opened");
   };
 
   return (

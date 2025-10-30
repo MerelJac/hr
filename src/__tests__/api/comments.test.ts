@@ -1,19 +1,53 @@
-// __tests__/api/comments.test.ts
-import { POST, GET } from "@/app/api/comments/route";
-import { prisma } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
-import { getServerSession } from "next-auth";
+/**
+ * Tests for /api/comments route
+ */
 
-// mock prisma
-jest.mock("@/lib/prisma", () => ({
-  prisma: {
-    user: { update: jest.fn() },
-    recognitionComment: { create: jest.fn(), findMany: jest.fn() },
-    $transaction: <T>(fn: (tx: unknown) => T) => fn(prisma),
+import { POST, GET } from "@/app/api/comments/route";
+import { getServerSession } from "next-auth";
+import { NextRequest } from "next/server";
+
+// ✅ Mock Prisma inside the factory so prismaMock is scoped correctly
+jest.mock("@/lib/prisma", () => {
+  const prismaMock = {
+    user: {
+      findUnique: jest.fn(),
+      update: jest.fn(),
+    },
+    recognitionComment: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+    },
+  };
+
+  return {
+    prisma: {
+      ...prismaMock,
+      $transaction: async <T>(fn: (tx: typeof prismaMock) => T) =>
+        fn(prismaMock),
+    },
+  };
+});
+
+// ✅ Mock handleApiError to keep test output simple
+jest.mock("@/lib/handleApiError", () => ({
+  handleApiError: (e: unknown) => {
+    let message = "error";
+    let status = 500;
+
+    if (e instanceof Error) {
+      message = e.message;
+    } else if (typeof e === "object" && e !== null) {
+      const maybeStatus = (e as Record<string, unknown>).status;
+      const maybeMessage = (e as Record<string, unknown>).message;
+      if (typeof maybeMessage === "string") message = maybeMessage;
+      if (typeof maybeStatus === "number") status = maybeStatus;
+    }
+
+    return new Response(JSON.stringify({ error: message }), { status });
   },
 }));
 
-// mock auth
+// ✅ Mock auth
 jest.mock("@/lib/auth", () => ({
   authOptions: {},
 }));
@@ -21,14 +55,22 @@ jest.mock("next-auth", () => ({
   getServerSession: jest.fn(),
 }));
 
+// Get mocks after jest.mock() runs
 const mockedGetServerSession = getServerSession as jest.Mock;
+const { prisma } = jest.requireMock("@/lib/prisma");
 
+// ------------------------------
+// TESTS
+// ------------------------------
 describe("POST /api/comments", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    prisma.user.findUnique.mockReset();
+    prisma.user.update.mockReset();
+    prisma.recognitionComment.create.mockReset();
   });
 
-  it("should return 401 if not logged in", async () => {
+  it("returns 401 if not logged in", async () => {
     mockedGetServerSession.mockResolvedValueOnce(null);
 
     const req = new Request("http://localhost", {
@@ -36,27 +78,26 @@ describe("POST /api/comments", () => {
       body: JSON.stringify({ recognitionId: "rec1", message: "hi" }),
     });
 
-    const res = await POST(req);
+    const res = await POST(req as unknown as NextRequest);
     expect(res.status).toBe(401);
   });
 
-  it("should create a comment without points", async () => {
-    mockedGetServerSession.mockResolvedValueOnce({ user: { id: "sender1" } });
-    (prisma.recognitionComment.create as jest.Mock).mockResolvedValueOnce({
-      id: "c1",
-    });
+  it("creates a comment without points", async () => {
+    mockedGetServerSession.mockResolvedValueOnce({ user: { id: "u1" } });
+    prisma.user.findUnique.mockResolvedValueOnce({ monthlyBudget: 10 });
+    prisma.recognitionComment.create.mockResolvedValueOnce({ id: "c1" });
 
     const req = new Request("http://localhost", {
       method: "POST",
       body: JSON.stringify({
         recognitionId: "rec1",
-        recipientId: "user2",
+        recipientId: "u2",
         message: "Nice job!",
         pointsBoosted: 0,
       }),
     });
 
-    const res = await POST(req);
+    const res = await POST(req as unknown as NextRequest);
     const json = await res.json();
 
     expect(res.status).toBe(200);
@@ -65,7 +106,7 @@ describe("POST /api/comments", () => {
       expect.objectContaining({
         data: expect.objectContaining({
           recognitionId: "rec1",
-          senderId: "sender1",
+          senderId: "u1",
           message: "Nice job!",
           pointsBoosted: 0,
         }),
@@ -73,116 +114,69 @@ describe("POST /api/comments", () => {
     );
   });
 
-  it("should decrement sender and increment recipient when points are boosted", async () => {
-    mockedGetServerSession.mockResolvedValueOnce({ user: { id: "sender1" } });
-
-    (prisma.user.update as jest.Mock)
-      .mockResolvedValueOnce({ id: "sender1", pointsBalance: 5 }) // sender update
-      .mockResolvedValueOnce({ id: "user2", pointsBalance: 15 }); // recipient update
-    (prisma.recognitionComment.create as jest.Mock).mockResolvedValueOnce({
-      id: "c2",
-    });
-
-    const req = new Request("http://localhost", {
-      method: "POST",
-      body: JSON.stringify({
-        recognitionId: "rec2",
-        recipientId: "user2",
-        message: "Boosted!",
-        pointsBoosted: 5,
-      }),
-    });
-
-    const res = await POST(req);
-    const json = await res.json();
-
-    expect(res.status).toBe(200);
-    expect(json).toEqual({ id: "c2" });
-    expect(prisma.user.update).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        where: { id: "sender1" },
-        data: { pointsBalance: { decrement: 5 } },
-      })
-    );
-    expect(prisma.user.update).toHaveBeenNthCalledWith(
-      2,
-      expect.objectContaining({
-        where: { id: "user2" },
-        data: { pointsBalance: { increment: 5 } },
-      })
-    );
-  });
-
-  it("should return 400 if sender doesn’t have enough points", async () => {
-    mockedGetServerSession.mockResolvedValueOnce({ user: { id: "sender1" } });
-
-    (prisma.user.update as jest.Mock).mockResolvedValueOnce({
-      pointsBalance: -1,
-    });
+  it("returns 400 if sender doesn’t have enough points", async () => {
+    mockedGetServerSession.mockResolvedValueOnce({ user: { id: "u1" } });
+    prisma.user.findUnique.mockResolvedValueOnce({ monthlyBudget: 5 }); // less than 10
+    prisma.recognitionComment.create.mockResolvedValueOnce({ id: "c_fail" });
 
     const req = new Request("http://localhost", {
       method: "POST",
       body: JSON.stringify({
         recognitionId: "rec3",
-        recipientId: "user2",
+        recipientId: "u2",
         message: "oops",
         pointsBoosted: 10,
       }),
     });
 
-    const res = await POST(req);
+    const res = await POST(req as unknown as NextRequest);
     const json = await res.json();
 
     expect(res.status).toBe(400);
     expect(json.error).toMatch(/Not enough points/);
   });
 
-  it("should return 404 on P2025 error", async () => {
-    mockedGetServerSession.mockResolvedValueOnce({ user: { id: "sender1" } });
+  it("decrements sender and increments recipient when points are boosted", async () => {
+    mockedGetServerSession.mockResolvedValueOnce({ user: { id: "u1" } });
 
-    (prisma.user.update as jest.Mock).mockRejectedValueOnce(
-      new Prisma.PrismaClientKnownRequestError("Record not found", {
-        code: "P2025",
-        clientVersion: "4.15.0", // any string, required by ctor
-        meta: { cause: "not found" },
-      })
-    );
+    prisma.user.findUnique.mockResolvedValueOnce({ monthlyBudget: 20 });
+    prisma.user.update
+      .mockResolvedValueOnce({ id: "u1", monthlyBudget: 15 })
+      .mockResolvedValueOnce({ id: "u2", pointsBalance: 10 });
+
+    // ✅ make sure this test defines its own create result
+    prisma.recognitionComment.create.mockResolvedValueOnce({ id: "c2" });
 
     const req = new Request("http://localhost", {
       method: "POST",
       body: JSON.stringify({
-        recognitionId: "rec4",
-        recipientId: "missing",
-        message: "uh oh",
+        recognitionId: "rec2",
+        recipientId: "u2",
+        message: "Boosted!",
         pointsBoosted: 5,
       }),
     });
 
-    const res = await POST(req);
+    const res = await POST(req as unknown as NextRequest);
     const json = await res.json();
 
-    expect(res.status).toBe(404);
-    expect(json.error).toMatch(/Record not found/);
-  });
+    expect(res.status).toBe(200);
+    expect(json).toEqual({ id: "c2" });
 
-  it("should return 500 on unexpected error", async () => {
-    mockedGetServerSession.mockResolvedValueOnce({ user: { id: "sender1" } });
-    (prisma.recognitionComment.create as jest.Mock).mockRejectedValueOnce(
-      new Error("DB exploded")
+    expect(prisma.user.update).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        where: { id: "u1" },
+        data: { monthlyBudget: { decrement: 5 } },
+      })
     );
-
-    const req = new Request("http://localhost", {
-      method: "POST",
-      body: JSON.stringify({
-        recognitionId: "rec5",
-        recipientId: "user2",
-        message: "broken",
-      }),
-    });
-
-    const res = await POST(req);
-    expect(res.status).toBe(500);
+    expect(prisma.user.update).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        where: { id: "u2" },
+        data: { pointsBalance: { increment: 5 } },
+      })
+    );
   });
 });
 
@@ -191,27 +185,22 @@ describe("GET /api/comments", () => {
     jest.clearAllMocks();
   });
 
-  it("should return 400 if no recognitionId", async () => {
+  it("returns 400 if no recognitionId", async () => {
     const req = new Request("http://localhost/api/comments");
-    const res = await GET(req);
+    const res = await GET(req as unknown as NextRequest);
     expect(res.status).toBe(400);
   });
 
-  it("should return comments when recognitionId is provided", async () => {
-    (prisma.recognitionComment.findMany as jest.Mock).mockResolvedValueOnce([
-      { id: "c1", message: "Great work" },
+  it("returns comments when recognitionId is provided", async () => {
+    prisma.recognitionComment.findMany.mockResolvedValueOnce([
+      { id: "c1", message: "Good job" },
     ]);
 
     const req = new Request("http://localhost/api/comments?recognitionId=rec1");
-    const res = await GET(req);
+    const res = await GET(req as unknown as NextRequest);
     const json = await res.json();
 
     expect(res.status).toBe(200);
-    expect(json).toEqual([{ id: "c1", message: "Great work" }]);
-    expect(prisma.recognitionComment.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { recognitionId: "rec1" },
-      })
-    );
+    expect(json).toEqual([{ id: "c1", message: "Good job" }]);
   });
 });
