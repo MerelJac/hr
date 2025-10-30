@@ -30,10 +30,21 @@ jest.mock("@/lib/prisma", () => {
 
 // ✅ Mock handleApiError to keep test output simple
 jest.mock("@/lib/handleApiError", () => ({
-  handleApiError: (e: any) =>
-    new Response(JSON.stringify({ error: e.message || "error" }), {
-      status: e.status || 500,
-    }),
+  handleApiError: (e: unknown) => {
+    let message = "error";
+    let status = 500;
+
+    if (e instanceof Error) {
+      message = e.message;
+    } else if (typeof e === "object" && e !== null) {
+      const maybeStatus = (e as Record<string, unknown>).status;
+      const maybeMessage = (e as Record<string, unknown>).message;
+      if (typeof maybeMessage === "string") message = maybeMessage;
+      if (typeof maybeStatus === "number") status = maybeStatus;
+    }
+
+    return new Response(JSON.stringify({ error: message }), { status });
+  },
 }));
 
 // ✅ Mock auth
