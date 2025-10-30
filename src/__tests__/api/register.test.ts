@@ -6,8 +6,8 @@ import { hash } from "bcryptjs";
 // mock prisma
 jest.mock("@/lib/prisma", () => ({
   prisma: {
-    userInvite: { findUnique: jest.fn(), update: jest.fn() },
-    user: { findUnique: jest.fn(), create: jest.fn() },
+    userInvite: { findFirst: jest.fn(), update: jest.fn() },
+    user: { findFirst: jest.fn(), create: jest.fn() },
   },
 }));
 
@@ -22,7 +22,7 @@ describe("POST /api/register", () => {
   });
 
   it("should return 403 if no invite found", async () => {
-    (prisma.userInvite.findUnique as jest.Mock).mockResolvedValueOnce(null);
+    (prisma.userInvite.findFirst as jest.Mock).mockResolvedValueOnce(null);
 
     const req = new Request("http://localhost/api/register", {
       method: "POST",
@@ -42,7 +42,7 @@ describe("POST /api/register", () => {
   });
 
   it("should return 403 if invite already consumed", async () => {
-    (prisma.userInvite.findUnique as jest.Mock).mockResolvedValueOnce({
+    (prisma.userInvite.findFirst as jest.Mock).mockResolvedValueOnce({
       email: "jane@example.com",
       role: "EMPLOYEE",
       consumedAt: new Date(),
@@ -63,12 +63,12 @@ describe("POST /api/register", () => {
   });
 
   it("should return 400 if email already registered", async () => {
-    (prisma.userInvite.findUnique as jest.Mock).mockResolvedValueOnce({
+    (prisma.userInvite.findFirst as jest.Mock).mockResolvedValueOnce({
       email: "jane@example.com",
       role: "EMPLOYEE",
       consumedAt: null,
     });
-    (prisma.user.findUnique as jest.Mock).mockResolvedValueOnce({ id: "u1" });
+    (prisma.user.findFirst as jest.Mock).mockResolvedValueOnce({ id: "u1" });
 
     const req = new Request("http://localhost/api/register", {
       method: "POST",
@@ -88,12 +88,12 @@ describe("POST /api/register", () => {
   });
 
   it("should create user and update invite if valid", async () => {
-    (prisma.userInvite.findUnique as jest.Mock).mockResolvedValueOnce({
+    (prisma.userInvite.findFirst as jest.Mock).mockResolvedValueOnce({
       email: "jane@example.com",
       role: "EMPLOYEE",
       consumedAt: null,
     });
-    (prisma.user.findUnique as jest.Mock).mockResolvedValueOnce(null);
+    (prisma.user.findFirst as jest.Mock).mockResolvedValueOnce(null);
     (prisma.user.create as jest.Mock).mockResolvedValueOnce({ id: "newUser" });
     (prisma.userInvite.update as jest.Mock).mockResolvedValueOnce({});
 
@@ -135,7 +135,7 @@ describe("POST /api/register", () => {
   });
 
   it("should return 500 on unexpected error", async () => {
-    (prisma.userInvite.findUnique as jest.Mock).mockRejectedValueOnce(new Error("DB exploded"));
+    (prisma.userInvite.findFirst as jest.Mock).mockRejectedValueOnce(new Error("DB exploded"));
 
     const req = new Request("http://localhost/api/register", {
       method: "POST",

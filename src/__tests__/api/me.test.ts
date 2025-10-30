@@ -70,11 +70,20 @@ describe("GET /api/me", () => {
         preferredName: true,
         workAnniversary: true,
         department: true,
+        role: true,
+        emailNotifications: true,
         profileImage: true,
         nominationsAsNominee: false,
         submittedNominations: {
           include: {
-            challenge: { select: { id: true, title: true, points: true } },
+            challenge: {
+              select: {
+                id: true,
+                title: true,
+                points: true,
+                hideStatusFromSubmitter: true,
+              },
+            },
           },
           orderBy: { createdAt: "desc" },
         },
