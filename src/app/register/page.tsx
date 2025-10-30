@@ -31,7 +31,7 @@ export default function RegisterPage() {
       const data = await res.json();
       setMessage("Registration failed");
       setIsLoading(false);
-      console.log("Registration failure:", data.error);
+      console.error("Registration failure:", data.error);
     }
   }
 

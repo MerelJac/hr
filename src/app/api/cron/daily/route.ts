@@ -6,14 +6,14 @@ import { checkChallengeDates } from "@/scripts/checkChallengeDates";
 export async function GET(req: Request) {
   const auth = req.headers.get("authorization");
   const expected = `Bearer ${process.env.CRON_SECRET}`;
-  console.log("AUTH HEADER:", JSON.stringify(auth));
-  console.log("EXPECTED:", JSON.stringify(expected));
+  console.error("AUTH HEADER:", JSON.stringify(auth));
+  console.error("EXPECTED:", JSON.stringify(expected));
   if (auth !== expected) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    console.log("🚀 Starting daily cron jobs...");
+    console.error("🚀 Starting daily cron jobs...");
     interface CronResults {
       anniversaries: Awaited<ReturnType<typeof grantAnniversaryPoints>>;
       birthdays: Awaited<ReturnType<typeof grantBirthdayPoints>>;
@@ -30,7 +30,7 @@ export async function GET(req: Request) {
     // 3️⃣ Challenges
     results.challenges = await checkChallengeDates();
 
-    console.log("✅ Daily cron completed successfully", results);
+    console.error("✅ Daily cron completed successfully", results);
     return NextResponse.json({ success: true, results });
   } catch (err) {
     console.error("❌ Daily cron failed:", err);

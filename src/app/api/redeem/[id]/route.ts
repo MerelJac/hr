@@ -66,9 +66,9 @@ export async function PATCH(
     ) {
       try {
         await sendRedemptionEmail(updated.user.email);
-        console.log("✅ Redemption email sent to:", updated.user.email);
+        console.error("✅ Redemption email sent to:", updated.user.email);
       } catch (err) {
-        console.log("❌ Failed to send redemption email:", err);
+        console.error("❌ Failed to send redemption email:", err);
       }
     }
 

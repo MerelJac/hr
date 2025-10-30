@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { catalogId, pointsCost, deliverEmail, idemKey } = body;
-    console.log("Delivery Email", deliverEmail);
+    console.error("Delivery Email", deliverEmail);
     if (!catalogId || !pointsCost) {
       return NextResponse.json(
         { error: "Missing required fields" },

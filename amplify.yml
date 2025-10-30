@@ -31,6 +31,8 @@ applications:
         baseDirectory: .next
         files:
           - "**/*"
+        # 👇 This tells Amplify to run it as SSR / Lambda-based
+        enableSSR: true
       cache:
         paths:
           - node_modules/**/*
