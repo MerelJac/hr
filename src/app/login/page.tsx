@@ -7,6 +7,7 @@ import Image from "next/image";
 import logo from "@/assets/logo.png";
 
 function LoginForm() {
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -16,6 +17,7 @@ function LoginForm() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setIsLoading(true);
     setMessage(""); // reset message
     const res = await signIn("credentials", {
       email,
@@ -24,7 +26,10 @@ function LoginForm() {
       callbackUrl,
     });
     if (res?.ok) router.push(callbackUrl);
-    else setMessage("Login failed");
+    else {
+      setMessage("Login failed");
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -47,8 +52,11 @@ function LoginForm() {
         onChange={(e) => setPassword(e.target.value)}
         placeholder="••••••••"
       />
-      <button className="w-full bg-black text-white py-2 rounded-xl">
-        Sign in
+      <button
+        className="w-full bg-black text-white py-2 rounded-xl"
+        disabled={isLoading}
+      >
+        {isLoading ? "Signing in..." : "Sign in"}
       </button>
       <Link
         href="/register"
