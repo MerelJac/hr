@@ -21,25 +21,28 @@ export async function GET(req: NextRequest) {
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  try {
+    const { searchParams } = new URL(req.url);
+    const contentType = searchParams.get("contentType") || "image/png";
 
-  const { searchParams } = new URL(req.url);
-  const contentType = searchParams.get("contentType") || "image/png";
+    const ext = contentType.split("/")[1] || "png";
+    const env = process.env.NODE_ENV === "production" ? "prod" : "dev";
+    const key = `${env}/profiles/${userId}/${randomUUID()}.${ext}`;
 
-  const ext = contentType.split("/")[1] || "png";
-  const env = process.env.NODE_ENV === "production" ? "prod" : "dev";
-  const key = `${env}/profiles/${userId}/${randomUUID()}.${ext}`;
+    const command = new PutObjectCommand({
+      Bucket: process.env.S3_BUCKET!,
+      Key: key,
+      ContentType: contentType,
+    });
 
-  const command = new PutObjectCommand({
-    Bucket: process.env.S3_BUCKET!,
-    Key: key,
-    ContentType: contentType
-  });
+    const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 }); // valid 1 min
 
-  const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 }); // valid 1 min
-
-  return NextResponse.json({
-    uploadUrl,
-    key,
-    publicUrl: `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com/${key}`,
-  });
+    return NextResponse.json({
+      uploadUrl,
+      key,
+      publicUrl: `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com/${key}`
+    });
+  } catch (e) {
+    console.log("Error saving image: ", e);
+  }
 }
