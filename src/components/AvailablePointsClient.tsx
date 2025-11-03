@@ -4,6 +4,7 @@
 import { MoveRight, X } from "lucide-react";
 import { useState } from "react";
 import BoostPointsModal from "./BoostPointsModal";
+import { useRouter } from "next/navigation";
 
 export default function AvailablePointsClient({
   available,
@@ -13,10 +14,20 @@ export default function AvailablePointsClient({
   toRedeemAvailable: number;
 }) {
   const [modal, setModal] = useState(false);
+  const router = useRouter();
   const boostPointsModal = () => {
     // put your modal logic here
     setModal(!modal);
-    console.error("Boost points modal opened");
+
+    console.log("Boost points modal opened");
+  };
+
+  const handleBoostComplete = async () => {
+    // ✅ Close modal
+    setModal(false);
+
+    // ✅ Refresh all server components (re-runs getServerSession, prisma calls, etc.)
+    router.refresh();
   };
 
   return (
@@ -49,7 +60,10 @@ export default function AvailablePointsClient({
             </h2>
 
             {/* Your modal content */}
-            <BoostPointsModal toRedeemAvailable={toRedeemAvailable} />
+            <BoostPointsModal
+              toRedeemAvailable={toRedeemAvailable}
+              onBoostComplete={handleBoostComplete}
+            />
 
             <div className="mt-6 text-center">
               <button

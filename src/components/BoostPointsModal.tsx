@@ -5,8 +5,10 @@ import { useState, useMemo } from "react";
 
 export default function BoostPointsModal({
   toRedeemAvailable,
+  onBoostComplete,
 }: {
   toRedeemAvailable: number;
+  onBoostComplete?: () => void;
 }) {
   const [selected, setSelected] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -38,6 +40,7 @@ export default function BoostPointsModal({
         throw new Error(`Request failed: ${res.status}`);
       }
 
+      onBoostComplete?.(); // ✅ triggers router.refresh()
       setSuccess(true);
     } catch (err) {
       console.error("Unexpected error redeeming points:", err);
@@ -58,7 +61,9 @@ export default function BoostPointsModal({
       </p>
 
       <p className="font-semibold">
-        You have <span className="text-red-600 ">{toRedeemAvailable} points </span>to redeem.
+        You have{" "}
+        <span className="text-red-600 ">{toRedeemAvailable} points </span>to
+        redeem.
       </p>
 
       {increments.length > 0 ? (
@@ -81,7 +86,8 @@ export default function BoostPointsModal({
             : "border-gray-300 hover:border-red-400 text-gray-700"
         }`}
               >
-                {points} Points to Redeem <MoveRight size={16} /> {points} Points to Give
+                {points} Points to Redeem <MoveRight size={16} /> {points}{" "}
+                Points to Give
               </button>
             ))}
           </div>
