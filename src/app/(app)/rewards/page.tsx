@@ -58,7 +58,7 @@ export default async function RewardsPage() {
         {history.length === 0 ? (
           <p className="text-sm text-gray-500 italic">No redemptions yet.</p>
         ) : (
-          <ul className="space-y-3 max-h-64 overflow-y-auto">
+          <ul className="space-y-3 max-h-150 overflow-y-auto">
             {history.map((r) => (
               <li
                 key={r.id}

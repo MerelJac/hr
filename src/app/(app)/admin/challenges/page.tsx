@@ -14,7 +14,10 @@ export default async function ChallengesAdminPage() {
   }
 
   const rawChallenges = await prisma.nominationChallenge.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: [
+      { isActive: "desc" }, // ✅ true (active) first, false (inactive) later
+      { createdAt: "desc" }, // ✅ then newest first
+    ],
     select: {
       id: true,
       title: true,

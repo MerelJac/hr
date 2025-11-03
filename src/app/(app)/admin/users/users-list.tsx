@@ -1,14 +1,17 @@
 "use client";
 
+import UserInsightsModal from "@/components/UserInsightsModal";
 import { Department } from "@/types/department";
 import { User } from "@/types/user";
-import { PencilIcon } from "lucide-react";
+import { PencilIcon, Spotlight } from "lucide-react";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 
 export default function UsersList({ users }: { users: User[] }) {
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   // ✅ Fetch departments when edit modal opens
   useEffect(() => {
@@ -64,6 +67,13 @@ export default function UsersList({ users }: { users: User[] }) {
       <ul className="space-y-1">
         {users.map((u) => (
           <li key={u.id} className="flex items-center gap-2">
+            <Image
+              src={u.profileImage ?? "/default-profile-image.svg"}
+              alt="Profile"
+              width={28}
+              height={28}
+              className="rounded-full w-10 h-10 border-2 border-blue-500"
+            />
             <span
               className={`w-xl ${
                 u.isActive ? "" : "line-through text-gray-500"
@@ -99,6 +109,12 @@ export default function UsersList({ users }: { users: User[] }) {
               <PencilIcon size={16} />
             </button>
 
+            <button
+              onClick={() => setSelectedUserId(u.id)}
+              className="text-blue-600 text-sm underline"
+            >
+              <Spotlight size={16} />
+            </button>
             {u.isActive ? (
               <button
                 onClick={() =>
@@ -144,6 +160,13 @@ export default function UsersList({ users }: { users: User[] }) {
           </li>
         ))}
       </ul>
+
+      {selectedUserId && (
+        <UserInsightsModal
+          userId={selectedUserId}
+          onClose={() => setSelectedUserId(null)}
+        />
+      )}
 
       {/* ✏️ Edit Modal */}
       {open && selectedUser && (
