@@ -6,7 +6,7 @@ export async function GET(req: Request) {
   const userId = searchParams.get("userId");
   if (!userId) return NextResponse.json({ error: "Missing userId" }, { status: 400 });
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findUnique({ where: { id: userId } ,   include: { department: true }});
 
   const points = user?.pointsBalance ?? 0;
 
@@ -32,7 +32,15 @@ export async function GET(req: Request) {
   });
 
   return NextResponse.json({
-    user,
+    user: {
+      id: user?.id,
+      firstName: user?.firstName,
+      lastName: user?.lastName,
+      email: user?.email,
+      role: user?.role,
+      profileImage: user?.profileImage,
+      department: user?.department?.name ?? null,
+    },
     points,
     recentChallenges,
     recentReceived: recentReceived

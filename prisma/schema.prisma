@@ -18,22 +18,22 @@ enum Role {
 }
 
 model User {
-  id              String      @id @default(cuid())
-  firstName       String?
-  lastName        String?
-  email           String      @unique
-  profileImage    String?
-  passwordHash    String
-  role            Role        @default(EMPLOYEE)
-  pointsBalance   Int         @default(0)
-  monthlyBudget   Int         @default(50)
-  emailVerified   DateTime?
-  birthday        DateTime?
-  workAnniversary DateTime?
-  preferredName   String?
-  departmentId    String?
-  department      Department? @relation(fields: [departmentId], references: [id])
-  emailNotifications Boolean  @default(true)
+  id                       String                 @id @default(cuid())
+  firstName                String?
+  lastName                 String?
+  email                    String                 @unique
+  profileImage             String?
+  passwordHash             String
+  role                     Role                   @default(EMPLOYEE)
+  pointsBalance            Int                    @default(0)
+  monthlyBudget            Int                    @default(50)
+  emailVerified            DateTime?
+  birthday                 DateTime?
+  workAnniversary          DateTime?
+  preferredName            String?
+  departmentId             String?
+  department               Department?            @relation(fields: [departmentId], references: [id])
+  emailNotifications       Boolean                @default(true)
   createdAt                DateTime               @default(now())
   updatedAt                DateTime               @updatedAt
   sessions                 Session[]
@@ -46,6 +46,11 @@ model User {
   sentComments             RecognitionComment[]   @relation("CommentSender")
   receivedComments         RecognitionComment[]   @relation("CommentRecipient")
   passwordResetTokens      PasswordResetToken[]
+
+  @@index([departmentId])
+  @@index([role])
+  @@index([createdAt])
+  @@index([isActive])
 }
 
 model Session {
@@ -72,6 +77,8 @@ model UserInvite {
   departmentId    String?
   department      Department? @relation(fields: [departmentId], references: [id])
   sendEmail       Boolean     @default(true)
+
+  @@index([email])
 }
 
 model Recognition {
@@ -86,6 +93,10 @@ model Recognition {
 
   recipients RecognitionRecipient[]
   comments   RecognitionComment[]   @relation("RecognitionComments")
+
+  @@index([senderId])
+  @@index([createdAt])
+  @@index([senderId, createdAt])
 }
 
 model RecognitionRecipient {
@@ -97,6 +108,11 @@ model RecognitionRecipient {
   points        Int
 
   createdAt DateTime @default(now())
+
+  @@index([recipientId])
+  @@index([createdAt])
+  @@index([recipientId, createdAt])
+  @@index([recognitionId])
 }
 
 enum NominationType {
@@ -131,6 +147,8 @@ model NominationChallenge {
   updatedAt   DateTime      @updatedAt
   nominations Nomination[]
   Recognition Recognition[]
+
+  @@index([isActive])
 }
 
 model Nomination {
@@ -153,6 +171,9 @@ model Nomination {
   updatedAt DateTime         @updatedAt
 
   @@unique([submitterId, challengeId, monthKey], map: "uniq_submitter_challenge_month")
+  @@index([submitterId])
+  @@index([challengeId])
+  @@index([nomineeId])
 }
 
 enum RedemptionStatus {
@@ -211,6 +232,9 @@ model Redemption {
 
   // Optional: idempotency if you add a client-generated key
   idemKey String? @unique
+
+  @@index([userId])
+  @@index([catalogId])
 }
 
 model RecognitionComment {
@@ -228,6 +252,9 @@ model RecognitionComment {
   pointsBoosted Int     @default(0)
 
   createdAt DateTime @default(now())
+
+  @@index([recognitionId])
+  @@index([senderId])
 }
 
 model PasswordResetToken {
@@ -249,6 +276,8 @@ model Department {
   // ✅ All users belonging to this department
   users      User[]
   UserInvite UserInvite[]
+
+  @@index([name])
 }
 
 model RewardToolboxLink {

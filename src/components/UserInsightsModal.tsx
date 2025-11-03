@@ -18,6 +18,7 @@ export default function UserInsightsModal({ userId, onClose }: Props) {
       lastName?: string;
       email?: string;
       role?: string;
+      department?: string
     };
     points?: number;
     recentChallenges?: {
@@ -79,6 +80,7 @@ export default function UserInsightsModal({ userId, onClose }: Props) {
                 </h2>
                 <p className="text-gray-600 text-sm">{data?.user?.email}</p>
                 <p className="text-gray-600 text-sm">{data?.user?.role}</p>
+                 <p className="text-gray-600 text-sm">{data?.user?.department}</p>
               </div>
             </div>
 
