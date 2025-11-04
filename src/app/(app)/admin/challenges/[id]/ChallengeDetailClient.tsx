@@ -106,10 +106,17 @@ export default function ChallengeDetailClient({
               className="max-h-40 rounded mt-2"
             />
           )}
+          {challenge.qualification && (
+            <p className="text-sm text-gray-600 mt-2">
+              Qualifications: {challenge.qualification}
+            </p>
+          )}
+             {challenge.points && (
+            <p className="text-sm text-gray-600 my-2">
+              Points: {challenge.points}
+            </p>
+          )}
 
-          <p className="text-sm text-gray-600 mt-2">
-            {challenge.qualification}
-          </p>
           <p className="text-xs text-gray-500">
             {formatDateLocal(challenge.startDate)} –{" "}
             {formatDateLocal(challenge.endDate)}
@@ -156,13 +163,13 @@ export default function ChallengeDetailClient({
         />
       )}
       {/* === Submissions Section === */}
-      <section className="mt-6">
+      <section className="mt-6 ">
         <h2 className="text-xl font-semibold mb-2">Submissions</h2>
 
         {challenge.nominations.length === 0 ? (
           <p className="text-gray-500">No nominations submitted yet.</p>
         ) : (
-          <ul className="divide-y border rounded-xl">
+          <ul className="divide-y border rounded-xl overflow-y-scroll max-h-screen">
             {challenge.nominations.map((n) => (
               <li key={n.id} className="p-4 space-y-2">
                 <p className="flex items-center gap-2">
