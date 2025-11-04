@@ -262,40 +262,42 @@ export default function ChallengeDetailClient({
         )}
 
         {/* === Related Recognitions === */}
-        <section className="mt-10">
-          <h2 className="text-xl font-semibold mb-2">
-            🏆 Winner Announcements
-          </h2>
-          {relatedRecognitions.length === 0 ? (
-            <p className="text-gray-500">No winner announcements yet.</p>
-          ) : (
-            <ul className="divide-y border rounded-xl">
-              {relatedRecognitions.map((r) => (
-                <li key={r.id} className="p-4 space-y-2">
-                  <p>{r.message}</p>
-                  <p className="text-sm text-gray-600">
-                    Announced on {formatDateLocal(r.createdAt)}
-                  </p>
-                  <Link
-                    href={`/feed/appreciation/${r.id}`}
-                    className="flex items-center gap-2 hover:text-blue-600"
-                  >
-                    <ArrowRight size={18} />
-                    <span>View Annoucement</span>
-                  </Link>
-                  <ul className="ml-4 list-disc text-sm">
-                    {r.recipients.map((rec) => (
-                      <li key={rec.recipient.id}>
-                        {rec.recipient.firstName} {rec.recipient.lastName} —{" "}
-                        <b>{rec.points}</b> points
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+        {challenge.allowMultipleWinners ?? (
+          <section className="mt-10">
+            <h2 className="text-xl font-semibold mb-2">
+              🏆 Winner Announcements
+            </h2>
+            {relatedRecognitions.length === 0 ? (
+              <p className="text-gray-500">No winner announcements yet.</p>
+            ) : (
+              <ul className="divide-y border rounded-xl">
+                {relatedRecognitions.map((r) => (
+                  <li key={r.id} className="p-4 space-y-2">
+                    <p>{r.message}</p>
+                    <p className="text-sm text-gray-600">
+                      Announced on {formatDateLocal(r.createdAt)}
+                    </p>
+                    <Link
+                      href={`/feed/appreciation/${r.id}`}
+                      className="flex items-center gap-2 hover:text-blue-600"
+                    >
+                      <ArrowRight size={18} />
+                      <span>View Annoucement</span>
+                    </Link>
+                    <ul className="ml-4 list-disc text-sm">
+                      {r.recipients.map((rec) => (
+                        <li key={rec.recipient.id}>
+                          {rec.recipient.firstName} {rec.recipient.lastName} —{" "}
+                          <b>{rec.points}</b> points
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
 
         {/* User modal */}
         {selectedUserId && (

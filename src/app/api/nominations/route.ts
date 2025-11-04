@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { monthKeyFromDate } from "@/lib/nomination-constants";
 import { User } from "@/types/user";
 import { ChallengeRequirements } from "@/types/challenge";
+import { sendNewSubmissionEmail } from "@/lib/emailTemplates";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -65,6 +66,17 @@ export async function POST(req: NextRequest) {
       status: "PENDING", // always pending, admin reviews
     },
   });
+
+  try {
+    // Send email to HR
+    const hrEmail = process.env.HR_EMAIL ?? null;
+    if (hrEmail) {
+      await sendNewSubmissionEmail(hrEmail, challengeId);
+      console.error("Sending submission email", hrEmail);
+    }
+  } catch (err) {
+    console.error("❌ Error sending submission email:", err);
+  }
 
   return NextResponse.json(nomination);
 }

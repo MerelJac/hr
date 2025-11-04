@@ -9,14 +9,14 @@ import { User } from "@/types/user";
 export default async function ChallengeDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const session = await getServerSession(authOptions);
   const role = (session?.user as User)?.role;
   if (role !== "SUPER_ADMIN") return <div className="p-6">Forbidden</div>;
-
+  const { id } = await params;
   const challenge = await prisma.nominationChallenge.findUnique({
-    where: { id: params.id },
+    where: { id: id },
     include: {
       nominations: {
         include: {
@@ -33,7 +33,7 @@ export default async function ChallengeDetailPage({
   });
 
   const relatedRecognitions = await prisma.recognition.findMany({
-    where: { challengeId: params.id },
+    where: { challengeId: id },
     include: {
       recipients: {
         include: { recipient: true },
@@ -57,6 +57,7 @@ export default async function ChallengeDetailPage({
           nominations: challenge.nominations.map((nomination) => ({
             ...nomination,
             reason: nomination.reason === null ? undefined : nomination.reason,
+            screenshot: nomination.screenshot ?? undefined
           })),
         }}
         relatedRecognitions={relatedRecognitions}

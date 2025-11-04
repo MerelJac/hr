@@ -7,13 +7,6 @@ import { Rocket } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
-type NominationPayload = {
-  challengeId: string;
-  nomineeId?: string;
-  reason?: string;
-  screenshot?: File; // or string if you plan to send it as base64 / URL
-};
-
 export default function NominationModal({
   users,
   challenges = [],
@@ -30,7 +23,6 @@ export default function NominationModal({
   // form state
   const [nomineeId, setNomineeId] = useState("");
   const [reason, setReason] = useState("");
-  const [qualification, setQualification] = useState("");
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
 
   async function safeReadError(res: Response) {
