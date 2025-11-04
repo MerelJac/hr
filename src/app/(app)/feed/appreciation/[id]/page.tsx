@@ -7,10 +7,11 @@ import RecognitionList from "@/components/RecognitionList";
 export default async function AppreciationPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const recognition = await prisma.recognition.findUnique({
-    where: { id: params.id },
+    where: { id: id },
     include: {
       sender: true,
       recipients: { include: { recipient: true } },

@@ -25,6 +25,7 @@ export default async function DepartmentPage() {
             role: true,
             profileImage: true,
           },
+          where: { id: { not: process.env.SYSTEM_ADMIN_ID } }, // exclude system admin
         },
       },
       orderBy: { name: "asc" },
@@ -39,8 +40,7 @@ export default async function DepartmentPage() {
       <section className="p-6">
         {role === "SUPER_ADMIN" && (
           <AllDepartments departments={departmentsData} />
-        ) }
-        
+        )}
       </section>
     </main>
   );

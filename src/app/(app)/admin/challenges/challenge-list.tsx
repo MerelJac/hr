@@ -37,7 +37,7 @@ export default function ChallengeList({
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
 
     if (res.ok) location.reload();
@@ -232,7 +232,9 @@ export default function ChallengeList({
                   type="date"
                   name="endDate"
                   defaultValue={
-                    selected?.endDate ? new Date(selected.endDate).toISOString().split("T")[0] : ""
+                    selected?.endDate
+                      ? new Date(selected.endDate).toISOString().split("T")[0]
+                      : ""
                   }
                   className="border rounded px-3 py-2 flex-1"
                   required
@@ -268,7 +270,7 @@ export default function ChallengeList({
                       selected?.requirements?.requiresReason ?? false
                     }
                   />
-                  Requires Reason
+                  Requires Reason or Explaination
                 </label>
                 <label className="flex items-center gap-2">
                   <input
@@ -288,7 +290,13 @@ export default function ChallengeList({
                       selected ? selected.hideStatusFromSubmitter : true
                     }
                   />
-                  Hide Status From Submitter?
+                  <span className="flex flex-col items-start">
+                    Hide Status From Submitter?
+                    <small className="text-gray-500">
+                      Users won&apos;t see if they won or not, just that they
+                      submitted an answer. (ex: Employee of the Quarter)
+                    </small>
+                  </span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input
@@ -298,7 +306,14 @@ export default function ChallengeList({
                       selected ? selected.allowMultipleWinners : true
                     }
                   />
-                  Allow Multiple Winners?
+
+                  <span className="flex flex-col items-start">
+                    Allow Multiple Winners?
+                    <small className="text-gray-500">
+                      You can award multiple winners for the same challenge.
+                      (ex: Employee of the Quarter)
+                    </small>
+                  </span>
                 </label>
               </div>
 

@@ -25,6 +25,16 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const contentType = searchParams.get("contentType") || "image/png";
 
+  // ✅ Explicit MIME whitelist
+  const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+  if (!validTypes.includes(contentType)) {
+    console.error("Unsupported file type");
+    return NextResponse.json(
+      { error: `Unsupported file type: ${contentType}` },
+      { status: 400 }
+    );
+  }
+
   const ext = contentType.split("/")[1] || "png";
   const env = process.env.NODE_ENV === "production" ? "prod" : "dev";
   const key = `${env}/images/${userId}/${randomUUID()}.${ext}`;
@@ -32,7 +42,7 @@ export async function GET(req: NextRequest) {
   const command = new PutObjectCommand({
     Bucket: process.env.S3_BUCKET!,
     Key: key,
-    ContentType: contentType
+    ContentType: contentType,
   });
 
   const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 }); // valid 1 min

@@ -21,6 +21,12 @@ export default async function FeedPage() {
       isActive: true,
       startDate: { lte: new Date() },
       endDate: { gte: new Date() },
+      // ✅ exclude challenges already submitted by current user this month
+      nominations: {
+        none: {
+          submitterId: me.id,
+        },
+      },
     },
     orderBy: { createdAt: "desc" },
     include: {
@@ -54,7 +60,7 @@ export default async function FeedPage() {
       isActive: true,
     },
   });
-  
+
   const mobile = (
     <main className="min-h-screen">
       {/* Wrapper that switches between column on mobile and row on desktop */}

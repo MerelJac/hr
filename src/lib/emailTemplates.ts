@@ -272,3 +272,28 @@ export async function sendNewChallengeAlert(to: string, challenge: string) {
     text: `${challenge ?? "A new challenge"} has been posted! Time to submit your response!  Start sending some kudos! 🎉 Log in & click 'Challenges' to keep the appreciation going!`,
   });
 }
+
+
+/**
+ * Submission Email
+ */
+export async function sendNewSubmissionEmail(to: string, challengeId: string) {
+  return sendEmail({
+    to,
+    subject: "Someone submitted a response! 🎉",
+    html: `
+      <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+        <h2>Someone submitted a response to a challenge. 🎉</h2>
+        <p>
+          <a href="${process.env.APP_URL}/admin/challenges/${challengeId}" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+              Check it out!
+            </a>
+        </p>
+        <p>Log in & go to the Challenges page.</p>
+        <br/>
+        <p style="font-size: 0.9rem; color: #888;">— Call One, Inc Team</p>
+      </div>
+    `,
+    text: `Log in & go to the Challenges page.`,
+  });
+}

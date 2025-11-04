@@ -25,6 +25,7 @@ type ChallengeDetailProps = {
       id: string;
       status: string;
       reason?: string;
+      screenshot?: string;
       createdAt: string | Date;
       submitter?: {
         id: string;
@@ -63,7 +64,7 @@ export default function ChallengeDetailClient({
   const [isPending, startTransition] = useTransition();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openAnnounceModal, setOpenAnnounceModal] = useState(false);
-  console.error("console log challenge");
+
   async function updateStatus(
     id: string,
     status: "APPROVED" | "REJECTED" | "WON"
@@ -188,6 +189,16 @@ export default function ChallengeDetailClient({
                   </p>
                 )}
 
+                {n.screenshot && (
+                  <Image
+                    src={n.screenshot}
+                    alt="Screenshot for submission"
+                    width={80}
+                    height={80}
+                    priority
+                  />
+                )}
+
                 <p className="text-xs text-gray-500">
                   Submitted on {formatDateLocal(n.createdAt)}
                 </p>
@@ -251,40 +262,42 @@ export default function ChallengeDetailClient({
         )}
 
         {/* === Related Recognitions === */}
-        <section className="mt-10">
-          <h2 className="text-xl font-semibold mb-2">
-            🏆 Winner Announcements
-          </h2>
-          {relatedRecognitions.length === 0 ? (
-            <p className="text-gray-500">No winner announcements yet.</p>
-          ) : (
-            <ul className="divide-y border rounded-xl">
-              {relatedRecognitions.map((r) => (
-                <li key={r.id} className="p-4 space-y-2">
-                  <p>{r.message}</p>
-                  <p className="text-sm text-gray-600">
-                    Announced on {formatDateLocal(r.createdAt)}
-                  </p>
-                  <Link
-                    href={`/feed/appreciation/${r.id}`}
-                    className="flex items-center gap-2 hover:text-blue-600"
-                  >
-                    <ArrowRight size={18} />
-                    <span>View Annoucement</span>
-                  </Link>
-                  <ul className="ml-4 list-disc text-sm">
-                    {r.recipients.map((rec) => (
-                      <li key={rec.recipient.id}>
-                        {rec.recipient.firstName} {rec.recipient.lastName} —{" "}
-                        <b>{rec.points}</b> points
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+        {challenge.allowMultipleWinners ?? (
+          <section className="mt-10">
+            <h2 className="text-xl font-semibold mb-2">
+              🏆 Winner Announcements
+            </h2>
+            {relatedRecognitions.length === 0 ? (
+              <p className="text-gray-500">No winner announcements yet.</p>
+            ) : (
+              <ul className="divide-y border rounded-xl">
+                {relatedRecognitions.map((r) => (
+                  <li key={r.id} className="p-4 space-y-2">
+                    <p>{r.message}</p>
+                    <p className="text-sm text-gray-600">
+                      Announced on {formatDateLocal(r.createdAt)}
+                    </p>
+                    <Link
+                      href={`/feed/appreciation/${r.id}`}
+                      className="flex items-center gap-2 hover:text-blue-600"
+                    >
+                      <ArrowRight size={18} />
+                      <span>View Annoucement</span>
+                    </Link>
+                    <ul className="ml-4 list-disc text-sm">
+                      {r.recipients.map((rec) => (
+                        <li key={rec.recipient.id}>
+                          {rec.recipient.firstName} {rec.recipient.lastName} —{" "}
+                          <b>{rec.points}</b> points
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
 
         {/* User modal */}
         {selectedUserId && (

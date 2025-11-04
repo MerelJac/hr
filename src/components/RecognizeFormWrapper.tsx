@@ -33,7 +33,10 @@ export default async function RecognizeFormWrapper() {
             profileImage: true,
           },
           where: {
-            id: { not: process.env.SYSTEM_ADMIN_ID },
+            AND: [
+              { id: { not: process.env.SYSTEM_ADMIN_ID } }, // Not system user
+              { id: { not: me.id } }, // ✅ exclude current user
+            ],
           },
         },
       },
