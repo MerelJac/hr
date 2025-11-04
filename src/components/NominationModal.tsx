@@ -45,19 +45,28 @@ export default function NominationModal({
     if (!activeChallenge) return;
 
     let screenshot: string | undefined;
-    console.log('Screenshot:', screenshot)
+    console.log("Screenshot:", screenshot);
     // 1️⃣ Upload screenshot if needed
     if (activeChallenge.requirements?.requiresScreenshot && screenshotFile) {
       // get a presigned URL from your API
       const signRes = await fetch(
-        `/api/util/images?contentType=${encodeURIComponent(screenshotFile.type)}`
+        `/api/util/images?contentType=${encodeURIComponent(
+          screenshotFile.type
+        )}`
       );
 
       if (!signRes.ok) {
-        setMessage("Failed to get upload URL");
+        let errorMsg = "Failed to get upload URL";
+        try {
+          const errJson = await signRes.json();
+          errorMsg = errJson.error || errorMsg;
+        } catch {
+          // if it's not valid JSON
+          console.error('Something went wrong...', signRes)
+        }
+        setMessage(errorMsg);
         return;
       }
-
       const { uploadUrl, publicUrl } = await signRes.json();
 
       // upload directly to S3
@@ -214,7 +223,9 @@ export default function NominationModal({
                       type="file"
                       accept="image/*"
                       onChange={(e) =>
-                        setScreenshotFile(e.target.files ? e.target.files[0] : null)
+                        setScreenshotFile(
+                          e.target.files ? e.target.files[0] : null
+                        )
                       }
                     />
                   </div>

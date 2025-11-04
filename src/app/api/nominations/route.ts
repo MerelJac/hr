@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       { status: 409 }
     );
   }
-
+  
   // enforce challenge requirements
   const reqs = (challenge.requirements ?? {}) as ChallengeRequirements;
   if (reqs.requiresNominee && !nomineeId)
