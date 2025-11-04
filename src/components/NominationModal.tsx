@@ -30,7 +30,8 @@ export default function NominationModal({
   // form state
   const [nomineeId, setNomineeId] = useState("");
   const [reason, setReason] = useState("");
-  const [screenshot, setScreenshot] = useState<File | null>(null);
+  const [qualification, setQualification] = useState("");
+  const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
 
   async function safeReadError(res: Response) {
     try {
@@ -51,17 +52,45 @@ export default function NominationModal({
     e.preventDefault();
     if (!activeChallenge) return;
 
-    const body: NominationPayload = { challengeId: activeChallenge.id };
-    if (activeChallenge.requirements?.requiresNominee) {
-      body.nomineeId = nomineeId;
+    let screenshot: string | undefined;
+    console.log('Screenshot:', screenshot)
+    // 1️⃣ Upload screenshot if needed
+    if (activeChallenge.requirements?.requiresScreenshot && screenshotFile) {
+      // get a presigned URL from your API
+      const signRes = await fetch(
+        `/api/util/images?contentType=${encodeURIComponent(screenshotFile.type)}`
+      );
+
+      if (!signRes.ok) {
+        setMessage("Failed to get upload URL");
+        return;
+      }
+
+      const { uploadUrl, publicUrl } = await signRes.json();
+
+      // upload directly to S3
+      const uploadRes = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": screenshotFile.type },
+        body: screenshotFile,
+      });
+
+      if (!uploadRes.ok) {
+        setMessage("Failed to upload screenshot");
+        return;
+      }
+
+      screenshot = publicUrl;
     }
-    if (activeChallenge.requirements?.requiresReason) {
-      body.reason = reason;
-    }
-    if (activeChallenge.requirements?.requiresScreenshot) {
-      body.screenshot = screenshot || undefined;
-    }
-    
+
+    // 2️⃣ Now submit the nomination JSON
+    const body = {
+      challengeId: activeChallenge.id,
+      nomineeId,
+      reason,
+      screenshot,
+    };
+
     const res = await fetch("/api/nominations", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -193,7 +222,7 @@ export default function NominationModal({
                       type="file"
                       accept="image/*"
                       onChange={(e) =>
-                        setScreenshot(e.target.files ? e.target.files[0] : null)
+                        setScreenshotFile(e.target.files ? e.target.files[0] : null)
                       }
                     />
                   </div>

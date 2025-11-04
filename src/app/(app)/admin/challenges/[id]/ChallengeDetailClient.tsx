@@ -25,6 +25,7 @@ type ChallengeDetailProps = {
       id: string;
       status: string;
       reason?: string;
+      screenshot?: string;
       createdAt: string | Date;
       submitter?: {
         id: string;
@@ -63,7 +64,7 @@ export default function ChallengeDetailClient({
   const [isPending, startTransition] = useTransition();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openAnnounceModal, setOpenAnnounceModal] = useState(false);
-  console.error("console log challenge");
+
   async function updateStatus(
     id: string,
     status: "APPROVED" | "REJECTED" | "WON"
@@ -186,6 +187,16 @@ export default function ChallengeDetailClient({
                   <p>
                     <b>Reason:</b> {n.reason}
                   </p>
+                )}
+
+                {n.screenshot && (
+                  <Image
+                    src={n.screenshot}
+                    alt="Screenshot for submission"
+                    width={80}
+                    height={80}
+                    priority
+                  />
                 )}
 
                 <p className="text-xs text-gray-500">
