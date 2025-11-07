@@ -12,7 +12,8 @@ export default async function DepartmentPage() {
 
   let departmentsData: DepartmentWithUsers[] = []; // ✅ initialize as empty array
 
-  if (role === "SUPER_ADMIN") {
+  if (role === "SUPER_ADMIN" || role === "ADMIN") {
+    console.log("Fetching departments for role:", role);
     departmentsData = await prisma.department.findMany({
       include: {
         users: {
@@ -38,7 +39,7 @@ export default async function DepartmentPage() {
         <h1 className="text-2xl font-semibold">Departments</h1>
       </header>
       <section className="p-6">
-        {role === "SUPER_ADMIN" && (
+        {(role === "SUPER_ADMIN" || role === "ADMIN") && (
           <AllDepartments departments={departmentsData} />
         )}
       </section>

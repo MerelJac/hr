@@ -95,7 +95,22 @@ export default async function Sidebar() {
             </Link>
           </>
         )}
-        {role === "MANAGER" && (
+        {role === "ADMIN"  && (
+          <>
+            <small className="text-gray-400 uppercase text-xs mt-2">
+              Admin
+            </small>
+
+            <Link
+              href="/admin/department"
+              className="flex items-center gap-2 hover:text-blue-600"
+            >
+              <Laugh size={18} />
+              <span>Departments</span>
+            </Link>
+          </>
+        )}
+        {role === "MANAGER"  && (
           <>
             <small className="text-gray-400 uppercase text-xs mt-2">
               Admin
