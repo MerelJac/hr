@@ -151,7 +151,7 @@ export async function sendRedemptionEmail(to: string) {
 /**
  * Birthday email
  */
-export async function sendBirthdayEmail(to: string) {
+export async function sendBirthdayEmail(to: string, recognitionId: string) {
   return sendEmail({
     to,
     subject: "Happy Birthday 🎉",
@@ -160,7 +160,8 @@ export async function sendBirthdayEmail(to: string) {
         <h2>Happy Birthday! 🎉</h2>
         <p>You've been awarded some Ignite Appreciation to help celebrate your birthday.</p>
         <p>
-          <a href="${process.env.APP_URL}/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+        <a href="${process.env.APP_URL}/feed/appreciation/${recognitionId}" 
+         style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
               Check it out!
             </a>
         </p>
@@ -174,9 +175,46 @@ export async function sendBirthdayEmail(to: string) {
 }
 
 /**
+ * Birthday announcement email (to everyone else)
+ */
+export async function sendBirthdayAnnouncementEmail(
+  to: string,
+  birthdays: { name: string; recognitionId: string }[]
+) {
+  const links = birthdays
+    .map(
+      (b) =>
+        `<li>
+          🎉 <a href="${process.env.APP_URL}/feed/appreciation/${b.recognitionId}"
+            style="color:#ff6a00; text-decoration:none;">
+            ${b.name}'s Birthday Recognition
+          </a>
+        </li>`
+    )
+    .join("");
+
+  return sendEmail({
+    to,
+    subject: "🎉 Today’s Birthdays on Ignite!",
+    html: `
+      <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+        <h2>It’s Celebration Time! 🥳</h2>
+        <p>Help us wish a happy birthday to:</p>
+        <ul>${links}</ul>
+        <p>Head over to Ignite Appreciation and keep the love going!</p>
+        <br/>
+        <p style="font-size: 0.9rem; color: #888;">— Call One, Inc. Team</p>
+      </div>
+    `,
+    text: `Today’s birthdays:\n${birthdays
+      .map((b) => `${b.name}: ${process.env.APP_URL}/feed/appreciation/${b.recognitionId}`)
+      .join("\n")}`,
+  });
+}
+/**
  * Work Anniversary email
  */
-export async function sendWorkAnniversaryEmail(to: string) {
+export async function sendWorkAnniversaryEmail(to: string, recognitionId: string) {
   return sendEmail({
     to,
     subject: "Happy Work Anniversary 🎉",
@@ -185,7 +223,7 @@ export async function sendWorkAnniversaryEmail(to: string) {
         <h2>Happy Work Anniversary! 🎉</h2>
         <p>Thank you for all your time spent with Call One, Inc. Here are some points as a token of our appreciation!</p>
         <p>
-          <a href="${process.env.APP_URL}/feed" style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
+           <a href="${process.env.APP_URL}/feed/appreciation/${recognitionId}"  style="background:#ff6a00; color:#fff; padding:10px 18px; border-radius:6px; text-decoration:none;">
               Check it out!
             </a>
         </p>
@@ -197,6 +235,49 @@ export async function sendWorkAnniversaryEmail(to: string) {
     text: "Happy Work Anniversary! Thank you for all your time spent with Call One, Inc. Here are some points as a token of our appreciation! Log in to view the details!",
   });
 }
+
+
+/**
+ * Anniversary announcement email (to everyone else)
+ */
+export async function sendAnniversaryAnnouncementEmail(
+  to: string,
+  anniversaries: { name: string; recognitionId: string }[]
+) {
+  const links = anniversaries
+    .map(
+      (a) => `
+        <li>
+          🎉 <a href="${process.env.APP_URL}/feed/appreciation/${a.recognitionId}"
+            style="color:#ff6a00; text-decoration:none;">
+            ${a.name}'s Work Anniversary Recognition
+          </a>
+        </li>`
+    )
+    .join("");
+
+  return sendEmail({
+    to,
+    subject: "🎉 Today’s Anniversaries on Ignite!",
+    html: `
+      <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+        <h2>It’s Celebration Time! 🥳</h2>
+        <p>Help us congratulate our team members celebrating work anniversaries today:</p>
+        <ul>${links}</ul>
+        <p>Head over to Ignite Appreciation and show them some love!</p>
+        <br/>
+        <p style="font-size: 0.9rem; color: #888;">— Call One, Inc. Team</p>
+      </div>
+    `,
+    text: `Today’s anniversaries:\n${anniversaries
+      .map(
+        (a) =>
+          `${a.name}: ${process.env.APP_URL}/feed/appreciation/${a.recognitionId}`
+      )
+      .join("\n")}`,
+  });
+}
+
 
 /**
  * Monthly Points email

@@ -1,7 +1,7 @@
 // src/scripts/grantBirthdayPoints.ts
 // Run with: npx tsx src/scripts/grantBirthdayPoints.ts
 
-import { sendBirthdayEmail } from "@/lib/emailTemplates";
+import { sendBirthdayAnnouncementEmail, sendBirthdayEmail } from "@/lib/emailTemplates";
 import { prisma } from "@/lib/prisma";
 
 export async function grantBirthdayPoints() {
@@ -35,12 +35,14 @@ export async function grantBirthdayPoints() {
     return;
   }
 
+  const birthdays: Record<string, string> = {};
+
   for (const u of matchingUsers) {
     // Create recognition for each employee
-    await prisma.recognition.create({
+    const recognition = await prisma.recognition.create({
       data: {
-        senderId: senderId,
-        message: `Happy Birthday! 🎉 `,
+        senderId,
+        message: `Happy Birthday! 🎉`,
         recipients: {
           create: {
             recipientId: u.id,
@@ -49,10 +51,38 @@ export async function grantBirthdayPoints() {
         },
       },
     });
+
+    // Store recognition ID by user ID or name
+    birthdays[u.id] = recognition.id;
   }
 
   // Send one email to all birthday users (parallel)
-  await Promise.all(matchingUsers.filter((u) => u.emailNotifications).map((u) => sendBirthdayEmail(u.email)));
+  await Promise.all(
+    matchingUsers
+      .filter((u) => u.emailNotifications)
+      .map((u) => sendBirthdayEmail(u.email, birthdays[u.id]))
+  );
+
+  // Now notify everyone else in the system about the birthdays
+  const allUsers = await prisma.user.findMany({
+    where: { emailNotifications: true },
+  });
+
+  const nonBirthdayUsers = allUsers.filter(
+    (u) => !matchingUsers.some((b) => b.id === u.id)
+  );
+
+  await Promise.all(
+    nonBirthdayUsers.map((u) =>
+      sendBirthdayAnnouncementEmail(
+        u.email,
+        matchingUsers.map((b) => ({
+          name: b.firstName ?? "Team Member",
+          recognitionId: birthdays[b.id],
+        }))
+      )
+    )
+  );
 
   // Update all birthday users
   const updates = await Promise.all(
