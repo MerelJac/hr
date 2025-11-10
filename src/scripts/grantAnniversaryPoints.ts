@@ -1,12 +1,15 @@
 // src/scripts/grantAnniversaryPoints.ts
 // Run with: npx tsx src/scripts/grantAnniversaryPoints.ts
 
-import { sendWorkAnniversaryEmail } from "@/lib/emailTemplates";
+import {
+  sendAnniversaryAnnouncementEmail,
+  sendWorkAnniversaryEmail,
+} from "@/lib/emailTemplates";
 import { prisma } from "@/lib/prisma";
 
 export async function grantAnniversaryPoints() {
   const today = new Date();
-  const month = today.getMonth() + 1; // JS months are 0–11
+  const month = today.getMonth() + 1;
   const day = today.getDate();
 
   // Find employees with anniversaries
@@ -14,6 +17,7 @@ export async function grantAnniversaryPoints() {
     where: { workAnniversary: { not: null } },
   });
 
+  // Match anniversaries for today
   const matchingUsers = anniversaryUsers.filter((u) => {
     if (!u.workAnniversary) return false;
     const ann = new Date(u.workAnniversary);
@@ -21,25 +25,27 @@ export async function grantAnniversaryPoints() {
   });
 
   if (matchingUsers.length === 0) {
-    console.log("🎂 No anniversaries today.");
+    console.log("🎉 No anniversaries today.");
     return;
   }
+
+  const senderId = process.env.SYSTEM_ADMIN_ID;
+  if (!senderId) {
+    console.log("❌ No System Admin ID to post with.");
+    return;
+  }
+
+  const anniversaries: Record<string, string> = {};
 
   for (const u of matchingUsers) {
     const years =
       today.getFullYear() - new Date(u.workAnniversary!).getFullYear();
 
-    const senderId = process.env.SYSTEM_ADMIN_ID;
-
-    if (!senderId) {
-      console.log("No System Admin Id to post with.");
-      return;
-    }
-    // Create recognition for each employee
-    await prisma.recognition.create({
+    // Create recognition post
+    const recognition = await prisma.recognition.create({
       data: {
-        senderId: senderId, // must be a valid User.id
-        message: `Happy Work Anniversary! 🎉 `,
+        senderId,
+        message: `Happy ${years} Year Work Anniversary! 🎉`,
         recipients: {
           create: {
             recipientId: u.id,
@@ -49,7 +55,10 @@ export async function grantAnniversaryPoints() {
       },
     });
 
-    // Increment their balance
+    // Save recognition ID for announcements
+    anniversaries[u.id] = recognition.id;
+
+    // Increment balance
     await prisma.user.update({
       where: { id: u.id },
       data: { pointsBalance: { increment: 500 } },
@@ -60,14 +69,33 @@ export async function grantAnniversaryPoints() {
     );
   }
 
-  // Send one email to all anniversary users (parallel)
+  // Send personalized work anniversary emails
   await Promise.all(
     matchingUsers
       .filter((u) => u.emailNotifications)
-      .map((u) => sendWorkAnniversaryEmail(u.email))
+      .map((u) => sendWorkAnniversaryEmail(u.email, anniversaries[u.id]))
   );
 
-  console.log(`✅ Finished processing ${matchingUsers.length} anniversaries`);
-}
+  // Notify everyone else
+  const allUsers = await prisma.user.findMany({
+    where: { emailNotifications: true },
+  });
 
-// grantAnniversaryPoints().finally(() => prisma.$disconnect());
+  const nonAnniversaryUsers = allUsers.filter(
+    (u) => !matchingUsers.some((b) => b.id === u.id)
+  );
+
+  await Promise.all(
+    nonAnniversaryUsers.map((u) =>
+      sendAnniversaryAnnouncementEmail(
+        u.email,
+        matchingUsers.map((b) => ({
+          name: b.firstName ?? "Team Member",
+          recognitionId: anniversaries[b.id],
+        }))
+      )
+    )
+  );
+
+  console.log(`✅ Finished processing ${matchingUsers.length} anniversaries.`);
+}
