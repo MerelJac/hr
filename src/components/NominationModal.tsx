@@ -112,17 +112,17 @@ export default function NominationModal({
         onClick={() => setOpen(true)}
         className="rounded-lg border-2 border-white bg-red-600 text-white px-3 py-2 flex items-center gap-2 justify-center"
         disabled={challenges.length === 0}
-        title={challenges.length === 0 ? "No active challenges" : undefined}
+        title={challenges.length === 0 ? "No active challenges or nominations" : undefined}
       >
         <Rocket size={18} />
-        Challenges
+        Challenges & Nominations
       </button>
 
       {open && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-2xl space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Active Challenges</h2>
+              <h2 className="text-xl font-semibold">Active Challenges & Nominations</h2>
               {message && (
                 <div className="text-red-600 text-sm mr-4">{message}</div>
               )}
