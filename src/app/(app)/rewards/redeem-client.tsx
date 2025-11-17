@@ -21,7 +21,7 @@ export default function RedeemClient({
   // Default tab → use first category (likely "Gift Card")
   const [activeTab, setActiveTab] = useState<string>(categories[0]?.id ?? "");
   const [selectedReward, setSelectedReward] = useState<Reward | null>(null);
-  const [amount, setAmount] = useState(10);
+  const [amount, setAmount] = useState(25);
   const [email, setEmail] = useState(defaultEmail);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -37,7 +37,7 @@ export default function RedeemClient({
   const canRedeem =
     currentCategory?.name === "Gift Card"
       ? selectedReward &&
-        amount >= 10 &&
+        amount >= 25 &&
         amount % 5 === 0 &&
         pointsCost <= balance
       : selectedReward && pointsCost > 0 && pointsCost <= balance;
@@ -158,10 +158,10 @@ export default function RedeemClient({
                 </span>
                 <input
                   type="number"
-                  min={10}
+                  min={25}
                   step={5}
                   value={amount}
-                  onChange={(e) => setAmount(parseInt(e.target.value) || 10)}
+                  onChange={(e) => setAmount(parseInt(e.target.value) || 25)}
                   className="border rounded-lg pl-6 pr-3 py-2 w-full bg-white"
                 />
               </div>
