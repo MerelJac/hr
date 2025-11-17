@@ -62,7 +62,7 @@ export default function NominationModal({
           errorMsg = errJson.error || errorMsg;
         } catch {
           // if it's not valid JSON
-          console.error('Something went wrong...', signRes)
+          console.error("Something went wrong...", signRes);
         }
         setMessage(errorMsg);
         return;
@@ -111,8 +111,11 @@ export default function NominationModal({
       <button
         onClick={() => setOpen(true)}
         className="rounded-lg border-2 border-white bg-red-600 text-white px-3 py-2 flex items-center gap-2 justify-center"
-        disabled={challenges.length === 0}
-        title={challenges.length === 0 ? "No active challenges or nominations" : undefined}
+        title={
+          challenges.length === 0
+            ? "No active challenges or nominations"
+            : undefined
+        }
       >
         <Rocket size={18} />
         Challenges & Nominations
@@ -122,7 +125,9 @@ export default function NominationModal({
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-2xl space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Active Challenges & Nominations</h2>
+              <h2 className="text-xl font-semibold">
+                Active Challenges & Nominations
+              </h2>
               {message && (
                 <div className="text-red-600 text-sm mr-4">{message}</div>
               )}
@@ -133,31 +138,39 @@ export default function NominationModal({
 
             {/* List of challenges */}
             {!activeChallenge ? (
-              <ul className="space-y-4">
-                {challenges.map((c) => (
-                  <li
-                    key={c.id}
-                    className="border rounded-lg p-4 bg-gray-50 space-y-2"
-                  >
-                    <h3 className="font-semibold">{c.title}</h3>
-                    <p className="text-sm text-gray-600">{c.description}</p>
-                    <p className="text-xs text-gray-500">
-                      Eligible: {formatDateLocal(c.startDate)} –{" "}
-                      {formatDateLocal(c.endDate)}
-                    </p>
-                    <p className="text-xs text-gray-700">Points: {c.points}</p>
-                    {c.qualification && (
-                      <p className="text-sm italic">{c.qualification}</p>
-                    )}
-                    <button
-                      onClick={() => setActiveChallenge(c)}
-                      className="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm"
+              challenges.length === 0 ? (
+                <div className="text-center text-gray-600 py-10 text-lg">
+                 🚀 No active challenges or nominations! 
+                </div>
+              ) : (
+                <ul className="space-y-4">
+                  {challenges.map((c) => (
+                    <li
+                      key={c.id}
+                      className="border rounded-lg p-4 bg-gray-50 space-y-2"
                     >
-                      Submit
-                    </button>
-                  </li>
-                ))}
-              </ul>
+                      <h3 className="font-semibold">{c.title}</h3>
+                      <p className="text-sm text-gray-600">{c.description}</p>
+                      <p className="text-xs text-gray-500">
+                        Eligible: {formatDateLocal(c.startDate)} –{" "}
+                        {formatDateLocal(c.endDate)}
+                      </p>
+                      <p className="text-xs text-gray-700">
+                        Points: {c.points}
+                      </p>
+                      {c.qualification && (
+                        <p className="text-sm italic">{c.qualification}</p>
+                      )}
+                      <button
+                        onClick={() => setActiveChallenge(c)}
+                        className="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm"
+                      >
+                        Submit
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )
             ) : (
               // Challenge submission form
               <form className="space-y-4" onSubmit={submitChallenge}>
