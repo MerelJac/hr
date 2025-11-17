@@ -65,21 +65,21 @@ export default function RedeemClient({
 
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
-      setMessage(j.error || "Failed to redeem")
+      setMessage(j.error || "Failed to redeem");
       return;
     }
-    setMessage("✅ Redemption submitted! Admin will process it.")
+    setMessage("✅ Redemption submitted! Admin will process it.");
     location.reload();
   }
 
   return (
     <section className="space-y-6 p-6">
-        {/* Message */}
-  {message && (
-    <div className="rounded-lg border border-yellow-300 bg-yellow-100 text-yellow-800 p-3 text-sm">
-      {message}
-    </div>
-  )}
+      {/* Message */}
+      {message && (
+        <div className="rounded-lg border border-yellow-300 bg-yellow-100 text-yellow-800 p-3 text-sm">
+          {message}
+        </div>
+      )}
       {/* Tabs */}
       <div className="flex border-b mb-4">
         {categories.map((cat) => (
@@ -104,35 +104,46 @@ export default function RedeemClient({
       {currentCategory && (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {currentCategory.rewards
-              .filter((r) => r.isActive)
-              .map((r) => (
-                <button
-                  key={r.id}
-                  onClick={() => setSelectedReward(r)}
-                  className={`rounded-lg p-4 border-2 flex flex-col items-center justify-center max-w-sm ${
-                    selectedReward?.id === r.id
-                      ? "ring-2 ring-blue-500 bg-blue-100"
-                      : "bg-white"
-                  }`}
-                >
-                  <span className="font-semibold pb-2">{r.label}</span>
-                  {r.imageUrl && (
-                    <Image
-                      src={r.imageUrl}
-                      alt={r.label}
-                      width={150}
-                      height={150}
-                    />
-                  )}
-                  <span className="text-sm text-gray-600 py-2">
-                    {(currentCategory.name === "Gift Card" && r.pointsCost == 0)
-                      ? "Flexible amount"
-                      : `${r.pointsCost} pts`}
-                  </span>
-                  <p className="bg-red-500 text-white px-4 py-2 rounded min-w-[80%]">Select Reward</p>
-                </button>
-              ))}
+            {currentCategory.rewards.filter((r) => r.isActive).length === 0 ? (
+              <div className="col-span-2 md:col-span-4 text-center text-gray-500 py-6">
+                Coming soon!
+              </div>
+            ) : (
+              currentCategory.rewards
+                .filter((r) => r.isActive)
+                .map((r) => (
+                  <button
+                    key={r.id}
+                    onClick={() => setSelectedReward(r)}
+                    className={`rounded-lg p-4 border-2 flex flex-col items-center justify-center max-w-sm ${
+                      selectedReward?.id === r.id
+                        ? "ring-2 ring-blue-500 bg-blue-100"
+                        : "bg-white"
+                    }`}
+                  >
+                    <span className="font-semibold pb-2">{r.label}</span>
+
+                    {r.imageUrl && (
+                      <Image
+                        src={r.imageUrl}
+                        alt={r.label}
+                        width={150}
+                        height={150}
+                      />
+                    )}
+
+                    <span className="text-sm text-gray-600 py-2">
+                      {currentCategory.name === "Gift Card" && r.pointsCost == 0
+                        ? "Flexible amount"
+                        : `${r.pointsCost} pts`}
+                    </span>
+
+                    <p className="bg-red-500 text-white px-4 py-2 rounded min-w-[80%]">
+                      Select Reward
+                    </p>
+                  </button>
+                ))
+            )}
           </div>
 
           {/* Amount input only for Gift Cards */}
