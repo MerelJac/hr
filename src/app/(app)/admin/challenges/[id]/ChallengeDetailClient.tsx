@@ -100,8 +100,8 @@ export default function ChallengeDetailClient({
             <Image
               src={challenge.gifUrl}
               alt="Challenge GIF"
-              width={150}
-              height={150}
+              width={200}
+              height={200}
               unoptimized
               className="max-h-40 rounded mt-2"
             />
