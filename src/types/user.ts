@@ -17,6 +17,7 @@ export type User = {
   emailNotifications?: boolean,
   isActive: boolean;
   submittedNominations?: Nomination[];
+  pointsBalance?: number;
 };
 
 export type LightUser = {

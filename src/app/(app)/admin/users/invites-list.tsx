@@ -28,7 +28,7 @@ export default function InvitesList({ invites }: { invites: Invite[] }) {
           }
         >
           <Send size={16} />
-          Resent invite to all
+          Resend invite to all
         </button>
       </span>
 
