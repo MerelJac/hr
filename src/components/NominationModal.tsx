@@ -140,7 +140,7 @@ export default function NominationModal({
             {!activeChallenge ? (
               challenges.length === 0 ? (
                 <div className="text-center text-gray-600 py-10 text-lg">
-                 🚀 No active challenges or nominations! 
+                  🚀 No active challenges or nominations!
                 </div>
               ) : (
                 <ul className="space-y-4">
@@ -158,6 +158,16 @@ export default function NominationModal({
                       <p className="text-xs text-gray-700">
                         Points: {c.points}
                       </p>
+                      {c.gifUrl && (
+                        <Image
+                          src={c.gifUrl}
+                          alt="Challenge GIF"
+                          width={200}
+                          height={200}
+                          unoptimized
+                          className="max-h-40 rounded mt-2"
+                        />
+                      )}
                       {c.qualification && (
                         <p className="text-sm italic">{c.qualification}</p>
                       )}
