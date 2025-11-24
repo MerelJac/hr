@@ -52,7 +52,15 @@ export async function PATCH(
   if (body.workAnniversary)
     data.workAnniversary = new Date(body.workAnniversary);
   if (body.isActive !== undefined) data.isActive = body.isActive;
-
+  if (body.pointsBalance !== undefined) {
+    if (typeof body.pointsBalance !== "number" || body.pointsBalance < 0) {
+      return NextResponse.json(
+        { error: "Invalid pointsBalance" },
+        { status: 400 }
+      );
+    }
+    data.pointsBalance = body.pointsBalance;
+  }
   if (Object.keys(data).length === 0) {
     return NextResponse.json({ error: "No changes provided" }, { status: 400 });
   }
