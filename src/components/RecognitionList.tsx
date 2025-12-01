@@ -129,6 +129,7 @@ export default function RecognitionList({ recs, users, user }: Props) {
             recognitionId={r.id}
             users={users}
             defaultRecipientId={r.recipients[0]?.recipient?.id}
+            user={user}
           />
         </React.Fragment>
       ))}

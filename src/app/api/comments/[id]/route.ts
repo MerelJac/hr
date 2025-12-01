@@ -20,6 +20,6 @@ export async function DELETE(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  await prisma.recognition.delete({ where: { id } });
+  await prisma.recognitionComment.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }
