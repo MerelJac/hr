@@ -5,7 +5,7 @@ import Image from "next/image";
 import CommentList from "@/components/CommentList";
 import { User } from "@/types/user";
 import { Recognition } from "@/types/recognition";
-import { EllipsisVertical, EllipsisVerticalIcon } from "lucide-react";
+import { EllipsisVerticalIcon } from "lucide-react";
 
 type Props = {
   recs: Recognition[];
@@ -27,7 +27,7 @@ export default function RecognitionList({ recs, users, user }: Props) {
 
   async function deleteRecognition(id: string) {
     setDeleteText("Deleting...");
-    const res = await fetch(`/api/recognitions/${encodeURIComponent(id)}`, {
+    const res = await fetch(`/api/recognitions/${encodeURIComponent(id)}?senderId=${user.id}`, {
       method: "DELETE",
     });
     if (res.ok) location.reload();
@@ -66,7 +66,7 @@ export default function RecognitionList({ recs, users, user }: Props) {
                 <span className="text-xs sm:text-sm px-3 py-1 bg-green text-white rounded-lg font-semibold">
                   +{r.recipients.reduce((a, b) => a + b.points, 0)} pts
                 </span>
-                {user.role === "SUPER_ADMIN" && (
+                {(user.role === "SUPER_ADMIN" || user.id === r.sender.id) && (
                   <div className="relative">
                     <button onClick={() => toggleDropdown(r.id)}>
                       <EllipsisVerticalIcon size={12} />

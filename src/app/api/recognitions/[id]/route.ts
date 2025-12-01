@@ -6,16 +6,20 @@ import { User } from "@/types/user";
 
 // delete route
 export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  req: NextRequest,
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await params;
+  const senderId = req.nextUrl.searchParams.get("senderId");
+  const id = params.id;
+
   const session = await getServerSession(authOptions);
-  if ((session?.user as User)?.role !== "SUPER_ADMIN") {
+  const loggedInUser = session?.user as User;
+
+  // SUPER_ADMIN OR original sender
+  if (loggedInUser.role !== "SUPER_ADMIN" && loggedInUser.id !== senderId) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   await prisma.recognition.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }
-

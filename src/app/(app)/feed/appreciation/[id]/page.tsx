@@ -3,12 +3,19 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import RecognitionList from "@/components/RecognitionList";
+import { getServerSession } from "next-auth";
+import { User } from "@prisma/client";
+import { authOptions } from "@/lib/auth";
 
 export default async function AppreciationPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+    const session = await getServerSession(authOptions);
+    if (!session) return <div className="p-6">Please sign in.</div>;
+    const me = session.user as User;
+
   const { id } = await params;
   const recognition = await prisma.recognition.findUnique({
     where: { id: id },
@@ -40,7 +47,7 @@ export default async function AppreciationPage({
       </Link>
 
       {/* ✅ Reuse RecognitionList here with just one recognition */}
-      <RecognitionList recs={[recognition]} users={users} />
+      <RecognitionList recs={[recognition]} users={users} user={me} />
     </main>
   );
 }
