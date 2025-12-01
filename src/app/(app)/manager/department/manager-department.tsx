@@ -1,5 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import ManagerDepartmentsClient from "./manager-client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { User } from "@prisma/client";
 
 type ManagerDepartmentsProps = {
   manager: {
@@ -21,6 +24,10 @@ export default async function ManagerDepartments({ manager }: ManagerDepartments
   if (!manager?.department) {
     return <p>You are not assigned to a department.</p>;
   }
+
+    const session = await getServerSession(authOptions);
+    if (!session) return <div className="p-6">Please sign in.</div>;
+    const me = session.user as User;
 
   const userIds = manager.department.users.map((u) => u.id);
 
@@ -52,6 +59,7 @@ export default async function ManagerDepartments({ manager }: ManagerDepartments
       manager={manager}
       recs={recs}
       users={users}
+      me={me}
     />
   );
 }

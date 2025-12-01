@@ -23,13 +23,16 @@ type ManagerDepartmentsClientProps = {
   } | null;
   recs: Recognition[];
   users: User[];
+  me: User;
 };
 
 export default function ManagerDepartmentsClient({
   manager,
   recs,
   users,
+  me
 }: ManagerDepartmentsClientProps) {
+
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<"feed" | "team">("feed");
@@ -64,7 +67,7 @@ export default function ManagerDepartmentsClient({
         </button>
       </div>
       {/* Feed tab */}
-      {activeTab === "feed" && <RecognitionList recs={recs} users={users} />}
+      {activeTab === "feed" && <RecognitionList recs={recs} users={users} user={me}  />}
 
       {/* Team tab */}
       {activeTab === "team" && (

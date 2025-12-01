@@ -54,6 +54,7 @@ export default async function FeedPage() {
     },
   });
 
+  // const activeUser = await prisma.
   const users = await prisma.user.findMany({
     where: {
       NOT: [{ id: me.id }, { id: process.env.SYSTEM_ADMIN_ID }],
@@ -70,7 +71,11 @@ export default async function FeedPage() {
           <RecognizeFormWrapper />
 
           <ul className="space-y-6 mt-4">
-            <RecognitionList recs={recs} users={users} />
+            <RecognitionList
+              recs={recs}
+              users={users}
+              user={me}
+            />
           </ul>
         </div>
 
@@ -94,7 +99,11 @@ export default async function FeedPage() {
         <div className="min-w-[70%]">
           <RecognizeFormWrapper />
           <ul className="space-y-6 mt-4">
-            <RecognitionList recs={recs} users={users} />
+            <RecognitionList
+              recs={recs}
+              users={users}
+              user={me}
+            />
           </ul>
         </div>
         <div id="actionItems2" className="flex flex-col gap-4 overflow-hidden ">
