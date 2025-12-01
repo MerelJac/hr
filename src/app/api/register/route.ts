@@ -15,7 +15,10 @@ export async function POST(req: NextRequest) {
       where: { email: { equals: normalizedEmail, mode: "insensitive" } },
     });
     if (!invite || invite.consumedAt) {
-      return NextResponse.json({ error: "No valid invite found for this email." }, { status: 403 });
+      return NextResponse.json(
+        { error: "No valid invite found for this email." },
+        { status: 403 }
+      );
     }
 
     // Check if email already exists
@@ -23,17 +26,24 @@ export async function POST(req: NextRequest) {
       where: { email: { equals: normalizedEmail, mode: "insensitive" } },
     });
     if (existing)
-      return NextResponse.json({ error: "Email already registered" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Email already registered" },
+        { status: 400 }
+      );
 
     const passwordHash = await hash(password, 12);
 
     const user = await prisma.user.create({
       data: {
-        firstName,
-        lastName,
+        firstName: invite.firstName ?? firstName,
+        lastName: invite.lastName ?? lastName,
+        preferredName: invite.preferredName,
         email: normalizedEmail,
         passwordHash,
         role: invite.role, // from invite
+        birthday: invite.birthday,
+        workAnniversary: invite.workAnniversary,
+        departmentId: invite.departmentId,
       },
     });
 
