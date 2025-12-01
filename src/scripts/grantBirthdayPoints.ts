@@ -46,7 +46,7 @@ export async function grantBirthdayPoints() {
         recipients: {
           create: {
             recipientId: u.id,
-            points: 500,
+            points: 200,
           },
         },
       },
