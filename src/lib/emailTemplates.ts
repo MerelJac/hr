@@ -26,7 +26,7 @@ async function sendEmail({
 }) {
   const params = {
     Source: process.env.SES_FROM_ADDRESS!,
-    Destination: { ToAddresses: [to], BccAddresses: ["mjacobs@calloneonline.com"],},
+    Destination: { ToAddresses: [to] },
     Message: {
       Subject: { Data: subject },
       Body: {
