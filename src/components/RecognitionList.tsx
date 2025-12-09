@@ -41,7 +41,7 @@ export default function RecognitionList({ recs, users, user }: Props) {
           <li className="bg-white rounded-t-xl p-4 border border-gray-100 mb-0">
             {/* 🧑‍🤝‍🧑 Recipients + points */}
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 max-w-2xl">
                 {r.recipients.map((rr, i) => (
                   <div key={rr.id} className="flex items-center gap-2">
                     <Image
@@ -101,7 +101,7 @@ export default function RecognitionList({ recs, users, user }: Props) {
             </div>
 
             {/* 📬 Message */}
-            <p className="mt-3 text-gray-800 text-sm sm:text-base leading-relaxed">
+            <p className="mt-3 text-gray-800 text-sm sm:text-base leading-relaxed max-w-3xl">
               {r.message}
               {r.gifUrl && (
                 <Image
