@@ -71,7 +71,7 @@ export default function RecognitionsForUsers({
         >
           {/* Header: recipients */}
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 max-w-2xl">
               {r.recipients.map((rr, i) => (
                 <div key={rr.id} className="flex items-center gap-2">
                   <Image
@@ -112,7 +112,7 @@ export default function RecognitionsForUsers({
           </div>
 
           {/* Message */}
-          <p className="mt-3 text-gray-800 text-sm sm:text-base leading-relaxed">
+          <p className="mt-3 text-gray-800 text-sm sm:text-base leading-relaxed max-w-3xl">
             {r.message}
             {r.gifUrl && (
               <Image

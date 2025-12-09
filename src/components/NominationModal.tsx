@@ -214,8 +214,9 @@ export default function NominationModal({
                       <option value="">Select a nominee</option>
                       {users.map((u) => (
                         <option key={u.id} value={u.id}>
-                          {u.preferredName ??
-                            `${u.firstName ?? ""} ${u.lastName ?? ""}`}
+                          {u.preferredName
+                            ? `${u.preferredName} ${u.lastName ?? ""}`
+                            : `${u.firstName ?? ""} ${u.lastName ?? ""}`}
                         </option>
                       ))}
                     </select>
