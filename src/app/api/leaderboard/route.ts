@@ -101,21 +101,52 @@ export async function GET(req: NextRequest) {
   }));
 
   // 2. Most points given
-  const givenRaw = await prisma.recognitionRecipient.groupBy({
-    by: ["recipientId"], // ⚠️ may want recognition.senderId instead
-    _sum: { points: true },
+  const topSenders = await prisma.recognition.groupBy({
+    by: ["senderId"],
+    _count: {
+      senderId: true,
+    },
     where: {
-      recognition: {
-        createdAt: { gte: start, lte: end },
-        senderId: { not: process.env.SYSTEM_ADMIN_ID },
+      createdAt: { gte: start, lte: end },
+      senderId: { not: process.env.SYSTEM_ADMIN_ID },
+    },
+    orderBy: {
+      _count: {
+        senderId: "desc",
       },
     },
-    orderBy: { _sum: { points: "desc" } },
     take: 10,
   });
 
+  const pointsBySender = await prisma.recognitionRecipient.groupBy({
+    by: ["recognitionId"],
+    _sum: {
+      points: true,
+    },
+    where: {
+      recognition: {
+        senderId: { in: topSenders.map((s) => s.senderId) },
+        createdAt: { gte: start, lte: end },
+      },
+    },
+  });
+
+  const senderPoints: Record<string, number> = {};
+
+  for (const row of pointsBySender) {
+    const recognition = await prisma.recognition.findUnique({
+      where: { id: row.recognitionId },
+      select: { senderId: true },
+    });
+
+    if (!recognition) continue;
+
+    senderPoints[recognition.senderId] =
+      (senderPoints[recognition.senderId] ?? 0) + (row._sum.points ?? 0);
+  }
+
   const givenUsers = await prisma.user.findMany({
-    where: { id: { in: givenRaw.map((r) => r.recipientId) } },
+    where: { id: { in: Object.keys(senderPoints) } },
     select: {
       id: true,
       firstName: true,
@@ -124,9 +155,9 @@ export async function GET(req: NextRequest) {
     },
   });
 
-  const given = givenRaw.map((r) => ({
-    user: givenUsers.find((u) => u.id === r.recipientId) || null,
-    points: r._sum.points || 0,
+  const given = topSenders.map((s) => ({
+    user: givenUsers.find((u) => u.id === s.senderId) || null,
+    points: senderPoints[s.senderId] ?? 0,
   }));
 
   // 3. Most shoutouts given
