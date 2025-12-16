@@ -143,7 +143,7 @@ export default function NominationModal({
                   🚀 No active challenges or nominations!
                 </div>
               ) : (
-                <ul className="space-y-4 overflow-y-scroll max-h-sm">
+                <ul className="space-y-4">
                   {challenges.map((c) => (
                     <li
                       key={c.id}
