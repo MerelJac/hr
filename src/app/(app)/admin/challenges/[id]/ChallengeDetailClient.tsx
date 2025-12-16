@@ -87,7 +87,7 @@ export default function ChallengeDetailClient({
     <div>
       {/* === Challenge Overview === */}
       <div className="flex flex-row justify-between">
-        <div className="flex flex-col">
+        <div className="flex flex-col max-w-[50%]">
           <h1 className="text-2xl font-semibold">{challenge.title}</h1>
           <p className="mt-1 text-gray-700">{challenge.description}</p>
           {challenge.allowMultipleWinners && (
