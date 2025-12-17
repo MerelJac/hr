@@ -32,6 +32,17 @@ export default async function ChallengeDetailPage({
     },
   });
 
+  const deleteSubmission = async (nominationId: string) => {
+    const res = await fetch(`/api/nominations/${nominationId}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      const body = await res.json();
+      throw new Error(body.error || "Failed to delete submission");
+    }
+  };
+
   const relatedRecognitions = await prisma.recognition.findMany({
     where: { challengeId: id },
     include: {
@@ -57,7 +68,7 @@ export default async function ChallengeDetailPage({
           nominations: challenge.nominations.map((nomination) => ({
             ...nomination,
             reason: nomination.reason === null ? undefined : nomination.reason,
-            screenshot: nomination.screenshot ?? undefined
+            screenshot: nomination.screenshot ?? undefined,
           })),
         }}
         relatedRecognitions={relatedRecognitions}

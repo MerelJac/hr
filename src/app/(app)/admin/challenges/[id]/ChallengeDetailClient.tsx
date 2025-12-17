@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Image from "next/image";
-import { ArrowRight, Spotlight } from "lucide-react";
+import { ArrowRight, Spotlight, Trash } from "lucide-react";
 import UserInsightsModal from "@/components/UserInsightsModal";
 import AnnounceWinnersForm from "@/components/AnnounceWinnersForm";
 import Link from "next/link";
@@ -83,6 +83,21 @@ export default function ChallengeDetailClient({
     startTransition(() => window.location.reload());
   }
 
+  async function handleDelete(id: string) {
+    if (!confirm("Delete this submission? This cannot be undone.")) return;
+
+    const res = await fetch(`/api/nominations/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      alert("Failed to delete submission");
+      return;
+    }
+
+    window.location.reload();
+  }
+
   return (
     <div>
       {/* === Challenge Overview === */}
@@ -111,7 +126,7 @@ export default function ChallengeDetailClient({
               Qualifications: {challenge.qualification}
             </p>
           )}
-             {challenge.points && (
+          {challenge.points && (
             <p className="text-sm text-gray-600 my-2">
               Points: {challenge.points}
             </p>
@@ -172,16 +187,24 @@ export default function ChallengeDetailClient({
           <ul className="divide-y border rounded-xl overflow-y-scroll max-h-screen">
             {challenge.nominations.map((n) => (
               <li key={n.id} className="p-4 space-y-2">
-                <p className="flex items-center gap-2">
-                  <b>Submitted by:</b> {n.submitter?.firstName}{" "}
-                  {n.submitter?.lastName} ({n.submitter?.email})
+                <div className="flex flex-row justify-between items-center">
+                  <p className="flex items-center gap-2">
+                    <b>Submitted by:</b> {n.submitter?.firstName}{" "}
+                    {n.submitter?.lastName} ({n.submitter?.email})
+                    <button
+                      onClick={() => setSelectedUserId(n.id)}
+                      className="text-blue-600 text-sm underline"
+                    >
+                      <Spotlight size={16} />
+                    </button>
+                  </p>
                   <button
-                    onClick={() => setSelectedUserId(n.id)}
-                    className="text-blue-600 text-sm underline"
+                    onClick={() => handleDelete(n.id)}
+                    className="text-sm text-red-600"
                   >
-                    <Spotlight size={16} />
+                    <Trash size={16} />
                   </button>
-                </p>
+                </div>
 
                 {n.nominee && (
                   <p>
