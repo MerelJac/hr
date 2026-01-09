@@ -61,6 +61,17 @@ export async function PATCH(
     }
     data.pointsBalance = body.pointsBalance;
   }
+
+    if (body.monthlyBudget !== undefined) {
+    if (typeof body.monthlyBudget !== "number" || body.monthlyBudget < 0) {
+      return NextResponse.json(
+        { error: "Invalid monthlyBudget" },
+        { status: 400 }
+      );
+    }
+    data.monthlyBudget = body.monthlyBudget;
+  }
+  
   if (Object.keys(data).length === 0) {
     return NextResponse.json({ error: "No changes provided" }, { status: 400 });
   }
