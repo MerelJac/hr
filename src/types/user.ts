@@ -18,6 +18,7 @@ export type User = {
   isActive: boolean;
   submittedNominations?: Nomination[];
   pointsBalance?: number;
+  monthlyBudget?: number;
 };
 
 export type LightUser = {

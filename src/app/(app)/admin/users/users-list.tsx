@@ -46,6 +46,7 @@ export default function UsersList({ users }: { users: User[] }) {
       role: selectedUser.role,
       departmentId: (selectedUser as User).departmentId || null, // 👈 make sure we're sending departmentId
       pointsBalance: selectedUser.pointsBalance,
+      monthlyBudget: selectedUser.monthlyBudget
     };
 
     const res = await fetch(`/api/users/${selectedUser.id}`, {
@@ -289,7 +290,7 @@ export default function UsersList({ users }: { users: User[] }) {
                   ))}
                 </select>
               </label>
-
+ 
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-gray-600">Points Balance</span>
                 <input
@@ -300,6 +301,21 @@ export default function UsersList({ users }: { users: User[] }) {
                     setSelectedUser({
                       ...selectedUser,
                       pointsBalance: parseInt(e.target.value, 10),
+                    })
+                  }
+                />
+              </label>
+
+                            <label className="flex flex-col gap-1">
+                <span className="text-sm text-gray-600">Points To Give</span>
+                <input
+                  type="number"
+                  className="border rounded-xl px-3 py-2"
+                  value={selectedUser.monthlyBudget ?? 0}
+                  onChange={(e) =>
+                    setSelectedUser({
+                      ...selectedUser,
+                      monthlyBudget: parseInt(e.target.value, 10),
                     })
                   }
                 />
