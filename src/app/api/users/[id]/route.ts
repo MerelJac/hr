@@ -39,6 +39,7 @@ export async function PATCH(
   if (typeof body.isActive === "boolean") data.isActive = body.isActive;
 
   if (body.firstName !== undefined) data.firstName = body.firstName;
+  if (body.email !== undefined) data.email = body.email;
   if (body.lastName !== undefined) data.lastName = body.lastName;
   if (body.preferredName !== undefined) data.preferredName = body.preferredName;
   if (body.departmentId !== undefined) {
