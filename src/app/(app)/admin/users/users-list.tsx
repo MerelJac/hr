@@ -45,8 +45,9 @@ export default function UsersList({ users }: { users: User[] }) {
       workAnniversary: selectedUser.workAnniversary,
       role: selectedUser.role,
       departmentId: (selectedUser as User).departmentId || null, // 👈 make sure we're sending departmentId
+      email: selectedUser.email,
       pointsBalance: selectedUser.pointsBalance,
-      monthlyBudget: selectedUser.monthlyBudget
+      monthlyBudget: selectedUser.monthlyBudget,
     };
 
     const res = await fetch(`/api/users/${selectedUser.id}`, {
@@ -149,7 +150,7 @@ export default function UsersList({ users }: { users: User[] }) {
                 <button
                   onClick={() =>
                     fetch(`/api/users/${u.id}`, { method: "DELETE" }).then(
-                      (res) => res.ok && location.reload()
+                      (res) => res.ok && location.reload(),
                     )
                   }
                   className="ml-2 text-red-700"
@@ -187,7 +188,12 @@ export default function UsersList({ users }: { users: User[] }) {
                 className="border rounded-xl px-3 py-2"
                 type="email"
                 value={selectedUser.email}
-                disabled
+                onChange={(e) =>
+                  setSelectedUser({
+                    ...selectedUser,
+                    email: e.target.value,
+                  })
+                }
               />
 
               <div className="flex gap-2">
@@ -290,7 +296,7 @@ export default function UsersList({ users }: { users: User[] }) {
                   ))}
                 </select>
               </label>
- 
+
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-gray-600">Points Balance</span>
                 <input
@@ -306,7 +312,7 @@ export default function UsersList({ users }: { users: User[] }) {
                 />
               </label>
 
-                            <label className="flex flex-col gap-1">
+              <label className="flex flex-col gap-1">
                 <span className="text-sm text-gray-600">Points To Give</span>
                 <input
                   type="number"
