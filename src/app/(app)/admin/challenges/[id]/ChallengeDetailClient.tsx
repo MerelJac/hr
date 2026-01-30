@@ -67,7 +67,7 @@ export default function ChallengeDetailClient({
 
   async function updateStatus(
     id: string,
-    status: "APPROVED" | "REJECTED" | "WON"
+    status: "APPROVED" | "REJECTED" | "WON" | 'SKIPPED',
   ) {
     const res = await fetch(`/api/nominations/${id}/status`, {
       method: "PATCH",
@@ -170,8 +170,8 @@ export default function ChallengeDetailClient({
                     firstName: n.nominee!.firstName || "",
                     lastName: n.nominee!.lastName || "",
                   },
-                ])
-            ).values()
+                ]),
+            ).values(),
           )}
           challengeId={challenge.id}
           points={challenge.points}
@@ -261,9 +261,20 @@ export default function ChallengeDetailClient({
                       <button
                         onClick={() => updateStatus(n.id, "WON")}
                         disabled={isPending}
-                        className="bg-blue-600 text-white px-3 py-1 rounded"
+                        className="bg-green-600 text-white px-3 py-1 rounded"
                       >
                         Mark as Winner 🎉
+                      </button>
+                    )}
+
+                    {/* For multiple-winner challenges */}
+                    {challenge.allowMultipleWinners && (
+                      <button
+                        onClick={() => updateStatus(n.id, "SKIPPED")}
+                        disabled={isPending}
+                        className="bg-gray-600 text-white px-3 py-1 rounded"
+                      >
+                        Mark as Non-Winnner
                       </button>
                     )}
                   </div>
@@ -278,8 +289,8 @@ export default function ChallengeDetailClient({
                         n.status === "APPROVED" || n.status === "WON"
                           ? "text-green-600"
                           : n.status === "REJECTED"
-                          ? "text-red-600"
-                          : "text-gray-600"
+                            ? "text-red-600"
+                            : "text-gray-600"
                       }
                     >
                       {n.status}
