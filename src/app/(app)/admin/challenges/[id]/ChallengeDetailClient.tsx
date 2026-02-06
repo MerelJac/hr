@@ -162,7 +162,7 @@ export default function ChallengeDetailClient({
             {challenge.isActive ? "Active" : "Inactive"}
           </span>
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col justify-between items-end">
           <div className="flex gap-2 mt-4">
             <button
               onClick={resendChallengeEmail}
