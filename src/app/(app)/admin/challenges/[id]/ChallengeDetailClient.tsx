@@ -67,7 +67,7 @@ export default function ChallengeDetailClient({
 
   async function updateStatus(
     id: string,
-    status: "APPROVED" | "REJECTED" | "WON" | 'SKIPPED',
+    status: "APPROVED" | "REJECTED" | "WON" | "SKIPPED",
   ) {
     const res = await fetch(`/api/nominations/${id}/status`, {
       method: "PATCH",
@@ -81,6 +81,21 @@ export default function ChallengeDetailClient({
     }
 
     startTransition(() => window.location.reload());
+  }
+
+  async function resendChallengeEmail() {
+    if (!confirm("Resend challenge email to all employees?")) return;
+
+    const res = await fetch(`/api/challenges/${challenge.id}/resend-email`, {
+      method: "POST",
+    });
+
+    if (!res.ok) {
+      alert("Failed to resend challenge email");
+      return;
+    }
+
+    alert("✅ Challenge email resent!");
   }
 
   async function handleDelete(id: string) {
@@ -147,13 +162,24 @@ export default function ChallengeDetailClient({
             {challenge.isActive ? "Active" : "Inactive"}
           </span>
         </div>
-        {challenge.allowMultipleWinners && (
-          <button onClick={() => setOpenAnnounceModal(!openAnnounceModal)}>
-            <span className="bg-blue-100 m-4 p-4 rounded ">
-              📣 Announce Winners
-            </span>
-          </button>
-        )}
+        <div className="flex flex-col">
+          <div className="flex gap-2 mt-4">
+            <button
+              onClick={resendChallengeEmail}
+              className="px-4 py-2 text-sm rounded bg-indigo-400 text-white hover:bg-indigo-700"
+            >
+              🔁 Resend Challenge Email Notification
+            </button>
+          </div>
+
+          {challenge.allowMultipleWinners && (
+            <button onClick={() => setOpenAnnounceModal(!openAnnounceModal)}>
+              <span className="bg-blue-100 m-4 p-4 rounded ">
+                📣 Announce Winners
+              </span>
+            </button>
+          )}
+        </div>
       </div>
       {/* === Winner Announcement (for multiple winners) === */}
       {openAnnounceModal && (
