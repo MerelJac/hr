@@ -43,7 +43,7 @@ export default function ChallengeList({
     if (res.ok) location.reload();
     else
       alert(
-        "Failed to save challenge. Check if name already exists or contact your developer."
+        "Failed to save challenge. Check if name already exists or contact your developer.",
       );
   }
 
@@ -323,7 +323,16 @@ export default function ChallengeList({
                   name="isActive"
                   defaultChecked={selected?.isActive ?? true}
                 />
-                Active
+                <span className="flex flex-col items-start">
+                  Active
+                  <small className="text-gray-500">
+                    Plan in advance by setting to inactive, and emails will auto
+                    send when the challenge goes live. If you set to active now,
+                    you can manually send announcement emails by clicking
+                    &quot;Resend Challenge Email Notification&quot; on the
+                    challenge page after saving.
+                  </small>
+                </span>
               </label>
 
               <div className="flex justify-end gap-2">
