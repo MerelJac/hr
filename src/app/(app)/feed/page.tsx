@@ -96,7 +96,7 @@ export default async function FeedPage() {
   return (
     <main className="p-6 space-y-4 p-6 bg-gradient-to-t from-blue-500 to-indigo-500 h-full">
       <div className="hidden md:flex flex-row gap-4 justify-between">
-        <div className="min-w-[70%]">
+        <div className="min-w-[70%] max-w-3xl">
           <RecognizeFormWrapper />
           <ul className="space-y-6 mt-4">
             <RecognitionList
