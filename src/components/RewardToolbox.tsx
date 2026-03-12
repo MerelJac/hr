@@ -1,13 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Gift, SquareArrowOutUpRight, X, Plus } from "lucide-react";
+import { Gift, SquareArrowOutUpRight, X, Plus, Pencil } from "lucide-react";
 
 type ToolboxLink = {
   id?: string;
   label: string;
   url: string;
 };
+
+function inputClass() {
+  return "w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 placeholder:text-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent transition";
+}
 
 export default function RewardToolbox() {
   const [open, setOpen] = useState(false);
@@ -16,7 +20,6 @@ export default function RewardToolbox() {
   const [label, setLabel] = useState("");
   const [url, setUrl] = useState("");
 
-  // Fetch links from DB
   useEffect(() => {
     (async () => {
       const res = await fetch("/api/reward-toolbox");
@@ -30,141 +33,144 @@ export default function RewardToolbox() {
     const res = await fetch("/api/reward-toolbox", {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(
-        editing ? { id: editing.id, label, url } : { label, url }
-      ),
+      body: JSON.stringify(editing ? { id: editing.id, label, url } : { label, url }),
     });
-
     if (res.ok) {
       const saved = await res.json();
-      setLinks((prev) => {
-        if (editing) {
-          return prev.map((l) => (l.id === saved.id ? saved : l));
-        } else {
-          return [saved, ...prev];
-        }
-      });
+      setLinks((prev) =>
+        editing ? prev.map((l) => (l.id === saved.id ? saved : l)) : [saved, ...prev]
+      );
       setEditing(null);
       setLabel("");
       setUrl("");
     }
   }
 
+  function cancelEdit() {
+    setEditing(null);
+    setLabel("");
+    setUrl("");
+  }
+
   return (
     <>
-      {/* Open button */}
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+        className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-indigo-500 hover:text-indigo-700 border border-indigo-200 hover:border-indigo-400 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all"
       >
-        <Gift size={18} />
+        <Gift size={13} />
         Reward Toolbox
       </button>
 
-      {/* Modal */}
       {open && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative animate-fadeIn">
-            <button
-              onClick={() => setOpen(false)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
-            >
-              <X size={20} />
-            </button>
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col max-h-[85vh] overflow-hidden">
 
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <Gift size={20} className="text-blue-600" />
-              Reward Toolbox
-            </h2>
-
-            {/* Links list */}
-            {links.length > 0 ? (
-              <ul className="space-y-2 mb-4">
-                {links.map((link) => (
-                  <li
-                    key={link.id}
-                    className="flex items-center justify-between border rounded-lg px-3 py-2 hover:bg-blue-50"
-                  >
-                    <a
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-between"
-                    >
-                      {link.label}
-                      <SquareArrowOutUpRight size={16} />
-                    </a>
-                    <button
-                      onClick={() => {
-                        setEditing(link);
-                        setLabel(link.label);
-                        setUrl(link.url);
-                      }}
-                      className="text-blue-600 text-sm ml-2"
-                    >
-                      Edit
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-500 text-sm mb-4">
-                No links available yet.
-              </p>
-            )}
-
-            {/* Add/Edit form */}
-            <form onSubmit={saveLink} className="space-y-3">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Label
-                </label>
-                <input
-                  type="text"
-                  value={label}
-                  onChange={(e) => setLabel(e.target.value)}
-                  className="border rounded-lg px-2 py-1 w-full"
-                  placeholder="e.g. Amazon Gift Card"
-                  required
-                />
+                <p className="text-xs font-semibold uppercase tracking-widest text-indigo-400">Admin</p>
+                <h2 className="text-base font-semibold text-gray-800 leading-tight">Reward Toolbox</h2>
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  URL
-                </label>
-                <input
-                  type="url"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  className="border rounded-lg px-2 py-1 w-full"
-                  placeholder="https://example.com"
-                  required
-                />
-              </div>
+              <button
+                onClick={() => { setOpen(false); cancelEdit(); }}
+                className="p-1.5 rounded-lg text-gray-300 hover:text-gray-500 hover:bg-gray-100 transition-all"
+              >
+                <X size={16} />
+              </button>
+            </div>
 
-              <div className="flex justify-end gap-2">
-                {editing && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditing(null);
-                      setLabel("");
-                      setUrl("");
-                    }}
-                    className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500"
-                  >
-                    Cancel
-                  </button>
+            {/* Body */}
+            <div className="overflow-y-auto flex-1 px-6 py-5 space-y-5">
+
+              {/* Links list */}
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">Quick Links</p>
+                {links.length > 0 ? (
+                  <ul className="space-y-1.5">
+                    {links.map((link) => (
+                      <li
+                        key={link.id}
+                        className="flex items-center justify-between bg-gray-50 border border-gray-100 hover:border-indigo-100 hover:bg-indigo-50/40 rounded-xl px-3 py-2.5 transition-all group"
+                      >
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 flex-1 min-w-0 text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors"
+                        >
+                          <span className="truncate">{link.label}</span>
+                          <SquareArrowOutUpRight size={12} className="shrink-0 text-gray-300 group-hover:text-indigo-400" />
+                        </a>
+                        <button
+                          onClick={() => { setEditing(link); setLabel(link.label); setUrl(link.url); }}
+                          className="ml-2 p-1.5 rounded-lg text-gray-300 hover:text-indigo-500 hover:bg-indigo-100 transition-all shrink-0"
+                          title="Edit"
+                        >
+                          <Pencil size={12} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="flex flex-col items-center gap-2 py-8 text-center">
+                    <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
+                      <Gift size={16} className="text-gray-300" />
+                    </div>
+                    <p className="text-sm text-gray-400">No links added yet.</p>
+                  </div>
                 )}
-                <button
-                  type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
-                >
-                  <Plus size={16} />
-                  {editing ? "Save Changes" : "Add Link"}
-                </button>
               </div>
-            </form>
+
+              {/* Add / Edit form */}
+              <div className="border-t border-gray-100 pt-4">
+                <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
+                  {editing ? "Edit Link" : "Add Link"}
+                </p>
+                <form onSubmit={saveLink} className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-1.5">Label</label>
+                    <input
+                      type="text"
+                      value={label}
+                      onChange={(e) => setLabel(e.target.value)}
+                      className={inputClass()}
+                      placeholder="e.g. Amazon Gift Cards"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-1.5">URL</label>
+                    <input
+                      type="url"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      className={inputClass()}
+                      placeholder="https://example.com"
+                      required
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2 pt-1">
+                    {editing && (
+                      <button
+                        type="button"
+                        onClick={cancelEdit}
+                        className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 border border-gray-200 hover:border-gray-300 rounded-xl transition-all"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                    <button
+                      type="submit"
+                      className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white rounded-xl transition-all"
+                    >
+                      <Plus size={14} />
+                      {editing ? "Save Changes" : "Add Link"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
       )}
