@@ -5,7 +5,7 @@ import { useState } from "react";
 import { DepartmentWithUsers } from "@/types/department";
 import Image from "next/image";
 import UserInsightsModal from "@/components/UserInsightsModal";
-import { Spotlight } from "lucide-react";
+import { ChartBar, Spotlight } from "lucide-react";
 export function AllDepartments({
   departments,
 }: {
@@ -16,10 +16,25 @@ export function AllDepartments({
 
   return (
     <div className="space-y-6 ">
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
+            <ChartBar size={16} className="text-indigo-400" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+              Admin
+            </p>
+            <h1 className="text-lg font-semibold text-gray-800 leading-tight">
+              Departments
+            </h1>
+          </div>
+        </div>
         <button
           onClick={() => setDepartmentOpen(true)}
-          className="bg-black text-white px-3 py-2 rounded-xl transition hover:shadow-md"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all mt-5
+              bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white
+              disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
         >
           + Department
         </button>

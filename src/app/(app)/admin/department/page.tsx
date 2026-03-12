@@ -35,9 +35,6 @@ export default async function DepartmentPage() {
 
   return (
     <main className="space-y-8 bg-white rounded-xl h-full">
-      <header className="p-6 shadow-md flex flex-row justify-between">
-        <h1 className="text-2xl font-semibold">Departments</h1>
-      </header>
       <section className="p-6">
         {(role === "SUPER_ADMIN" || role === "ADMIN") && (
           <AllDepartments departments={departmentsData} />
