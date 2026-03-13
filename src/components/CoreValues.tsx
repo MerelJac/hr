@@ -1,6 +1,4 @@
-// src/components/CoreValues.tsx
 "use client";
-
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
@@ -19,17 +17,17 @@ const values: CoreValue[] = [
   {
     id: "right",
     label: "#DotheRightThing",
-    def: "Do the right thing always.  No matter the circumstance or time. Don't just take the easy route. It may take longer, it may take more effort and more time but we will do the right thing always.",
+    def: "Do the right thing always. No matter the circumstance or time. Don't just take the easy route. It may take longer, it may take more effort and more time but we will do the right thing always.",
   },
   {
     id: "service",
     label: "#SelflessService",
-    def: "We put the welfare of the organization and our work family first.  A selfless person is larger than just one person. The basic building block of selfless service is the commitment of each team member to go a little further, endure a little longer, and look a little closer to see how they can add to the effort.",
+    def: "We put the welfare of the organization and our work family first. A selfless person is larger than just one person. The basic building block of selfless service is the commitment of each team member to go a little further, endure a little longer, and look a little closer to see how they can add to the effort.",
   },
   {
     id: "problem",
     label: "#ProactivePositiveProblemSolving",
-    def: "We strive to come at every problem with a positive mind and open heart and as many solutions as possible. pointing out a problem without a solution is whining. We look at every problem as an opportunity. An opportunity to learn, teach, bond, and grow.",
+    def: "We strive to come at every problem with a positive mind and open heart and as many solutions as possible. Pointing out a problem without a solution is whining. We look at every problem as an opportunity — to learn, teach, bond, and grow.",
   },
   {
     id: "evolution",
@@ -46,38 +44,53 @@ export default function CoreValues() {
   }
 
   return (
-    <div
-      id="coreValues"
-      className="space-y-2 p-4 bg-white rounded-lg max-w-min"
-    >
-      <div className="headerSection mb-4">
-        <p className="text-xl font-semibold">Call One Mission</p>
+    <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
+      <div className="mb-4">
+        <p className="text-xs font-semibold uppercase tracking-widest text-indigo-400 mb-0.5">Our Mission</p>
+        <p className="text-lg font-semibold text-gray-800">Call One Values</p>
       </div>
 
-      {values.map((v) => (
-        <div
-          key={v.id}
-          id="coreFilterSection"
-          className="border-2 border-blue rounded-lg p-2 cursor-pointer overflow-hidden transition-all duration-300"
-          onClick={() => toggle(v.id)}
-        >
-          <div className="flex items-center">
-            <p className="text-md break-words  w-full">{v.label}</p>
-            <div className="flex-1" />
-            <ChevronDown
-              className={`w-5 h-5 transition-transform ${
-                open === v.id ? "rotate-180" : ""
-              }`}
-            />
-          </div>
-          {open === v.id && (
-            <div className="mt-2 text-sm text-gray-700 max-w-full">
-              {/* You can drop in expanded details here */}
-              {v.def || "Description for " + v.label}
+      <div className="space-y-2">
+        {values.map((v) => {
+          const isOpen = open === v.id;
+          return (
+            <div
+              key={v.id}
+              onClick={() => toggle(v.id)}
+              className={`rounded-xl border cursor-pointer transition-all duration-200 overflow-hidden
+                ${isOpen
+                  ? "border-indigo-200 bg-indigo-50"
+                  : "border-gray-100 bg-gray-50 hover:border-indigo-100 hover:bg-indigo-50/40"
+                }`}
+            >
+              <div className="flex items-center gap-2 px-3 py-2.5 overflow-x-auto">
+                <span className={`text-sm font-semibold transition-colors duration-200 flex-1
+                  ${isOpen ? "text-indigo-600" : "text-gray-700"}`}>
+                  {v.label}
+                </span>
+                <ChevronDown
+                  size={15}
+                  className={`shrink-0 transition-transform duration-200 ${
+                    isOpen ? "rotate-180 text-indigo-400" : "text-gray-300"
+                  }`}
+                />
+              </div>
+
+              <div
+                className={`grid transition-all duration-300 ease-in-out ${
+                  isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <p className="px-3 pb-3 text-xs leading-relaxed text-gray-500">
+                    {v.def}
+                  </p>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
-      ))}
+          );
+        })}
+      </div>
     </div>
   );
 }

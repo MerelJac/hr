@@ -7,9 +7,12 @@ import { getAvailablePoints } from "@/lib/recognition";
 import { User } from "@/types/user";
 import { sendRecognitionEmail } from "@/lib/emailTemplates";
 
+const CORE_VALUES = ["LIGHT", "RIGHT", "SERVICE", "PROBLEM", "EVOLUTION"] as const;
+
 const schema = z.object({
   message: z.string().min(1).max(500),
-  gifUrl: z.string().url().optional().nullable(), // 👈 allow GIF
+  gifUrl: z.string().url().optional().nullable(),
+  coreValue: z.enum(CORE_VALUES).optional().nullable(), // ← added
   recipients: z
     .array(
       z.object({
@@ -35,7 +38,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { message, gifUrl, recipients } = parsed.data;
+  const { message, gifUrl, coreValue, recipients } = parsed.data;
 
   // No self-awards
   if (recipients.some((r) => r.userId === senderId)) {
@@ -71,18 +74,22 @@ export async function POST(req: NextRequest) {
   // Create recognition + increment piggy banks in a transaction
   const result = await prisma.$transaction(async (tx) => {
     const rec = await tx.recognition.create({
-      data: { senderId, message, gifUrl },
+      data: {
+        senderId,
+        message,
+        gifUrl,
+        coreValue: coreValue ?? null, // ← saved here
+      },
     });
 
     await tx.recognitionRecipient.createMany({
-      data: recipients.map((r) => ({
+      data: recipients.map(({ userId, points }) => ({
         recognitionId: rec.id,
-        recipientId: r.userId,
-        points: r.points,
+        recipientId: userId,
+        points,
       })),
     });
 
-    // Update recipients' piggy bank balances
     for (const r of recipients) {
       await tx.user.update({
         where: { id: r.userId },
@@ -90,7 +97,6 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Update senders' piggy bank monthyl balances
     await tx.user.update({
       where: { id: senderId },
       data: { monthlyBudget: { decrement: total } },
@@ -99,7 +105,7 @@ export async function POST(req: NextRequest) {
     return rec;
   });
 
-  // ✅ Now send emails *after* transaction is committed
+  // Send emails after transaction commits
   await Promise.all(
     found
       .filter((u) => u.emailNotifications)

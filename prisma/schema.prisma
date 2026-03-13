@@ -81,12 +81,22 @@ model UserInvite {
   @@index([email])
 }
 
+enum CoreValue {
+  LIGHT
+  RIGHT
+  SERVICE
+  PROBLEM
+  EVOLUTION
+}
+
 model Recognition {
-  id          String               @id @default(cuid())
-  senderId    String
-  sender      User                 @relation("SenderRecognitions", fields: [senderId], references: [id], onDelete: Cascade)
-  gifUrl      String?
-  message     String
+  id        String     @id @default(cuid())
+  senderId  String
+  sender    User       @relation("SenderRecognitions", fields: [senderId], references: [id], onDelete: Cascade)
+  gifUrl    String?
+  message   String
+  coreValue CoreValue?
+
   createdAt   DateTime             @default(now())
   challengeId String?
   challenge   NominationChallenge? @relation(fields: [challengeId], references: [id])
@@ -97,6 +107,7 @@ model Recognition {
   @@index([senderId])
   @@index([createdAt])
   @@index([senderId, createdAt])
+  @@index([coreValue])
 }
 
 model RecognitionRecipient {

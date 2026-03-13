@@ -1,7 +1,7 @@
 "use client";
-
 import { signOut } from "next-auth/react";
 import { useState } from "react";
+import { LogOut } from "lucide-react";
 
 export default function LogoutButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +12,6 @@ export default function LogoutButton() {
       await signOut({ callbackUrl: "/login" });
     } catch (error) {
       console.error("Logout failed:", error);
-      // optional: reset button after short delay if signOut fails
       setTimeout(() => setIsLoading(false), 1500);
     }
   };
@@ -21,11 +20,10 @@ export default function LogoutButton() {
     <button
       onClick={handleLogout}
       disabled={isLoading}
-      className={`bg-red-500 text-white px-4 py-2 rounded min-w-[80%] transition ${
-        isLoading ? "opacity-60 cursor-not-allowed" : "hover:bg-red-600"
-      }`}
+      className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-400 hover:text-red-500 border border-gray-200 hover:border-red-200 hover:bg-red-50 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      Logout
+      <LogOut size={13} />
+      {isLoading ? "Signing out…" : "Sign out"}
     </button>
   );
 }

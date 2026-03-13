@@ -6,6 +6,80 @@ import { User } from "@/types/user";
 import LogoutButton from "@/app/login/logoutButton";
 import SupportButton from "@/components/SupportButton";
 import { formatDateLocal } from "@/lib/formatDate";
+import {
+  Camera,
+  CheckCircle2,
+  ChevronDown,
+  Lock,
+  Bell,
+  Pencil,
+  Rocket,
+} from "lucide-react";
+
+function inputClass() {
+  return "w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 placeholder:text-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent transition";
+}
+
+function AccordionSection({
+  icon: Icon,
+  title,
+  children,
+}: {
+  icon: React.ElementType;
+  title: string;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between px-5 py-4 text-left"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
+            <Icon size={14} className="text-indigo-400" />
+          </div>
+          <span className="text-sm font-semibold text-gray-700">{title}</span>
+        </div>
+        <ChevronDown
+          size={15}
+          className={`text-gray-300 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      <div
+        className={`grid transition-all duration-300 ease-in-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+      >
+        <div className="overflow-hidden">
+          <div className="px-5 pb-5 pt-1 border-t border-gray-100 space-y-4">
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  if (status === "APPROVED")
+    return (
+      <span className="text-xs font-medium px-2 py-0.5 rounded-lg bg-green-50 border border-green-100 text-green-600">
+        Approved
+      </span>
+    );
+  if (status === "REJECTED")
+    return (
+      <span className="text-xs font-medium px-2 py-0.5 rounded-lg bg-red-50 border border-red-100 text-red-500">
+        Rejected
+      </span>
+    );
+  return (
+    <span className="text-xs font-medium px-2 py-0.5 rounded-lg bg-gray-100 border border-gray-200 text-gray-500">
+      {status}
+    </span>
+  );
+}
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -14,11 +88,9 @@ export default function ProfilePage() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [activeTab, setActiveTab] = useState<"settings" | "challenges">(
-    "settings"
+    "settings",
   );
   const [emailNotifications, setEmailNotifications] = useState(false);
-
-  // Change password form state
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -29,21 +101,13 @@ export default function ProfilePage() {
       .then((res) => res.json())
       .then((data) => {
         if (!data || data.error) return;
-
         setUser(data);
-        if (data.birthday) {
+        if (data.birthday)
           setBirthday(new Date(data.birthday).toISOString().split("T")[0]);
-        }
-        if (data.preferredName) {
-          setPreferredName(data.preferredName);
-        }
-        if (data.profileImage) {
-          setProfileImage(data.profileImage);
-        }
-
-        if (data.emailNotifications) {
+        if (data.preferredName) setPreferredName(data.preferredName);
+        if (data.profileImage) setProfileImage(data.profileImage);
+        if (data.emailNotifications)
           setEmailNotifications(data.emailNotifications);
-        }
       });
   }, []);
 
@@ -54,7 +118,6 @@ export default function ProfilePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ emailNotifications: enabled }),
       });
-
       if (!res.ok) throw new Error("Failed to update notifications");
       setMessage(`Email notification set to ${emailNotifications}!`);
     } catch (err) {
@@ -65,46 +128,34 @@ export default function ProfilePage() {
 
   async function uploadProfileImage(file: File) {
     try {
-      // 1️⃣ Ask the backend for a presigned URL
       const res = await fetch(
-        `/api/profile/upload-url?contentType=${encodeURIComponent(file.type)}`
+        `/api/profile/upload-url?contentType=${encodeURIComponent(file.type)}`,
       );
       if (!res.ok) {
-        // Try to read JSON error message if possible
-        let errorMessage = "Unknown error";
-
         const errData = await res.json();
-        errorMessage = errData.error || errData.details || res.statusText;
-
-        setMessage(`Upload failed: ${errorMessage}`);
+        setMessage(
+          `Upload failed: ${errData.error || errData.details || res.statusText}`,
+        );
         return;
       }
-
       const { uploadUrl, publicUrl } = await res.json();
-
-      // 2️⃣ Upload directly to S3 (PUT)
       const uploadRes = await fetch(uploadUrl, {
         method: "PUT",
         headers: { "Content-Type": file.type },
         body: file,
       });
-
       if (!uploadRes.ok) {
-        setMessage(`Image upload failed.`);
+        setMessage("Image upload failed.");
         return;
       }
-
-      // 3️⃣ Save the image URL in your app DB
       const saveRes = await fetch("/api/profile/images", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageUrl: publicUrl }),
       });
-
       if (!saveRes.ok) setMessage("Failed to save image URL");
-
       setProfileImage(publicUrl);
-      setMessage("Profile image uploaded successfully!");
+      setMessage("Profile image updated!");
     } catch (err) {
       console.error(err);
       setMessage(`Upload failed. Please try again. ${err}`);
@@ -117,12 +168,7 @@ export default function ProfilePage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ birthday, preferredName }),
     });
-
-    if (res.ok) {
-      setMessage("Profile updated!");
-    } else {
-      setMessage("Failed to update profile.");
-    }
+    setMessage(res.ok ? "Profile updated!" : "Failed to update profile.");
   }
 
   async function changePassword() {
@@ -131,13 +177,11 @@ export default function ProfilePage() {
       setPasswordMessage("New passwords do not match.");
       return;
     }
-
     const res = await fetch("/api/profile/password", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ oldPassword, newPassword }),
     });
-
     const data = await res.json();
     if (res.ok) {
       setPasswordMessage("Password updated successfully!");
@@ -149,220 +193,232 @@ export default function ProfilePage() {
     }
   }
 
-  if (!user) return <div className="p-6 text-gray-600">Loading...</div>;
+  if (!user)
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-gray-100 animate-pulse" />
+          <p className="text-sm text-gray-400">Loading profile…</p>
+        </div>
+      </div>
+    );
 
   return (
-    <main className="p-6 bg-white rounded-xl w-full h-screen">
-      {/* Tabs */}
-      <div className="flex border-b mb-6">
-        <button
-          onClick={() => setActiveTab("settings")}
-          className={`px-4 py-2 text-sm font-medium ${
-            activeTab === "settings"
-              ? "border-b-2 border-blue-600 text-blue-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          Settings
-        </button>
-        <button
-          onClick={() => setActiveTab("challenges")}
-          className={`px-4 py-2 text-sm font-medium ${
-            activeTab === "challenges"
-              ? "border-b-2 border-blue-600 text-blue-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          Past Challenges
-        </button>
+    <main className="max-w-2xl mx-auto p-6 space-y-5">
+      {/* Profile hero card */}
+      <div className="rounded-2xl border border-gray-100 bg-white shadow-sm p-5">
+        <div className="flex items-center gap-5">
+          <div className="relative shrink-0">
+            <Image
+              src={profileImage ?? "/default-profile-image.svg"}
+              alt="Profile"
+              width={72}
+              height={72}
+              className="rounded-full border-2 border-indigo-200 object-cover w-[72px] h-[72px]"
+            />
+            <label className="absolute -bottom-1 -right-1 w-7 h-7 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center justify-center cursor-pointer shadow transition-all">
+              <Camera size={12} className="text-white" />
+              <input
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={(e) => {
+                  if (e.target.files?.[0])
+                    uploadProfileImage(e.target.files[0]);
+                }}
+              />
+            </label>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-0.5">
+              Profile
+            </p>
+            <h1 className="text-lg font-bold text-gray-800 truncate">
+              {user.preferredName || `${user.firstName} ${user.lastName}`}
+            </h1>
+            <p className="text-sm text-gray-400 truncate">{user.email}</p>
+          </div>
+        </div>
       </div>
 
-      {/* Tab Content */}
+      {/* Tabs */}
+      <div className="flex gap-1 border-b border-gray-100">
+        {(["settings", "challenges"] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all capitalize
+              ${
+                activeTab === tab
+                  ? "bg-indigo-50 text-indigo-600 border border-b-0 border-indigo-100"
+                  : "text-gray-400 hover:text-gray-600"
+              }`}
+          >
+            {tab === "settings" ? "Settings" : "Past Challenges"}
+          </button>
+        ))}
+      </div>
+
+      {/* Message banner */}
+      {message && (
+        <div className="flex items-center gap-2 rounded-xl bg-green-50 border border-green-100 text-green-700 text-sm px-4 py-3">
+          <CheckCircle2 size={15} className="shrink-0" />
+          {message}
+        </div>
+      )}
+
       {activeTab === "settings" && (
-        <div className="space-y-8">
-          {/* Header */}
-          <div className="flex items-center justify-between border-b pb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800">
-                Hi, {user.preferredName || `${user.firstName} ${user.lastName}`}
-              </h1>
-              <p className="text-gray-500 text-sm mt-1">
-                Manage your profile, preferences, and account security
-              </p>
-            </div>
-
-            {/* Profile image */}
-            <div className="relative group">
-              <Image
-                src={profileImage ?? "/default-profile-image.svg"}
-                alt="Profile"
-                width={100}
-                height={100}
-                className="rounded-full border-4 border-blue-500 shadow-md group-hover:opacity-80 transition"
-              />
-              <label className="absolute bottom-1 right-1 bg-blue-600 text-white text-xs px-2 py-1 rounded-full cursor-pointer shadow hover:bg-blue-700 transition">
-                ✎
-                <input
-                  type="file"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={(e) => {
-                    if (e.target.files?.[0]) {
-                      uploadProfileImage(e.target.files[0]);
-                    }
-                  }}
-                />
-              </label>
-            </div>
-          </div>
-
-          {/* Message */}
-          {message && (
-            <div className="rounded-lg border border-yellow-300 bg-yellow-100 text-yellow-800 p-3 text-sm">
-              {message}
-            </div>
-          )}
-
-          {/* Basic Info */}
-          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 space-y-2">
-            <h2 className="text-lg font-semibold text-gray-800 mb-3">
+        <div className="space-y-3">
+          {/* Basic info */}
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm p-5 space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
               Basic Info
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-6 text-gray-700">
-              <p>
-                <b>Name:</b> {user.firstName} {user.lastName}
-              </p>
-              <p>
-                <b>Email:</b> {user.email}
-              </p>
-              <p>
-                <b>Work Anniversary:</b>{" "}
-                {user.workAnniversary
-                  ? formatDateLocal(user.workAnniversary)
-                  : "Not set"}
-              </p>
-              <p>
-                <b>Birthday:</b>{" "}
-                {user.birthday ? formatDateLocal(user.birthday) : "Not set"}
-              </p>
-              {user.role && (
-                <p>
-                  <b>Role:</b> {user.role}
-                </p>
-              )}
-              {user.department?.name && (
-                <p>
-                  <b>Department:</b> {user.department.name}
-                </p>
-              )}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-6">
+              {[
+                ["Name", `${user.firstName} ${user.lastName}`],
+                ["Email", user.email],
+                [
+                  "Work Anniversary",
+                  user.workAnniversary
+                    ? formatDateLocal(user.workAnniversary)
+                    : "Not set",
+                ],
+                [
+                  "Birthday",
+                  user.birthday ? formatDateLocal(user.birthday) : "Not set",
+                ],
+                user.role ? ["Role", user.role] : null,
+                user.department?.name
+                  ? ["Department", user.department.name]
+                  : null,
+              ]
+                .filter((item): item is [string, string] => item !== null)
+                .map(([label, value]) => (
+                  <div key={label as string}>
+                    <p className="text-xs text-gray-400 mb-0.5">{label}</p>
+                    <p className="text-sm font-medium text-gray-700">
+                      {value as string}
+                    </p>
+                  </div>
+                ))}
             </div>
           </div>
 
-          {/* Editable Fields */}
-          <details className="group border border-gray-200 bg-white rounded-2xl p-5 shadow-sm">
-            <summary className="font-medium cursor-pointer text-lg flex items-center justify-between">
-              Editable Fields
-              <span className="text-gray-400 group-open:rotate-180 transition-transform">
-                ▼
-              </span>
-            </summary>
-            <div className="mt-4 space-y-4">
-              <label className="block text-sm font-medium text-gray-700">
-                Preferred Name
-              </label>
-              <input
-                type="text"
-                value={preferredName}
-                onChange={(e) => setPreferredName(e.target.value)}
-                className="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder={user.firstName ?? "Preferred Name"}
-              />
-              <button
-                onClick={saveProfile}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-              >
-                Update Name
-              </button>
-            </div>
-          </details>
-
-          {/* Change Password */}
-          <details className="group border border-gray-200 bg-white rounded-2xl p-5 shadow-sm">
-            <summary className="font-medium cursor-pointer text-lg flex items-center justify-between">
-              Change Password
-              <span className="text-gray-400 group-open:rotate-180 transition-transform">
-                ▼
-              </span>
-            </summary>
-            <div className="mt-4 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* Editable fields */}
+          <AccordionSection icon={Pencil} title="Preferred Name">
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-1.5">
+                  Preferred Name
+                </label>
                 <input
-                  type="password"
-                  placeholder="Current Password"
-                  value={oldPassword}
-                  onChange={(e) => setOldPassword(e.target.value)}
-                  className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  type="password"
-                  placeholder="New Password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  type="password"
-                  placeholder="Confirm New Password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 md:col-span-2"
+                  type="text"
+                  value={preferredName}
+                  onChange={(e) => setPreferredName(e.target.value)}
+                  className={inputClass()}
+                  placeholder={user.firstName ?? "Preferred name"}
                 />
               </div>
               <button
-                onClick={changePassword}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                onClick={saveProfile}
+                className="px-4 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white rounded-xl transition-all"
               >
-                Update Password
+                Save Changes
               </button>
-              {passwordMessage && (
-                <p className="text-sm text-gray-600">{passwordMessage}</p>
-              )}
             </div>
-          </details>
+          </AccordionSection>
+
+          {/* Change password */}
+          <AccordionSection icon={Lock} title="Change Password">
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-1.5">
+                    Current Password
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="••••••••"
+                    value={oldPassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
+                    className={inputClass()}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-1.5">
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="••••••••"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className={inputClass()}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-1.5">
+                    Confirm New Password
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className={inputClass()}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={changePassword}
+                  className="px-4 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white rounded-xl transition-all"
+                >
+                  Update Password
+                </button>
+                {passwordMessage && (
+                  <p
+                    className={`text-xs ${passwordMessage.includes("successfully") ? "text-green-600" : "text-red-500"}`}
+                  >
+                    {passwordMessage}
+                  </p>
+                )}
+              </div>
+            </div>
+          </AccordionSection>
 
           {/* Notifications */}
-          <details className="group border border-gray-200 bg-white rounded-2xl p-5 shadow-sm">
-            <summary className="font-medium cursor-pointer text-lg flex items-center justify-between">
-              Notifications
-              <span className="text-gray-400 group-open:rotate-180 transition-transform">
-                ▼
-              </span>
-            </summary>
-            <div className="mt-4 space-y-4">
-              <label className="flex items-start gap-3 text-gray-700">
+          <AccordionSection icon={Bell} title="Notifications">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <div className="relative mt-0.5">
                 <input
                   type="checkbox"
                   checked={emailNotifications}
                   onChange={(e) => {
-                    const enabled = e.target.checked;
-                    setEmailNotifications(enabled);
-                    updateEmailNotifications(enabled);
+                    const v = e.target.checked;
+                    setEmailNotifications(v);
+                    updateEmailNotifications(v);
                   }}
-                  className="mt-1 w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="sr-only peer"
                 />
-                <span className="flex flex-col">
-                  <span className="font-medium">Email Notifications</span>
-                  <small className="text-gray-500">
-                    Receive emails for shoutouts and comments. Even if toggled
-                    off, you’ll still receive essential system notifications.
-                  </small>
-                </span>
-              </label>
-            </div>
-          </details>
+                <div className="w-10 h-5 rounded-full border border-gray-200 bg-gray-100 peer-checked:bg-indigo-500 peer-checked:border-indigo-500 transition-all" />
+                <div className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-all peer-checked:translate-x-5" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-700">
+                  Email Notifications
+                </p>
+                <p className="text-xs text-gray-400 mt-0.5 leading-relaxed">
+                  Receive emails for shoutouts and comments. Essential system
+                  notifications are always sent.
+                </p>
+              </div>
+            </label>
+          </AccordionSection>
 
           {/* Mobile logout/support */}
-          <div className="flex flex-row gap-3 justify-center items-center md:hidden">
+          <div className="flex gap-3 justify-center pt-2 md:hidden">
             <LogoutButton />
             <SupportButton />
           </div>
@@ -370,44 +426,49 @@ export default function ProfilePage() {
       )}
 
       {activeTab === "challenges" && (
-        <div>
-          <h2 className="text-xl font-semibold mb-4">
-            Your Challenge Submissions
-          </h2>
+        <div className="space-y-3">
           {user.submittedNominations && user.submittedNominations.length > 0 ? (
-            <ul className="divide-y border rounded-lg">
+            <ul className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden divide-y divide-gray-100">
               {user.submittedNominations.map((n) => (
-                <li key={n.id} className="p-4">
-                  <p>
-                    <b>Challenge:</b> {n.challenge.title} ({n.challenge.points}{" "}
-                    pts)
-                  </p>
-                  <p>
-                    <b>Status:</b>{" "}
+                <li
+                  key={n.id}
+                  className="flex items-start justify-between gap-4 px-5 py-4 hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0 mt-0.5">
+                      <Rocket size={13} className="text-indigo-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-800">
+                        {n.challenge.title}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {n.challenge.points} pts · Submitted{" "}
+                        {formatDateLocal(n.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="shrink-0 pt-0.5">
                     {n.challenge.hideStatusFromSubmitter ? (
-                      "SUBMITTED"
-                    ) : (
-                      <span
-                        className={`font-medium ${
-                          n.status === "APPROVED"
-                            ? "text-green-600"
-                            : n.status === "REJECTED"
-                            ? "text-red-600"
-                            : "text-gray-600"
-                        }`}
-                      >
-                        {n.status}
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-lg bg-gray-100 border border-gray-200 text-gray-500">
+                        Submitted
                       </span>
+                    ) : (
+                      <StatusBadge status={n.status} />
                     )}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    Submitted {formatDateLocal(n.createdAt)}
-                  </p>
+                  </div>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-gray-500">No challenge submissions yet.</p>
+            <div className="flex flex-col items-center gap-2 py-14 text-center">
+              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                <Rocket size={18} className="text-gray-300" />
+              </div>
+              <p className="text-sm text-gray-400">
+                No challenge submissions yet.
+              </p>
+            </div>
           )}
         </div>
       )}

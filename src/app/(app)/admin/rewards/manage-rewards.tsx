@@ -26,84 +26,75 @@ export default function ManageRewards({
   categories: RewardCategory[];
 }) {
   const [activeTab, setActiveTab] = useState<"redemption" | "manage">("manage");
-  const [redemptionList, setRedemptionList] =
-    useState<Redemption[]>(redemptions);
+  const [redemptionList, setRedemptionList] = useState<Redemption[]>(redemptions);
   const [redemptionAttention, setRedemptionAttention] = useState(false);
 
-  // ✅ Reactively update badge based on current redemption list
   useEffect(() => {
-    const hasPending = redemptionList.some((r) => r.status === "PENDING");
-    setRedemptionAttention(hasPending);
+    setRedemptionAttention(redemptionList.some((r) => r.status === "PENDING"));
   }, [redemptionList]);
 
-  // 👇 This callback will be passed to each RedemptionRow
   function handleRedemptionUpdate(updated: Redemption) {
-    setRedemptionList((prev) =>
-      prev.map((r) => (r.id === updated.id ? updated : r))
-    );
+    setRedemptionList((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
   }
 
-  return (
-    <section className="space-y-6 p-6 h-screen">
-      <div className="w-full">
-        {/* Tabs */}
-        <div className="flex border-b mb-4">
-          <button
-            onClick={() => setActiveTab("manage")}
-            className={`px-4 py-2 font-medium ${
-              activeTab === "manage"
-                ? "border-b-2 border-blue-500 text-blue-600"
-                : "text-gray-600"
-            }`}
-          >
-            Manage
-          </button>
+  const tabs: { key: "manage" | "redemption"; label: string }[] = [
+    { key: "manage", label: "Manage" },
+    { key: "redemption", label: "Redemptions" },
+  ];
 
+  return (
+    <section className="space-y-4">
+      {/* Tabs */}
+      <div className="flex gap-1 border-b border-gray-100">
+        {tabs.map(({ key, label }) => (
           <button
-            onClick={() => setActiveTab("redemption")}
-            className={`relative px-4 py-2 font-medium transition ${
-              activeTab === "redemption"
-                ? "border-b-2 border-blue-500 text-blue-600"
-                : "text-gray-600 hover:text-gray-800"
-            }`}
+            key={key}
+            onClick={() => setActiveTab(key)}
+            className={`relative px-4 py-2 text-sm font-medium rounded-t-lg transition-all
+              ${activeTab === key
+                ? "bg-indigo-50 text-indigo-600 border border-b-0 border-indigo-100"
+                : "text-gray-400 hover:text-gray-600"
+              }`}
           >
-            Redemptions
-            {redemptionAttention && (
-              <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center animate-bounce">
+            {label}
+            {key === "redemption" && redemptionAttention && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-bounce">
                 !
               </span>
             )}
           </button>
-        </div>
-
-        {/* Tab content */}
-        {activeTab === "redemption" && (
-          <div>
-            <span className="flex justify-end item-end pb-2">
-            <RewardToolbox />
-            </span>
-            <ul className="space-y-2 max-h-[75vh] overflow-y-auto">
-              {redemptionList.map((r) => (
-                <RedemptionRow
-                  key={r.id}
-                  r={r}
-                  onUpdate={handleRedemptionUpdate}
-                />
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {activeTab === "manage" && (
-          <RewardsAdmin
-            rewards={rewards.map((r) => ({
-              ...r,
-              valueCents: r.valueCents ?? 0,
-            }))}
-            categories={categories}
-          />
-        )}
+        ))}
       </div>
+
+      {/* Redemptions tab */}
+      {activeTab === "redemption" && (
+        <div className="space-y-3">
+          <div className="flex justify-end">
+            <RewardToolbox />
+          </div>
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+            {redemptionList.length === 0 ? (
+              <div className="flex flex-col items-center gap-2 py-12 text-center">
+                <p className="text-sm text-gray-400">No redemptions yet.</p>
+              </div>
+            ) : (
+              <ul className="divide-y divide-gray-100 max-h-[75vh] overflow-y-auto">
+                {redemptionList.map((r) => (
+                  <RedemptionRow key={r.id} r={r} onUpdate={handleRedemptionUpdate} />
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Manage tab */}
+      {activeTab === "manage" && (
+        <RewardsAdmin
+          rewards={rewards.map((r) => ({ ...r, valueCents: r.valueCents ?? 0 }))}
+          categories={categories}
+        />
+      )}
     </section>
   );
 }
