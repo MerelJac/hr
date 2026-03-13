@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     DATABASE_URL: process.env.DATABASE_URL,
   },
+  formats: ['image/avif', 'image/webp'], // prioritize modern formats for better performance
+  minimumCacheTTL: 60, // cache images for at least 60 seconds
 };
 
 export default nextConfig;

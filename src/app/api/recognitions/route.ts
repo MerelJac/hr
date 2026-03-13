@@ -82,6 +82,7 @@ export async function POST(req: NextRequest) {
       })),
     });
 
+    // TODO replace with usser.updateMany when supported in transactions for speed
     // Update recipients' piggy bank balances
     for (const r of recipients) {
       await tx.user.update({
