@@ -4,6 +4,7 @@ import GifPicker from "./GifPicker";
 import Image from "next/image";
 import { RefreshCcw, Trash, UserPlus } from "lucide-react";
 import { DepartmentWithUsers } from "@/types/department";
+import CoreValues from "./CoreValues";
 
 type SimpleUser = {
   id: string;
@@ -27,9 +28,11 @@ export default function RecognizeForm({
   const [message, setMessage] = useState("");
   const [gifUrl, setGifUrl] = useState<string | null>(null);
   const [mode, setMode] = useState<"user" | "team">("user");
-  const [selectedTeam, setSelectedTeam] = useState<DepartmentWithUsers | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<DepartmentWithUsers | null>(
+    null,
+  );
   const [teamPoints, setTeamPoints] = useState(5);
-
+  const [coreValue, setCoreValue] = useState<string>("");
   const total = rows.reduce((s, r) => s + (Number(r.points) || 0), 0);
   const isOverBudget = total > available;
   const canSubmit = message.trim() && total >= 1 && !isOverBudget;
@@ -40,7 +43,10 @@ export default function RecognizeForm({
     setRows([{ userId: users[0]?.id ?? "", points: 5 }]);
   }
 
-  function updateRow(i: number, patch: Partial<{ userId: string; points: number }>) {
+  function updateRow(
+    i: number,
+    patch: Partial<{ userId: string; points: number }>,
+  ) {
     const next = [...rows];
     next[i] = { ...next[i], ...patch };
     setRows(next);
@@ -60,7 +66,10 @@ export default function RecognizeForm({
     const dept = departments.find((d) => d.id === deptId);
     if (!dept) return;
     setSelectedTeam(dept);
-    const newRows = dept.users.map((u) => ({ userId: u.id, points: teamPoints }));
+    const newRows = dept.users.map((u) => ({
+      userId: u.id,
+      points: teamPoints,
+    }));
     setRows(newRows);
   }
 
@@ -73,15 +82,22 @@ export default function RecognizeForm({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!message.trim()) return alert("Message is required.");
+    if (!coreValue.trim()) return alert("Core value is required.");
+
     if (!rows.length) return alert("At least one recipient.");
-    if (total > available) return alert(`Total points ${total} exceeds available ${available}.`);
+    if (total > available)
+      return alert(`Total points ${total} exceeds available ${available}.`);
     const res = await fetch("/api/recognitions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message,
         gifUrl,
-        recipients: rows.map((r) => ({ userId: r.userId, points: Number(r.points) })),
+        coreValue: coreValue,
+        recipients: rows.map((r) => ({
+          userId: r.userId,
+          points: Number(r.points),
+        })),
       }),
     });
     if (res.ok) {
@@ -93,14 +109,17 @@ export default function RecognizeForm({
   }
 
   return (
-    <form onSubmit={submit} className="space-y-5 p-5 rounded-2xl bg-white shadow-sm border border-gray-100">
-
+    <form
+      onSubmit={submit}
+      className="space-y-5 p-5 rounded-2xl bg-white shadow-sm border border-gray-100"
+    >
       {/* Header row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-yellow-400 text-lg">⭐</span>
           <span className="text-sm font-medium text-gray-700">
-            <span className="text-indigo-600 font-semibold">{available}</span> stars available
+            <span className="text-indigo-600 font-semibold">{available}</span>{" "}
+            stars available
           </span>
         </div>
         <button
@@ -122,7 +141,9 @@ export default function RecognizeForm({
                 key={i}
                 className="flex flex-wrap items-center gap-2 bg-indigo-50 border border-indigo-100 px-3 py-2.5 rounded-xl transition-shadow hover:shadow-sm"
               >
-                <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider">To</span>
+                <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider">
+                  To
+                </span>
 
                 <select
                   className="flex-1 min-w-0 bg-white border border-indigo-200 rounded-lg px-2.5 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent transition"
@@ -147,7 +168,9 @@ export default function RecognizeForm({
                     step={5}
                     className="w-16 border border-indigo-200 bg-white rounded-lg px-2 py-1.5 text-sm text-center font-medium text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent transition"
                     value={row.points}
-                    onChange={(e) => updateRow(i, { points: Number(e.target.value) })}
+                    onChange={(e) =>
+                      updateRow(i, { points: Number(e.target.value) })
+                    }
                   />
                   <span className="text-base">⭐</span>
                 </div>
@@ -184,30 +207,41 @@ export default function RecognizeForm({
               onChange={(e) => handleSelectDepartment(e.target.value)}
               className="w-full bg-white border border-indigo-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent transition"
             >
-              <option value="" disabled>Select a team…</option>
+              <option value="" disabled>
+                Select a team…
+              </option>
               {departments.map((d) => (
-                <option key={d.id} value={d.id}>{d.name}</option>
+                <option key={d.id} value={d.id}>
+                  {d.name}
+                </option>
               ))}
             </select>
 
             {selectedTeam && (
               <>
                 <div className="flex items-center gap-2.5 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2.5">
-                  <span className="text-sm text-gray-500">Each member receives</span>
+                  <span className="text-sm text-gray-500">
+                    Each member receives
+                  </span>
                   <input
                     type="number"
                     min={5}
                     step={5}
                     className="w-16 border border-indigo-200 bg-white rounded-lg px-2 py-1.5 text-sm text-center font-medium text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition"
                     value={teamPoints}
-                    onChange={(e) => handleTeamPointsChange(Number(e.target.value))}
+                    onChange={(e) =>
+                      handleTeamPointsChange(Number(e.target.value))
+                    }
                   />
                   <span>⭐</span>
                 </div>
 
                 <div className="border border-gray-100 rounded-xl bg-gray-50 divide-y divide-gray-100 max-h-44 overflow-y-auto">
                   {selectedTeam.users.map((u) => (
-                    <div key={u.id} className="flex items-center gap-3 px-3 py-2">
+                    <div
+                      key={u.id}
+                      className="flex items-center gap-3 px-3 py-2"
+                    >
                       <Image
                         src={u.profileImage ?? "/default-profile-image.svg"}
                         alt={`${u.firstName} ${u.lastName}`}
@@ -215,7 +249,9 @@ export default function RecognizeForm({
                         height={32}
                         className="rounded-full w-8 h-8 border border-indigo-200 object-cover"
                       />
-                      <span className="text-sm text-gray-700">{u.firstName} {u.lastName}</span>
+                      <span className="text-sm text-gray-700">
+                        {u.firstName} {u.lastName}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -266,6 +302,37 @@ export default function RecognizeForm({
               Over budget by {total - available} ⭐
             </span>
           )}
+        </div>
+      </div>
+      {/* Core Value (required) */}
+      <div className="space-y-1.5">
+        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+          Core Value{" "}
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { value: "LIGHT", label: "🙌 Be the light" },
+            { value: "RIGHT", label: "🏆 Do the right thing" },
+            { value: "SERVICE", label: "🤝 Selfless Service" },
+            {
+              value: "PROBLEM",
+              label: "💛 Proactive Positive Problem Solving",
+            },
+            { value: "EVOLUTION", label: " 🌱 Embrace Evolution" },
+          ].map(({ value, label }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setCoreValue(coreValue === value ? "" : value)}
+              className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-all ${
+                coreValue === value
+                  ? "bg-indigo-600 text-white border-indigo-600 shadow-sm"
+                  : "bg-white text-gray-600 border-gray-200 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
