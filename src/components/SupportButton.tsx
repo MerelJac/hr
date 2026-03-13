@@ -48,6 +48,7 @@ export default function SupportButton() {
       {/* Floating Support Button */}
       <button
         onClick={() => setOpen(true)}
+        className="text-gray-400 hover:text-green-500"
         aria-label="Contact Support"
       >
         <CircleQuestionMark size={24} />
@@ -59,12 +60,12 @@ export default function SupportButton() {
           <div className="bg-white p-6 rounded-lg shadow-xl relative w-[90%] max-w-lg max-h-screen overflow-y-auto">
             <button
               onClick={() => setOpen(false)}
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-gray-400 hover:text-red-500"
               aria-label="Close"
             >
               ✕
             </button>
-            <h2 className="text-xl font-semibold mb-4">Contact Support</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">Contact Support</h2>
             <div id="hs-support-form"></div>
           </div>
         </div>
